@@ -18,7 +18,9 @@ interface ProjectPageProps {
 }
 
 export async function generateMetadata({ params }: ProjectPageProps): Promise<Metadata> {
-  const project = await getContentItem("projects", params.slug, params.locale)
+  const locale = (await params).locale
+  const slug = (await params).slug
+  const project = await getContentItem("projects", slug, locale)
 
   if (!project) {
     return {
@@ -33,7 +35,8 @@ export async function generateMetadata({ params }: ProjectPageProps): Promise<Me
 }
 
 export async function generateStaticParams({ params }: { params: { locale: Locale } }) {
-  const projects = await getAllContent("projects", params.locale)
+  const locale = (await params).locale
+  const projects = await getAllContent("projects", locale)
 
   return projects.map((project) => ({
     slug: project.slug,
@@ -41,8 +44,10 @@ export async function generateStaticParams({ params }: { params: { locale: Local
 }
 
 export default async function ProjectPage({ params }: ProjectPageProps) {
-  const project = await getContentItem("projects", params.slug, params.locale)
-  const dictionary = await getDictionary(params.locale)
+  const locale = (await params).locale
+  const slug = (await params).slug
+  const project = await getContentItem("projects", slug, locale)
+  const dictionary = await getDictionary(locale)
 
   if (!project) {
     notFound()
@@ -50,7 +55,7 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
 
   return (
     <div className="container py-12">
-      <Link href={getLocalizedPathname("/projects", params.locale)}>
+      <Link href={getLocalizedPathname("/projects", locale)}>
         <Button variant="ghost" className="mb-6 gap-2 text-gray-400 hover:text-purple-400">
           <ArrowLeft className="h-4 w-4" />
           {dictionary.common.backToProjects}
@@ -90,7 +95,7 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
             <Link href={project.github} target="_blank" rel="noopener noreferrer">
               <Button className="gap-2 bg-purple-600 text-white hover:bg-purple-700">
                 <Github className="h-4 w-4" />
-                {params.locale === "tr" ? "GitHub'da Görüntüle" : "View on GitHub"}
+                {locale === "tr" ? "GitHub'da Görüntüle" : "View on GitHub"}
               </Button>
             </Link>
           )}
@@ -101,7 +106,7 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
                 className="gap-2 border-purple-600 hover:bg-purple-950/20 hover:text-purple-400"
               >
                 <ExternalLink className="h-4 w-4" />
-                {params.locale === "tr" ? "Projeyi Ziyaret Et" : "Visit Project"}
+                {locale === "tr" ? "Projeyi Ziyaret Et" : "Visit Project"}
               </Button>
             </Link>
           )}

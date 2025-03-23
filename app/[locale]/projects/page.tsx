@@ -25,6 +25,6 @@ export default async function ProjectsPage({ params }: { params: { locale: Local
     console.error("Error fetching projects:", error)
   }
 
-  return <ProjectsPageClient params={params} dictionary={dictionary} projects={projects} />
+  return <ProjectsPageClient params={{ locale }} dictionary={dictionary} projects={projects} />
 }
 

@@ -12,6 +12,8 @@ interface ProjectsPageClientProps {
 }
 
 export default function ProjectsPageClient({ params, dictionary, projects }: ProjectsPageClientProps) {
+  const locale = params.locale
+
   return (
     <div className="container py-12">
       <div className="space-y-4">
@@ -28,7 +30,7 @@ export default function ProjectsPageClient({ params, dictionary, projects }: Pro
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: index * 0.1 }}
           >
-            <ProjectCard project={project} locale={params.locale} index={index} />
+            <ProjectCard project={project} locale={locale} index={index} />
           </motion.div>
         ))}
       </div>
