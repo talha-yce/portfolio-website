@@ -28,15 +28,15 @@ export default function HomeClient({ params, dictionary, featuredProjects, recen
           <div className="flex flex-col items-center space-y-4 text-center">
             <div className="space-y-2">
               <AnimatedText
-                text={dictionary.home.heroTitle}
+                text={dictionary?.home?.heroTitle || ""}
                 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl lg:text-6xl/none bg-clip-text text-transparent bg-gradient-to-r from-purple-400 to-green-400"
               />
-              <p className="mx-auto max-w-[700px] text-gray-400 md:text-xl">{dictionary.home.heroSubtitle}</p>
+              <p className="mx-auto max-w-[700px] text-gray-400 md:text-xl">{dictionary?.home?.heroSubtitle || ""}</p>
             </div>
             <div className="space-x-4">
               <Link href={getLocalizedPathname("/about", params.locale)}>
                 <Button className="inline-flex h-10 items-center justify-center rounded-md bg-purple-600 px-8 text-sm font-medium text-white shadow transition-colors hover:bg-purple-700 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50">
-                  {dictionary.common.about}
+                  {dictionary?.common?.about || ""}
                 </Button>
               </Link>
               <Link href={getLocalizedPathname("/projects", params.locale)}>
@@ -44,7 +44,7 @@ export default function HomeClient({ params, dictionary, featuredProjects, recen
                   variant="outline"
                   className="inline-flex h-10 items-center justify-center rounded-md border border-purple-600 bg-background px-8 text-sm font-medium shadow-sm transition-colors hover:bg-purple-950/20 hover:text-purple-400 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50"
                 >
-                  {dictionary.common.projects}
+                  {dictionary?.common?.projects || ""}
                 </Button>
               </Link>
             </div>
@@ -58,10 +58,10 @@ export default function HomeClient({ params, dictionary, featuredProjects, recen
           <div className="flex flex-col items-center justify-center space-y-4 text-center">
             <div className="space-y-2">
               <h2 className="text-3xl font-bold tracking-tighter sm:text-5xl bg-clip-text text-transparent bg-gradient-to-r from-purple-400 to-green-400">
-                {dictionary.home.featuredProjects}
+                {dictionary?.home?.featuredProjects || ""}
               </h2>
               <p className="mx-auto max-w-[700px] text-gray-400 md:text-xl/relaxed lg:text-base/relaxed xl:text-xl/relaxed">
-                {dictionary.home.projectsSubtitle}
+                {dictionary?.home?.projectsSubtitle || ""}
               </p>
             </div>
           </div>
@@ -76,7 +76,7 @@ export default function HomeClient({ params, dictionary, featuredProjects, recen
                 variant="outline"
                 className="inline-flex h-10 items-center justify-center rounded-md px-8 border-purple-600 hover:bg-purple-950/20 hover:text-purple-400"
               >
-                {dictionary.common.viewAllProjects}
+                {dictionary?.common?.viewAllProjects || ""}
                 <ArrowRight className="ml-2 h-4 w-4" />
               </Button>
             </Link>
@@ -90,16 +90,16 @@ export default function HomeClient({ params, dictionary, featuredProjects, recen
           <div className="flex flex-col items-center justify-center space-y-4 text-center">
             <div className="space-y-2">
               <h2 className="text-3xl font-bold tracking-tighter sm:text-5xl bg-clip-text text-transparent bg-gradient-to-r from-purple-400 to-green-400">
-                {dictionary.home.latestArticles}
+                {dictionary?.home?.latestArticles || ""}
               </h2>
               <p className="mx-auto max-w-[700px] text-gray-400 md:text-xl/relaxed lg:text-base/relaxed xl:text-xl/relaxed">
-                {dictionary.home.articlesSubtitle}
+                {dictionary?.home?.articlesSubtitle || ""}
               </p>
             </div>
           </div>
           <div className="mx-auto grid max-w-5xl grid-cols-1 gap-6 py-12 md:grid-cols-2 lg:grid-cols-3">
             {recentPosts.map((post, index) => {
-              const readingTimeText = dictionary.blog.readingTime.replace("{time}", post.readingTime?.toString() || "0")
+              const readingTimeText = dictionary?.blog?.readingTime?.replace("{time}", post.readingTime?.toString() || "0") || ""
               return (
                 <motion.div
                   key={post.slug}
@@ -118,7 +118,7 @@ export default function HomeClient({ params, dictionary, featuredProjects, recen
                 variant="outline"
                 className="inline-flex h-10 items-center justify-center rounded-md px-8 border-purple-600 hover:bg-purple-950/20 hover:text-purple-400"
               >
-                {dictionary.common.viewAllPosts}
+                {dictionary?.common?.viewAllPosts || ""}
                 <ArrowRight className="ml-2 h-4 w-4" />
               </Button>
             </Link>
@@ -132,10 +132,10 @@ export default function HomeClient({ params, dictionary, featuredProjects, recen
           <div className="flex flex-col items-center justify-center space-y-4 text-center">
             <div className="space-y-2">
               <h2 className="text-3xl font-bold tracking-tighter sm:text-5xl bg-clip-text text-transparent bg-gradient-to-r from-purple-400 to-green-400">
-                {dictionary.common.getInTouch}
+                {dictionary?.common?.getInTouch || ""}
               </h2>
               <p className="mx-auto max-w-[700px] text-gray-400 md:text-xl/relaxed lg:text-base/relaxed xl:text-xl/relaxed">
-                {dictionary.home.contactDescription}
+                {dictionary?.home?.contactDescription || ""}
               </p>
             </div>
             <div className="w-full max-w-sm space-y-2">

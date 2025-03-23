@@ -13,17 +13,25 @@ import "../globals.css"
 const spaceGrotesk = Space_Grotesk({
   subsets: ["latin"],
   weight: ["300", "400", "500", "600", "700"],
+  display: "swap",
 })
 
 export const metadata: Metadata = {
+  metadataBase: new URL("https://talha-portfolio.vercel.app"),
   title: {
-    default: "Talha Yüce | Yazılım Mühendisi",
-    template: "%s | Talha Yüce",
+    template: '%s | Talha Yüce',
+    default: 'Talha Yüce | Yazılım Mühendisi',
   },
-  description: "Web Geliştirme, Oyun Geliştirme ve Yapay Zeka Uygulamaları konusunda uzmanlaşmış Yazılım Mühendisi",
-  keywords: ["Yazılım Mühendisi", "Web Geliştirme", "Oyun Geliştirme", "Unity", "Yapay Zeka", "React", "Next.js"],
+  description: 'Web Geliştirme, Oyun Geliştirme ve Yapay Zeka Uygulamaları konusunda uzmanlaşmış Yazılım Mühendisi',
+  keywords: ['yazılım mühendisi', 'web geliştirme', 'oyun geliştirme', 'yapay zeka', 'frontend', 'backend', 'fullstack', 'react', 'next.js', 'typescript', 'unity', 'c#', 'python'],
   authors: [{ name: "Talha Yüce" }],
   creator: "Talha Yüce",
+  publisher: "Talha Yüce",
+  formatDetection: {
+    email: false,
+    address: false,
+    telephone: false,
+  },
   openGraph: {
     type: "website",
     locale: "tr_TR",
@@ -31,14 +39,61 @@ export const metadata: Metadata = {
     title: "Talha Yüce | Yazılım Mühendisi",
     description: "Web Geliştirme, Oyun Geliştirme ve Yapay Zeka Uygulamaları konusunda uzmanlaşmış Yazılım Mühendisi",
     siteName: "Talha Yüce Portfolyo",
+    images: [
+      {
+        url: "/og-image.jpg",
+        width: 1200,
+        height: 630,
+        alt: "Talha Yüce Portfolyo",
+      },
+    ],
   },
   twitter: {
     card: "summary_large_image",
     title: "Talha Yüce | Yazılım Mühendisi",
     description: "Web Geliştirme, Oyun Geliştirme ve Yapay Zeka Uygulamaları konusunda uzmanlaşmış Yazılım Mühendisi",
+    images: ["/og-image.jpg"],
+    creator: "@talhayuce",
   },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-video-preview": -1,
+      "max-image-preview": "large",
+      "max-snippet": -1,
+    },
+  },
+  verification: {
+    google: "google-site-verification-code",
+  },
+  alternates: {
+    canonical: "https://talha-portfolio.vercel.app",
+  },
+  manifest: '/site.webmanifest',
   icons: {
-    icon: "/favicon.ico",
+    icon: [
+      { url: '/icon-16x16.png', sizes: '16x16', type: 'image/png' },
+      { url: '/icon-32x32.png', sizes: '32x32', type: 'image/png' },
+      { url: '/icon-48x48.png', sizes: '48x48', type: 'image/png' },
+      { url: '/icon-64x64.png', sizes: '64x64', type: 'image/png' },
+      { url: '/icon-96x96.png', sizes: '96x96', type: 'image/png' },
+      { url: '/icon-128x128.png', sizes: '128x128', type: 'image/png' },
+      { url: '/icon-256x256.png', sizes: '256x256', type: 'image/png' },
+      { url: '/icon-384x384.png', sizes: '384x384', type: 'image/png' },
+      { url: '/icon-512x512.png', sizes: '512x512', type: 'image/png' },
+    ],
+    shortcut: '/icon-512x512.png',
+    apple: [
+      { url: '/apple-touch-icon.png', sizes: '180x180', type: 'image/png' },
+    ],
+  },
+  appleWebApp: {
+    capable: true,
+    title: 'Talha Yüce | Yazılım Mühendisi',
+    statusBarStyle: 'black-translucent',
   },
 }
 
@@ -59,6 +114,15 @@ export default async function RootLayout({ children, params }: RootLayoutProps) 
 
   return (
     <html lang={locale} suppressHydrationWarning>
+      <head>
+        <link rel="canonical" href="https://talha-portfolio.vercel.app" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
+        <meta name="theme-color" content="#000000" />
+        <link rel="manifest" href="/manifest.json" />
+        <link rel="manifest" href="/site.webmanifest" />
+        <link rel="icon" type="image/png" sizes="512x512" href="/icon-512x512.png" />
+        <link rel="apple-touch-icon" href="/icon-512x512.png" />
+      </head>
       <body className={`${spaceGrotesk.className} bg-background text-foreground`}>
         <ThemeProvider attribute="class" defaultTheme="dark" enableSystem disableTransitionOnChange>
           <div className="relative flex min-h-screen flex-col">

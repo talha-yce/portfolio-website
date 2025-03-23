@@ -1,0 +1,10 @@
+User-agent: *
+Allow: /
+
+# Sitemap
+Sitemap: https://talha-portfolio.vercel.app/sitemap.xml
+
+# Disallow
+Disallow: /api/
+Disallow: /_next/
+Disallow: /static/ 

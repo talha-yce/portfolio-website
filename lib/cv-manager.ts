@@ -54,7 +54,7 @@ export interface UserData {
 
 export const getUserData = async (locale: Locale = defaultLocale): Promise<UserData> => {
   try {
-    const filePath = path.join(process.cwd(), "data", "cv", `cv.${locale}.json`)
+    const filePath = path.join(process.cwd(), "public", "data", "cv", `cv.${locale}.json`)
     const fileContents = fs.readFileSync(filePath, "utf8")
     return JSON.parse(fileContents) as UserData
   } catch (error) {
