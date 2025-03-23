@@ -1,0 +1,83 @@
+{
+  "name": "Talha Yüce",
+  "title": "Yazılım Mühendisi",
+  "email": "yucetalha00@gmail.com",
+  "phone": "+90 538 550 7019",
+  "location": "Mersin, Türkiye",
+  "bio": "Fırat Üniversitesi'nde yazılım mühendisliği öğrencisiyim ve web geliştirme, oyun geliştirme ve yapay zeka uygulamaları konularında tutkuluyum. Çeşitli programlama dilleri ve çerçeveleri konusunda deneyimim var ve her zaman yeni teknolojiler öğrenmeye hevesliyim.",
+  "github": "https://github.com/talha-yce",
+  "linkedin": "https://www.linkedin.com/in/talha-yüce/",
+  "profileImage": "/data/images/profile/talha-yuce.jpg",
+  "languages": [
+    {
+      "name": "Türkçe",
+      "level": "Anadil"
+    },
+    {
+      "name": "İngilizce",
+      "level": "A2"
+    }
+  ],
+  "education": [
+    {
+      "degree": "Yazılım Mühendisliği",
+      "institution": "Fırat Üniversitesi",
+      "date": "2021 - Devam Ediyor",
+      "description": "Şu anda Elazığ, Türkiye'deki Fırat Üniversitesi'nde Yazılım Mühendisliği alanında lisans eğitimi almaktayım."
+    }
+  ],
+  "experience": [
+    {
+      "title": "Unity Oyun Geliştirme Stajyeri",
+      "company": "İnosens Bilişim Teknolojileri",
+      "date": "Temmuz 2024 - Eylül 2024",
+      "description": "Fizik tedavi hastaları için 3B oyun prototipi ve snowboard yarış oyunu dahil olmak üzere Unity oyun geliştirme projeleri üzerinde çalıştım."
+    }
+  ],
+  "skills": [
+    {
+      "category": "Programlama Dilleri",
+      "items": ["Java", "Python", "C#", "JavaScript", "HTML", "CSS"]
+    },
+    {
+      "category": "Web Geliştirme",
+      "items": ["HTML", "JavaScript", "CSS", "ASP.NET", "Web API", "React", "React Native"]
+    },
+    {
+      "category": "Veritabanları",
+      "items": ["MySQL", "MS SQL", "MongoDB", "Firebase"]
+    },
+    {
+      "category": "Araçlar ve Ortamlar",
+      "items": ["Visual Studio", "Unity", "Visual Studio Code", "Git", "GitHub"]
+    }
+  ],
+  "certifications": [
+    {
+      "title": "Unity Oyun Geliştirme",
+      "issuer": "Udemy",
+      "date": "Temmuz 2023 - Eylül 2023"
+    },
+    {
+      "title": "Sürüm Kontrolü: Git ve GitHub",
+      "issuer": "BTK Akademi",
+      "date": "Ağustos 2023 - Eylül 2023"
+    },
+    {
+      "title": "Unity Dijital Oyun Geliştirme",
+      "issuer": "BTK Akademi",
+      "date": "Ağustos 2023 - Ekim 2023"
+    },
+    {
+      "title": "Web Geliştirme",
+      "issuer": "BTK Akademi",
+      "date": "Ocak 2024 - Devam Ediyor"
+    },
+    {
+      "title": "Unity için Programlama Tasarım Kalıpları",
+      "issuer": "Udemy",
+      "date": "Haziran 2024"
+    }
+  ]
+}
+

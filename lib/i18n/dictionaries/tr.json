@@ -1,0 +1,45 @@
+{
+  "common": {
+    "home": "Ana Sayfa",
+    "about": "Hakkımda",
+    "projects": "Projeler",
+    "blog": "Blog",
+    "contact": "İletişim",
+    "getInTouch": "İletişime Geçin",
+    "viewAll": "Tümünü Görüntüle",
+    "viewDetails": "Detayları Görüntüle",
+    "viewAllProjects": "Tüm Projeleri Görüntüle",
+    "viewAllPosts": "Tüm Yazıları Görüntüle",
+    "backToProjects": "Projelere Dön",
+    "backToBlog": "Bloga Dön"
+  },
+  "home": {
+    "heroTitle": "Talha Yüce",
+    "heroSubtitle": "Web Geliştirme, Oyun Geliştirme ve Yapay Zeka Uygulamaları konusunda uzmanlaşmış Yazılım Mühendisi",
+    "featuredProjects": "Öne Çıkan Projeler",
+    "projectsSubtitle": "Son çalışmalarımdan bazılarına göz atın",
+    "latestArticles": "Son Yazılar",
+    "articlesSubtitle": "Web geliştirme, yapay zeka ve oyun geliştirme hakkında düşünceler",
+    "contactDescription": "İşbirliği veya sadece dostça bir sohbet için iletişime geçmekten çekinmeyin"
+  },
+  "about": {
+    "title": "Hakkımda",
+    "contact": "İletişim",
+    "languages": "Diller",
+    "profiles": "Profiller",
+    "education": "Eğitim",
+    "experience": "Deneyim",
+    "skills": "Yetenekler",
+    "certifications": "Sertifikalar"
+  },
+  "projects": {
+    "title": "Projeler",
+    "description": "Web geliştirme, oyun geliştirme ve yapay zeka uygulamaları alanındaki çalışmalarımın bir koleksiyonu."
+  },
+  "blog": {
+    "title": "Blog",
+    "description": "Web geliştirme, yapay zeka ve oyun geliştirme hakkında makaleler ve düşünceler.",
+    "readingTime": "{time} dk okuma"
+  }
+}
+

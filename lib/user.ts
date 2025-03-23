@@ -1,0 +1,123 @@
+export interface UserData {
+  name: string
+  title: string
+  email: string
+  phone: string
+  location: string
+  bio: string
+  github: string
+  linkedin: string
+  languages: {
+    name: string
+    level: string
+  }[]
+  education: {
+    degree: string
+    institution: string
+    date: string
+    description?: string
+  }[]
+  experience: {
+    title: string
+    company: string
+    date: string
+    description?: string
+  }[]
+  skills: {
+    category: string
+    items: string[]
+  }[]
+  certifications: {
+    title: string
+    issuer: string
+    date: string
+    description?: string
+  }[]
+}
+
+export async function getUserData(): Promise<UserData> {
+  // In a real implementation, this would read from a JSON file or database
+  return {
+    name: "Talha Yüce",
+    title: "Software Engineer",
+    email: "yucetalha00@gmail.com",
+    phone: "+90 538 550 7019",
+    location: "Mersin, Turkey",
+    bio: "I am a software engineering student at Firat University with a passion for web development, game development, and AI applications. I have experience with various programming languages and frameworks, and I am always eager to learn new technologies.",
+    github: "https://github.com/talha-yce",
+    linkedin: "https://www.linkedin.com/in/talha-yüce/",
+    languages: [
+      {
+        name: "Turkish",
+        level: "Native",
+      },
+      {
+        name: "English",
+        level: "A2",
+      },
+    ],
+    education: [
+      {
+        degree: "Software Engineering",
+        institution: "Firat University",
+        date: "2021 - Present",
+        description: "Currently pursuing a degree in Software Engineering at Firat University, Elazig, Turkey.",
+      },
+    ],
+    experience: [
+      {
+        title: "Unity Game Development Internship",
+        company: "İnosens Bilişim Teknolojileri",
+        date: "July 2024 - September 2024",
+        description:
+          "Worked on Unity game development projects, including a 3D game prototype for physical therapy patients and a snowboard racing game.",
+      },
+    ],
+    skills: [
+      {
+        category: "Programming Languages",
+        items: ["Java", "Python", "C#", "JavaScript", "HTML", "CSS"],
+      },
+      {
+        category: "Web Development",
+        items: ["HTML", "JavaScript", "CSS", "ASP.NET", "Web API", "React", "React Native"],
+      },
+      {
+        category: "Databases",
+        items: ["MySQL", "MS SQL", "MongoDB", "Firebase"],
+      },
+      {
+        category: "Tools & Environments",
+        items: ["Visual Studio", "Unity", "Visual Studio Code", "Git", "GitHub"],
+      },
+    ],
+    certifications: [
+      {
+        title: "Unity Game Development",
+        issuer: "Udemy",
+        date: "July 2023 - September 2023",
+      },
+      {
+        title: "Version Control: Git and GitHub",
+        issuer: "BTK Akademi",
+        date: "August 2023 - September 2023",
+      },
+      {
+        title: "Unity Digital Game Development",
+        issuer: "BTK Akademi",
+        date: "August 2023 - October 2023",
+      },
+      {
+        title: "Web Development",
+        issuer: "BTK Akademi",
+        date: "January 2024 - Present",
+      },
+      {
+        title: "Programming Design Patterns for Unity",
+        issuer: "Udemy",
+        date: "June 2024",
+      },
+    ],
+  }
+}
+

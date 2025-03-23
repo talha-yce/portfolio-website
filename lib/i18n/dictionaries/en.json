@@ -1,0 +1,45 @@
+{
+  "common": {
+    "home": "Home",
+    "about": "About",
+    "projects": "Projects",
+    "blog": "Blog",
+    "contact": "Contact",
+    "getInTouch": "Get In Touch",
+    "viewAll": "View All",
+    "viewDetails": "View Details",
+    "viewAllProjects": "View All Projects",
+    "viewAllPosts": "View All Posts",
+    "backToProjects": "Back to Projects",
+    "backToBlog": "Back to Blog"
+  },
+  "home": {
+    "heroTitle": "Talha Yüce",
+    "heroSubtitle": "Software Engineer specializing in Web Development, Game Development, and AI Applications",
+    "featuredProjects": "Featured Projects",
+    "projectsSubtitle": "Check out some of my recent work",
+    "latestArticles": "Latest Articles",
+    "articlesSubtitle": "Thoughts on web development, AI, and game development",
+    "contactDescription": "Feel free to reach out for collaborations or just a friendly chat"
+  },
+  "about": {
+    "title": "About Me",
+    "contact": "Contact",
+    "languages": "Languages",
+    "profiles": "Profiles",
+    "education": "Education",
+    "experience": "Experience",
+    "skills": "Skills",
+    "certifications": "Certifications"
+  },
+  "projects": {
+    "title": "Projects",
+    "description": "A collection of my work in web development, game development, and AI applications."
+  },
+  "blog": {
+    "title": "Blog",
+    "description": "Articles and thoughts on web development, AI, and game development.",
+    "readingTime": "{time} min read"
+  }
+}
+
