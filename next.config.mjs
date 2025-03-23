@@ -70,23 +70,8 @@ const nextConfig = {
     ]
   },
   async rewrites() {
-    return [
-      {
-        source: '/manifest.json',
-        destination: '/site.webmanifest'
-      }
-    ]
-  },
-  webpack: (config) => {
-    config.module.rules.push({
-      test: /\.(webmanifest|manifest)$/,
-      type: 'asset/resource',
-      generator: {
-        filename: 'static/[hash][ext]'
-      }
-    });
-    return config;
-  },
+    return []
+  }
 }
 
 mergeConfig(nextConfig, userConfig)
