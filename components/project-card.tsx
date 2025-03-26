@@ -26,11 +26,12 @@ export function ProjectCard({ project, locale, index = 0 }: ProjectCardProps) {
     >
       <Card className="flex flex-col overflow-hidden border-purple-900/40 bg-black/20 backdrop-blur-sm transition-all duration-300 hover:border-purple-600/60 hover:shadow-[0_0_15px_rgba(147,51,234,0.15)]">
         <Link href={getLocalizedPathname(`/projects/${project.slug}`, locale)} className="overflow-hidden">
-          <div className="relative h-48 w-full overflow-hidden">
+          <div className="relative aspect-[3/2] w-full overflow-hidden">
             <Image
               src={project.coverImage || "/placeholder.svg?height=400&width=600"}
               alt={project.title}
               fill
+              sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
               className="object-cover transition-transform duration-500 hover:scale-105"
             />
           </div>

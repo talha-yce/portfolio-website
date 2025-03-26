@@ -6,13 +6,15 @@ import { Badge } from "@/components/ui/badge"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import type { UserData } from "@/lib/cv-manager"
 import type { Dictionary } from "@/lib/i18n/dictionaries"
+import type { Locale } from "@/lib/i18n/config"
 
 interface AboutPageClientProps {
   userData: UserData
   dictionary: Dictionary
+  locale: Locale
 }
 
-export default function AboutPageClient({ userData, dictionary }: AboutPageClientProps) {
+export default function AboutPageClient({ userData, dictionary, locale }: AboutPageClientProps) {
   return (
     <div className="container py-12">
       <div className="grid gap-8 md:grid-cols-[1fr_2fr]">

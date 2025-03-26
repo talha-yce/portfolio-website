@@ -22,6 +22,6 @@ export default async function AboutPage({ params }: { params: { locale: Locale }
   const userData = await getUserData(awaitedParams.locale)
   const dictionary = await getDictionary(awaitedParams.locale)
 
-  return <AboutPageClient userData={userData} dictionary={dictionary} />
+  return <AboutPageClient userData={userData} dictionary={dictionary} locale={awaitedParams.locale} />
 }
 

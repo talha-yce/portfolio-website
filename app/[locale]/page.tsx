@@ -37,7 +37,7 @@ export default async function Home({ params }: { params: { locale: Locale } }) {
   const recentPosts = posts.slice(0, 3)
 
   return (
-    <HomeClient params={params} dictionary={dictionary} featuredProjects={featuredProjects} recentPosts={recentPosts} />
+    <HomeClient params={awaitedParams} dictionary={dictionary} featuredProjects={featuredProjects} recentPosts={recentPosts} />
   )
 }
 

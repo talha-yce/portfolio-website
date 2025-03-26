@@ -73,8 +73,15 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
         </div>
 
         {project.coverImage && (
-          <div className="relative aspect-video w-full overflow-hidden rounded-lg border border-purple-900/40 shadow-[0_0_15px_rgba(147,51,234,0.15)]">
-            <Image src={project.coverImage || "/placeholder.svg"} alt={project.title} fill className="object-cover" />
+          <div className="relative aspect-[16/9] w-full overflow-hidden rounded-lg border border-purple-900/40 shadow-[0_0_15px_rgba(147,51,234,0.15)]">
+            <Image 
+              src={project.coverImage || "/placeholder.svg?height=630&width=1200"} 
+              alt={project.title} 
+              fill 
+              sizes="100vw"
+              priority
+              className="object-cover" 
+            />
           </div>
         )}
 

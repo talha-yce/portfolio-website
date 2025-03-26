@@ -34,11 +34,6 @@ export const removeLocaleFromPathname = (pathname: string): string => {
 
 export const getLocalizedPathname = (pathname: string, locale: Locale): string => {
   const cleanPath = removeLocaleFromPathname(pathname)
-
-  if (locale === defaultLocale) {
-    return cleanPath
-  }
-
   return `/${locale}${cleanPath === "/" ? "" : cleanPath}`
 }
 
