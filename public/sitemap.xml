@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <!-- Ana Sayfalar -->
+  <url>
+    <loc>https://talha-yuce.vercel.app/tr</loc>
+    <lastmod>2024-03-20</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>1.0</priority>
+  </url>
+  <url>
+    <loc>https://talha-yuce.vercel.app/en</loc>
+    <lastmod>2024-03-20</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>1.0</priority>
+  </url>
+
+  <!-- Hakkımda Sayfaları -->
+  <url>
+    <loc>https://talha-yuce.vercel.app/tr/about</loc>
+    <lastmod>2024-03-20</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://talha-yuce.vercel.app/en/about</loc>
+    <lastmod>2024-03-20</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <!-- Blog Sayfaları -->
+  <url>
+    <loc>https://talha-yuce.vercel.app/tr/blog</loc>
+    <lastmod>2024-03-20</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://talha-yuce.vercel.app/en/blog</loc>
+    <lastmod>2024-03-20</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <!-- Projeler Sayfaları -->
+  <url>
+    <loc>https://talha-yuce.vercel.app/tr/projects</loc>
+    <lastmod>2024-03-20</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://talha-yuce.vercel.app/en/projects</loc>
+    <lastmod>2024-03-20</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+</urlset> 

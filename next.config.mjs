@@ -69,14 +69,6 @@ const nextConfig = {
       },
     ];
   },
-  async rewrites() {
-    return [
-      {
-        source: "/sitemap.xml",
-        destination: "/sitemap.xml.ts",
-      },
-    ];
-  },
 };
 
 mergeConfig(nextConfig, userConfig);
