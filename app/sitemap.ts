@@ -10,11 +10,12 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
   // Static routes for each locale
   const staticRoutes = locales.flatMap((locale) => {
+    // For default locale, don't include the locale in the URL
     const localePath = locale === defaultLocale ? "" : `/${locale}`
 
     return [
       {
-        url: `${baseUrl}${localePath}`,
+        url: `${baseUrl}${localePath || "/"}`,
         lastModified: date,
         changeFrequency: "weekly" as const,
         priority: 1.0,
@@ -40,9 +41,16 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     ]
   })
 
-  // Dynamic routes for projects
-  const projectRoutes = await Promise.all(
-    locales.map(async (locale) => {
+  // Dynamic routes for projects - with error handling
+  let projectRoutes: Array<{
+    url: string
+    lastModified: Date
+    changeFrequency: "monthly"
+    priority: number
+  }> = []
+
+  try {
+    const projectsPromises = locales.map(async (locale) => {
       try {
         const projects = await getAllContent("projects", locale)
         return projects.map((project) => ({
@@ -55,12 +63,24 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         console.error(`Error getting projects for sitemap (${locale}):`, error)
         return []
       }
-    }),
-  )
+    })
 
-  // Dynamic routes for blog posts
-  const blogRoutes = await Promise.all(
-    locales.map(async (locale) => {
+    const projectsResults = await Promise.all(projectsPromises)
+    projectRoutes = projectsResults.flat()
+  } catch (error) {
+    console.error("Error generating project routes for sitemap:", error)
+  }
+
+  // Dynamic routes for blog posts - with error handling
+  let blogRoutes: Array<{
+    url: string
+    lastModified: Date
+    changeFrequency: "monthly"
+    priority: number
+  }> = []
+
+  try {
+    const blogPromises = locales.map(async (locale) => {
       try {
         const posts = await getAllContent("blog", locale)
         return posts.map((post) => ({
@@ -73,10 +93,15 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         console.error(`Error getting blog posts for sitemap (${locale}):`, error)
         return []
       }
-    }),
-  )
+    })
+
+    const blogResults = await Promise.all(blogPromises)
+    blogRoutes = blogResults.flat()
+  } catch (error) {
+    console.error("Error generating blog routes for sitemap:", error)
+  }
 
   // Combine all routes
-  return [...staticRoutes, ...projectRoutes.flat(), ...blogRoutes.flat()]
+  return [...staticRoutes, ...projectRoutes, ...blogRoutes]
 }
 

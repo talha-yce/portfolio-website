@@ -5,6 +5,11 @@ export function middleware(request: NextRequest) {
   // Get the pathname from the request
   const { pathname } = request.nextUrl
 
+  // Skip middleware for sitemap.xml and robots.txt
+  if (pathname === "/sitemap.xml" || pathname === "/robots.txt") {
+    return NextResponse.next()
+  }
+
   // Check if the pathname already has a locale
   const pathnameHasLocale = locales.some((locale) => pathname.startsWith(`/${locale}/`) || pathname === `/${locale}`)
 
