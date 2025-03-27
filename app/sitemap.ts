@@ -2,7 +2,7 @@ import { MetadataRoute } from "next"
 import { getAllContent } from "@/lib/content-manager"
 import { locales } from "@/lib/i18n/config"
 
-const baseUrl = "https://talha-portfolio.vercel.app" // Sitenizin gerçek URL'sini buraya yazın
+const baseUrl = "https://talha-yuce.vercel.app" // Sitenizin gerçek URL'sini buraya yazın
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   // Tüm projeleri ve blog yazılarını al
