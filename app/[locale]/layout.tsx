@@ -17,7 +17,7 @@ const spaceGrotesk = Space_Grotesk({
 })
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://talha-portfolio.vercel.app"),
+  metadataBase: new URL("https://talha-yuce.vercel.app"),
   title: {
     template: '%s | Talha Yüce',
     default: 'Talha Yüce | Yazılım Mühendisi',
@@ -35,7 +35,7 @@ export const metadata: Metadata = {
   openGraph: {
     type: "website",
     locale: "tr_TR",
-    url: "https://talha-portfolio.vercel.app",
+    url: "https://talha-yuce.vercel.app",
     title: "Talha Yüce | Yazılım Mühendisi",
     description: "Web Geliştirme, Oyun Geliştirme ve Yapay Zeka Uygulamaları konusunda uzmanlaşmış Yazılım Mühendisi",
     siteName: "Talha Yüce Portfolyo",
@@ -70,7 +70,7 @@ export const metadata: Metadata = {
     google: "google-site-verification-code",
   },
   alternates: {
-    canonical: "https://talha-portfolio.vercel.app",
+    canonical: "https://talha-yuce.vercel.app",
   },
   manifest: undefined,
   icons: {
@@ -115,7 +115,7 @@ export default async function RootLayout({ children, params }: RootLayoutProps) 
   return (
     <html lang={locale} suppressHydrationWarning>
       <head>
-        <link rel="canonical" href="https://talha-portfolio.vercel.app" />
+        <link rel="canonical" href="https://talha-yuce.vercel.app" />
         <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
         <meta name="theme-color" content="#000000" />
         <link rel="icon" type="image/png" sizes="512x512" href="/icon-512x512.png" />

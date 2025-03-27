@@ -21,7 +21,7 @@ export const metadata: Metadata = {
   openGraph: {
     type: "website",
     locale: "en_US",
-    url: "https://talha-portfolio.vercel.app",
+    url: "https://talha-yuce.vercel.app",
     title: "Talha Yüce | Software Engineer",
     description: "Software Engineer specializing in Web Development, Game Development, and AI Applications",
     siteName: "Talha Yüce Portfolio",
@@ -34,7 +34,7 @@ export const metadata: Metadata = {
   icons: {
     icon: "/favicon.ico",
   },
-    generator: 'v0.dev'
+  generator: 'v0.dev'
 }
 
 export default function RootLayout({
@@ -44,7 +44,5 @@ export default function RootLayout({
 }) {
   return children
 }
-
-
 
 import './globals.css'
