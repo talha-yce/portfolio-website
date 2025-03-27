@@ -71,18 +71,6 @@ const nextConfig = {
   },
   async rewrites() {
     return []
-  },
-  // Sitemap yapılandırması
-  async generateStaticParams() {
-    return {
-      '/sitemap.xml': {
-        generateSitemap: true,
-        sitemapSize: 50000,
-        changefreq: 'daily',
-        priority: 0.7,
-        lastmod: new Date().toISOString(),
-      },
-    }
   }
 }
 

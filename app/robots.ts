@@ -7,6 +7,6 @@ export default function robots(): MetadataRoute.Robots {
       allow: "/",
       disallow: ["/api/", "/_next/", "/static/"],
     },
-    sitemap: "https://talha-yuce.vercel.app/sitemap.xml", // Sitenizin gerçek URL'sini buraya yazın
+    sitemap: "https://talha-yuce.vercel.app/sitemap.xml",
   }
 } 
