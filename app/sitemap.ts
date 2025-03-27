@@ -1,54 +1,18 @@
 import { MetadataRoute } from 'next'
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  return [
-    {
-      url: 'https://talha-yuce.vercel.app/tr',
+  const baseUrl = 'https://talha-yuce.vercel.app'
+  const locales = ['tr', 'en']
+  const routes = ['', '/about', '/blog', '/projects']
+
+  const sitemapEntries = locales.flatMap(locale =>
+    routes.map(route => ({
+      url: `${baseUrl}/${locale}${route}`,
       lastModified: new Date(),
-      changeFrequency: 'monthly',
-      priority: 1,
-    },
-    {
-      url: 'https://talha-yuce.vercel.app/en',
-      lastModified: new Date(),
-      changeFrequency: 'monthly',
-      priority: 1,
-    },
-    {
-      url: 'https://talha-yuce.vercel.app/tr/about',
-      lastModified: new Date(),
-      changeFrequency: 'monthly',
-      priority: 0.8,
-    },
-    {
-      url: 'https://talha-yuce.vercel.app/en/about',
-      lastModified: new Date(),
-      changeFrequency: 'monthly',
-      priority: 0.8,
-    },
-    {
-      url: 'https://talha-yuce.vercel.app/tr/blog',
-      lastModified: new Date(),
-      changeFrequency: 'weekly',
-      priority: 0.8,
-    },
-    {
-      url: 'https://talha-yuce.vercel.app/en/blog',
-      lastModified: new Date(),
-      changeFrequency: 'weekly',
-      priority: 0.8,
-    },
-    {
-      url: 'https://talha-yuce.vercel.app/tr/projects',
-      lastModified: new Date(),
-      changeFrequency: 'weekly',
-      priority: 0.8,
-    },
-    {
-      url: 'https://talha-yuce.vercel.app/en/projects',
-      lastModified: new Date(),
-      changeFrequency: 'weekly',
-      priority: 0.8,
-    },
-  ]
+      changeFrequency: route === '' ? 'monthly' as const : 'weekly' as const,
+      priority: route === '' ? 1 : 0.8,
+    }))
+  )
+
+  return sitemapEntries
 } 
