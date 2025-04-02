@@ -1,9 +1,6 @@
 import type React from "react"
 import type { Metadata } from "next"
 import { Space_Grotesk } from "next/font/google"
-import { Analytics } from '@vercel/analytics/react';
-import { SpeedInsights } from '@vercel/speed-insights/next';
-
 
 import "./globals.css"
 
@@ -45,15 +42,7 @@ export default function RootLayout({
 }: {
   children: React.ReactNode
 }) {
-  return (
-    <html>
-      <body>
-        {children}
-        <Analytics />
-        <SpeedInsights />
-      </body>
-    </html>
-  );
+  return children
 }
 
 import './globals.css'

@@ -47,12 +47,16 @@ export type Dictionary = {
   }
 }
 
-const dictionaries: Record<Locale, () => Promise<Dictionary>> = {
+const dictionaries = {
   tr: () => import("./dictionaries/tr.json").then((module) => module.default),
   en: () => import("./dictionaries/en.json").then((module) => module.default),
-}
+} as const
 
 export const getDictionary = async (locale: Locale = defaultLocale): Promise<Dictionary> => {
-  return dictionaries[locale]()
+  const dictionary = dictionaries[locale]
+  if (!dictionary) {
+    throw new Error(`Dictionary for locale "${locale}" not found`)
+  }
+  return dictionary()
 }
 

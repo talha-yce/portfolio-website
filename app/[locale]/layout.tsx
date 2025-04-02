@@ -2,6 +2,9 @@ import type React from "react"
 import type { Metadata } from "next"
 import { Space_Grotesk } from "next/font/google"
 import { notFound } from "next/navigation"
+import { Analytics } from '@vercel/analytics/react'
+import { SpeedInsights } from '@vercel/speed-insights/next'
+import { cn } from "@/lib/utils"
 
 import { ThemeProvider } from "@/components/theme-provider"
 import { SiteHeader } from "@/components/site-header"
@@ -129,6 +132,12 @@ export default async function RootLayout({ children, params }: RootLayoutProps) 
             <SiteFooter locale={locale} />
           </div>
         </ThemeProvider>
+        {process.env.NODE_ENV === "production" && (
+          <>
+            <Analytics />
+            <SpeedInsights />
+          </>
+        )}
         <script
           type="application/json"
           id="manifest"
