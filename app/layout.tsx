@@ -33,12 +33,14 @@ export const metadata: Metadata = {
   ],
   creator: "Talha Yüce",
   metadataBase: new URL('https://talha-yuce.site'),
-  icons: [
-    { rel: "icon", url: "/icon-32x32.png" },
-    { rel: "icon", url: "/icon-16x16.png", sizes: "16x16", type: "image/png" },
-    { rel: "icon", url: "/icon-32x32.png", sizes: "32x32", type: "image/png" },
-    { rel: "apple-touch-icon", url: "/apple-touch-icon.png" }
-  ],
+  icons: {
+    icon: [
+      { url: '/icon-32x32.png', type: 'image/png', sizes: '32x32' },
+      { url: '/icon-16x16.png', type: 'image/png', sizes: '16x16' }
+    ],
+    shortcut: '/icon-32x32.png',
+    apple: '/apple-touch-icon.png'
+  },
   manifest: "/manifest.json",
   openGraph: {
     type: "website",
@@ -60,7 +62,15 @@ export default function RootLayout({
   children,
 }: {
   children: React.ReactNode
-}) {  return children
+}) {
+  return (
+    <html lang="en">
+      <head />
+      <body className={spaceGrotesk.className}>
+        {children}
+      </body>
+    </html>
+  )
 }
 
 import './globals.css'
