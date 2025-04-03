@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
@@ -36,6 +36,7 @@ type FormData = {
 export function NewsletterSubscription() {
   const [step, setStep] = useState<"recaptcha" | "form" | "verification" | "success">("recaptcha");
   const [verificationSent, setVerificationSent] = useState(false);
+  const [success, setSuccess] = useState<string>("");
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [isCodeExpired, setIsCodeExpired] = useState(false);
@@ -50,6 +51,8 @@ export function NewsletterSubscription() {
     language: "tr",
   });
   const [verificationCode, setVerificationCode] = useState('');
+  const [timeRemaining, setTimeRemaining] = useState<number | null>(null);
+  const [timerInterval, setTimerInterval] = useState<NodeJS.Timeout | null>(null);
 
   const {
     register: registerSubscription,
@@ -137,14 +140,12 @@ export function NewsletterSubscription() {
     }
   };
 
-  const onSubmitVerification = async () => {
-    try {
-      setError(null);
-      setLoading(true);
-      setIsCodeExpired(false);
-      setIsMaxAttemptsReached(false);
-      setRemainingAttempts(null);
+  const handleVerify = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError("");
+    setLoading(true);
 
+    try {
       const response = await fetch("/api/subscribe/verify", {
         method: "POST",
         headers: {
@@ -161,11 +162,18 @@ export function NewsletterSubscription() {
       });
 
       const result = await response.json();
+      console.log("Doğrulama sonucu:", result);
 
       if (!response.ok) {
         // Kodun süresi dolmuşsa, isCodeExpired'ı true yap
         if (result.expired) {
           setIsCodeExpired(true);
+          // Timer'ı durdur
+          if (timerInterval) {
+            clearInterval(timerInterval);
+            setTimerInterval(null);
+          }
+          setTimeRemaining(null);
         }
         
         // Maksimum başarısız deneme sayısı aşıldıysa
@@ -184,6 +192,13 @@ export function NewsletterSubscription() {
       setStep("success");
       resetSubscription();
       resetVerification();
+      
+      // Timer'ı durdur
+      if (timerInterval) {
+        clearInterval(timerInterval);
+        setTimerInterval(null);
+      }
+      setTimeRemaining(null);
     } catch (error) {
       console.error("Hata:", error);
       setError(error instanceof Error ? error.message : "Bir hata oluştu. Lütfen daha sonra tekrar deneyin.");
@@ -226,14 +241,17 @@ export function NewsletterSubscription() {
       }
 
       // Başarılı mesajı göster
-      alert(formData.language === "tr" 
+      setSuccess(formData.language === "tr" 
         ? "Yeni doğrulama kodu e-posta adresinize gönderildi."
         : "A new verification code has been sent to your email.");
       
       // 5 saniye sonra başarı mesajını temizle
       setTimeout(() => {
-        alert("");
+        setSuccess("");
       }, 5000);
+      
+      // Geri sayımı başlat
+      startTimer();
       
     } catch (error) {
       console.error("Hata:", error);
@@ -241,6 +259,53 @@ export function NewsletterSubscription() {
     } finally {
       setLoading(false);
     }
+  };
+  
+  // Geri sayım işlevi
+  const startTimer = () => {
+    // Önceki timer'ı temizle
+    if (timerInterval) {
+      clearInterval(timerInterval);
+    }
+    
+    // 3 dakika = 180 saniye
+    const codeExpirationSeconds = 3 * 60;
+    setTimeRemaining(codeExpirationSeconds);
+    
+    const interval = setInterval(() => {
+      setTimeRemaining(prev => {
+        if (prev === null || prev <= 1) {
+          clearInterval(interval);
+          setIsCodeExpired(true);
+          return null;
+        }
+        return prev - 1;
+      });
+    }, 1000);
+    
+    setTimerInterval(interval);
+  };
+  
+  // Doğrulama kodu gönderildiğinde geri sayımı başlat
+  useEffect(() => {
+    if (verificationSent) {
+      startTimer();
+    }
+    
+    // Component unmount olduğunda timer'ı temizle
+    return () => {
+      if (timerInterval) {
+        clearInterval(timerInterval);
+      }
+    };
+  }, [verificationSent]);
+  
+  // Saniyeyi dakika:saniye formatına dönüştür
+  const formatTime = (seconds: number | null): string => {
+    if (seconds === null) return "00:00";
+    const minutes = Math.floor(seconds / 60);
+    const remainingSeconds = seconds % 60;
+    return `${minutes.toString().padStart(2, '0')}:${remainingSeconds.toString().padStart(2, '0')}`;
   };
 
   const handleRecaptchaSuccess = () => {
@@ -429,7 +494,7 @@ export function NewsletterSubscription() {
               </button>
             </form>
           ) : (
-            <form onSubmit={handleSubmitVerification(onSubmitVerification)} className="space-y-4">
+            <form onSubmit={handleVerify} className="space-y-4">
               <div className="mt-4">
                 <label htmlFor="verificationCode" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
                   {formData.language === "tr" ? "Doğrulama Kodu" : "Verification Code"}
@@ -470,6 +535,13 @@ export function NewsletterSubscription() {
                       ? "Doğrulama kodunun geçerlilik süresi 3 dakikadır."
                       : "The verification code is valid for 3 minutes."}
                   </p>
+                  {timeRemaining !== null && (
+                    <p className="mt-2 text-sm font-medium text-red-600 dark:text-red-400">
+                      {formData.language === "tr" 
+                        ? `Kalan süre: ${formatTime(timeRemaining)}`
+                        : `Time remaining: ${formatTime(timeRemaining)}`}
+                    </p>
+                  )}
                 </div>
               </div>
 
