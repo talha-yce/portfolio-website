@@ -15,6 +15,10 @@ const auth = new google.auth.GoogleAuth({
 const sheets = google.sheets({ version: "v4", auth });
 const SPREADSHEET_ID = process.env.GOOGLE_SHEETS_SPREADSHEET_ID;
 
+// Güvenlik limitleri
+const MAX_CODE_REQUESTS_PER_HOUR = 5; // Saat başına maksimum kod gönderme limiti
+const CODE_REQUEST_WINDOW_MS = 60 * 60 * 1000; // 1 saat (milisaniye cinsinden)
+
 // Resend yapılandırması
 const resend = new Resend(process.env.RESEND_API_KEY);
 
@@ -78,11 +82,48 @@ export async function POST(request: Request) {
       // Önce mevcut kayıtları kontrol et
       const response = await sheets.spreadsheets.values.get({
         spreadsheetId: SPREADSHEET_ID,
-        range: "Sayfa1!A:E", // Tüm sütunlar (doğrulama kodu için E sütunu eklendi)
+        range: "Sayfa1!A:I", // I sütununa kadar genişletildi (kod istekleri ve zamanları için)
       });
 
       const rows = response.data.values || [];
-      const emailExists = rows.some((row) => row[2] === email); // E-posta 3. sütunda
+      const rowIndex = rows.findIndex((row) => row[2] === email); // E-posta 3. sütunda
+      const emailExists = rowIndex !== -1;
+      
+      // Kod isteklerini kontrol et
+      if (emailExists) {
+        const existingRow = rows[rowIndex];
+        const codeRequestsStr = existingRow[7] || "[]"; // 8. sütun: Kod istekleri zamanları
+        
+        try {
+          const codeRequests = JSON.parse(codeRequestsStr);
+          const now = new Date().getTime();
+          
+          // Son 1 saatteki istekleri filtrele
+          const recentRequests = codeRequests.filter(
+            (timestamp: number) => now - timestamp < CODE_REQUEST_WINDOW_MS
+          );
+          
+          // Limit kontrolü
+          if (recentRequests.length >= MAX_CODE_REQUESTS_PER_HOUR) {
+            return NextResponse.json(
+              { 
+                error: "Çok fazla doğrulama kodu isteği gönderdiniz. Lütfen bir süre bekleyin.",
+                rateLimited: true 
+              },
+              { status: 429 } // Too Many Requests
+            );
+          }
+          
+          // Yeni isteği ekle
+          recentRequests.push(now);
+          
+          // Kod istekleri zamanlarını güncelle
+          existingRow[7] = JSON.stringify(recentRequests);
+        } catch (e) {
+          // JSON parse hatası durumunda yeni bir dizi başlat
+          existingRow[7] = JSON.stringify([new Date().getTime()]);
+        }
+      }
 
       if (!emailExists) {
         // Yeni kayıt ekle
@@ -91,12 +132,16 @@ export async function POST(request: Request) {
           lastName,  // 2. sütun: Soyad
           email,     // 3. sütun: E-posta
           interests.join(", "), // 4. sütun: İlgi Alanları
-          verificationCode // 5. sütun: Doğrulama Kodu
+          verificationCode, // 5. sütun: Doğrulama Kodu
+          new Date().toISOString(), // 6. sütun: Oluşturma Zamanı
+          language, // 7. sütun: Dil
+          JSON.stringify([new Date().getTime()]), // 8. sütun: Kod istekleri zamanları
+          "0" // 9. sütun: Başarısız doğrulama denemeleri
         ];
 
         await sheets.spreadsheets.values.append({
           spreadsheetId: SPREADSHEET_ID,
-          range: "Sayfa1!A:E",
+          range: "Sayfa1!A:I", // I sütununa kadar genişletildi
           valueInputOption: "USER_ENTERED",
           requestBody: {
             values: [newRow],
@@ -110,12 +155,16 @@ export async function POST(request: Request) {
           lastName,  // 2. sütun: Soyad
           email,     // 3. sütun: E-posta
           interests.join(", "), // 4. sütun: İlgi Alanları
-          verificationCode // 5. sütun: Doğrulama Kodu
+          verificationCode, // 5. sütun: Doğrulama Kodu
+          new Date().toISOString(), // 6. sütun: Oluşturma Zamanı
+          language, // 7. sütun: Dil
+          rows[rowIndex][7] || JSON.stringify([new Date().getTime()]), // 8. sütun: Kod istekleri zamanları (mevcut değeri koru)
+          rows[rowIndex][8] || "0" // 9. sütun: Başarısız doğrulama denemeleri (mevcut değeri koru)
         ];
 
         await sheets.spreadsheets.values.update({
           spreadsheetId: SPREADSHEET_ID,
-          range: `Sayfa1!A${rowIndex + 1}:E${rowIndex + 1}`,
+          range: `Sayfa1!A${rowIndex + 1}:I${rowIndex + 1}`, // I sütununa kadar genişletildi
           valueInputOption: "USER_ENTERED",
           requestBody: {
             values: [updatedRow],

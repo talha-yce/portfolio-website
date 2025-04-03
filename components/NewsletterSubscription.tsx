@@ -38,6 +38,10 @@ export function NewsletterSubscription() {
   const [verificationSent, setVerificationSent] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const [isCodeExpired, setIsCodeExpired] = useState(false);
+  const [isRateLimited, setIsRateLimited] = useState(false);
+  const [isMaxAttemptsReached, setIsMaxAttemptsReached] = useState(false);
+  const [remainingAttempts, setRemainingAttempts] = useState<number | null>(null);
   const [formData, setFormData] = useState<FormData>({
     firstName: "",
     lastName: "",
@@ -45,6 +49,7 @@ export function NewsletterSubscription() {
     interests: [],
     language: "tr",
   });
+  const [verificationCode, setVerificationCode] = useState('');
 
   const {
     register: registerSubscription,
@@ -71,6 +76,10 @@ export function NewsletterSubscription() {
     setVerificationSent(false);
     setError(null);
     setLoading(false);
+    setIsCodeExpired(false);
+    setIsRateLimited(false);
+    setIsMaxAttemptsReached(false);
+    setRemainingAttempts(null);
     setFormData({
       firstName: "",
       lastName: "",
@@ -78,6 +87,7 @@ export function NewsletterSubscription() {
       interests: [],
       language: "tr",
     });
+    setVerificationCode('');
     resetSubscription();
     resetVerification();
   };
@@ -127,19 +137,13 @@ export function NewsletterSubscription() {
     }
   };
 
-  const onSubmitVerification = async (data: VerificationForm) => {
+  const onSubmitVerification = async () => {
     try {
       setError(null);
       setLoading(true);
-
-      console.log("Doğrulama isteği gönderiliyor:", {
-        firstName: formData.firstName,
-        lastName: formData.lastName,
-        email: formData.email,
-        verificationCode: data.verificationCode,
-        language: formData.language,
-        interests: formData.interests,
-      });
+      setIsCodeExpired(false);
+      setIsMaxAttemptsReached(false);
+      setRemainingAttempts(null);
 
       const response = await fetch("/api/subscribe/verify", {
         method: "POST",
@@ -150,24 +154,87 @@ export function NewsletterSubscription() {
           firstName: formData.firstName,
           lastName: formData.lastName,
           email: formData.email,
-          verificationCode: data.verificationCode,
+          verificationCode: verificationCode,
           language: formData.language,
           interests: formData.interests,
         }),
       });
 
-      console.log("Doğrulama yanıtı:", response);
-
       const result = await response.json();
-      console.log("Doğrulama sonucu:", result);
 
       if (!response.ok) {
+        // Kodun süresi dolmuşsa, isCodeExpired'ı true yap
+        if (result.expired) {
+          setIsCodeExpired(true);
+        }
+        
+        // Maksimum başarısız deneme sayısı aşıldıysa
+        if (result.maxAttemptsReached) {
+          setIsMaxAttemptsReached(true);
+        }
+        
+        // Kalan deneme sayısını göster
+        if (result.remainingAttempts !== undefined) {
+          setRemainingAttempts(result.remainingAttempts);
+        }
+        
         throw new Error(result.error || "Doğrulama başarısız oldu. Lütfen kodu kontrol edip tekrar deneyin.");
       }
 
       setStep("success");
       resetSubscription();
       resetVerification();
+    } catch (error) {
+      console.error("Hata:", error);
+      setError(error instanceof Error ? error.message : "Bir hata oluştu. Lütfen daha sonra tekrar deneyin.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleResendCode = async () => {
+    setError("");
+    setLoading(true);
+    setIsCodeExpired(false);
+    setIsMaxAttemptsReached(false);
+    setRemainingAttempts(null);
+
+    try {
+      const response = await fetch("/api/subscribe/send-verification", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          email: formData.email,
+          firstName: formData.firstName,
+          lastName: formData.lastName,
+          interests: formData.interests,
+          language: formData.language
+        }),
+      });
+
+      const result = await response.json();
+
+      if (!response.ok) {
+        // Rate limit aşıldıysa
+        if (result.rateLimited) {
+          setIsRateLimited(true);
+        }
+        
+        throw new Error(result.error || "Doğrulama kodu gönderilirken bir hata oluştu.");
+      }
+
+      // Başarılı mesajı göster
+      alert(formData.language === "tr" 
+        ? "Yeni doğrulama kodu e-posta adresinize gönderildi."
+        : "A new verification code has been sent to your email.");
+      
+      // 5 saniye sonra başarı mesajını temizle
+      setTimeout(() => {
+        alert("");
+      }, 5000);
+      
     } catch (error) {
       console.error("Hata:", error);
       setError(error instanceof Error ? error.message : "Bir hata oluştu. Lütfen daha sonra tekrar deneyin.");
@@ -363,39 +430,122 @@ export function NewsletterSubscription() {
             </form>
           ) : (
             <form onSubmit={handleSubmitVerification(onSubmitVerification)} className="space-y-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+              <div className="mt-4">
+                <label htmlFor="verificationCode" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
                   {formData.language === "tr" ? "Doğrulama Kodu" : "Verification Code"}
                 </label>
-                <input
-                  type="text"
-                  {...registerVerification("verificationCode")}
-                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-                  placeholder={formData.language === "tr" ? "E-postanıza gönderilen kodu giriniz" : "Enter the code sent to your email"}
-                  maxLength={6}
-                />
-                {verificationErrors.verificationCode && (
-                  <p className="mt-1 text-sm text-red-600">{verificationErrors.verificationCode.message}</p>
-                )}
-                <div className="mt-4 text-sm text-gray-600 dark:text-gray-400">
-                  <p>{formData.language === "tr" 
-                    ? "E-posta adresinize gönderilen 6 haneli doğrulama kodunu giriniz."
-                    : "Enter the 6-digit verification code sent to your email address."}</p>
-                  <p>{formData.language === "tr"
-                    ? "Eğer kodu almadıysanız, spam klasörünüzü kontrol edin."
-                    : "If you haven't received the code, please check your spam folder."}</p>
+                <div className="mt-1">
+                  <input
+                    id="verificationCode"
+                    name="verificationCode"
+                    type="text"
+                    required
+                    value={verificationCode}
+                    onChange={(e) => setVerificationCode(e.target.value)}
+                    className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                    placeholder={formData.language === "tr" ? "6 haneli kodu girin" : "Enter 6-digit code"}
+                    disabled={loading || isCodeExpired || isMaxAttemptsReached || isRateLimited}
+                  />
+                </div>
+                <div className="mt-2">
+                  {remainingAttempts !== null && remainingAttempts > 0 && (
+                    <p className="text-sm text-yellow-600 dark:text-yellow-400">
+                      {formData.language === "tr" 
+                        ? `Kalan deneme hakkı: ${remainingAttempts}`
+                        : `Remaining attempts: ${remainingAttempts}`}
+                    </p>
+                  )}
+                  <p className="text-sm text-gray-500">
+                    {formData.language === "tr" 
+                      ? "Doğrulama kodunu e-posta adresinize gönderdik. Lütfen gelen kutunuzu kontrol edin."
+                      : "We've sent a verification code to your email. Please check your inbox."}
+                  </p>
+                  <p className="text-sm text-gray-500">
+                    {formData.language === "tr" 
+                      ? "Eğer kodu almadıysanız, lütfen spam klasörünüzü kontrol edin."
+                      : "If you haven't received the code, please check your spam folder."}
+                  </p>
+                  <p className="mt-2 text-sm text-gray-500">
+                    {formData.language === "tr" 
+                      ? "Doğrulama kodunun geçerlilik süresi 3 dakikadır."
+                      : "The verification code is valid for 3 minutes."}
+                  </p>
                 </div>
               </div>
 
               <button
                 type="submit"
-                disabled={loading}
+                disabled={loading || isCodeExpired || isMaxAttemptsReached || isRateLimited}
                 className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {loading 
                   ? (formData.language === "tr" ? "İşleniyor..." : "Processing...") 
                   : (formData.language === "tr" ? "Aboneliği Tamamla" : "Complete Subscription")}
               </button>
+
+              {/* Durum mesajları */}
+              {isCodeExpired && (
+                <div className="mt-4 p-3 bg-yellow-100 text-yellow-800 rounded-md dark:bg-yellow-800 dark:text-yellow-100">
+                  <p className="text-sm font-medium">
+                    {formData.language === "tr" 
+                      ? "Doğrulama kodunuzun süresi doldu." 
+                      : "Your verification code has expired."}
+                  </p>
+                  <button
+                    type="button"
+                    onClick={handleResendCode}
+                    disabled={loading || isRateLimited}
+                    className="mt-2 w-full inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-yellow-600 hover:bg-yellow-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-yellow-500 disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    {loading 
+                      ? (formData.language === "tr" ? "İşleniyor..." : "Processing...") 
+                      : (formData.language === "tr" ? "Yeni Kod Gönder" : "Send New Code")}
+                  </button>
+                </div>
+              )}
+
+              {isMaxAttemptsReached && (
+                <div className="mt-4 p-3 bg-red-100 text-red-800 rounded-md dark:bg-red-800 dark:text-red-100">
+                  <p className="text-sm font-medium">
+                    {formData.language === "tr" 
+                      ? "Çok fazla başarısız deneme yaptınız." 
+                      : "You have made too many failed attempts."}
+                  </p>
+                  <button
+                    type="button"
+                    onClick={handleResendCode}
+                    disabled={loading || isRateLimited}
+                    className="mt-2 w-full inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    {loading 
+                      ? (formData.language === "tr" ? "İşleniyor..." : "Processing...") 
+                      : (formData.language === "tr" ? "Yeni Kod Gönder" : "Send New Code")}
+                  </button>
+                </div>
+              )}
+
+              {isRateLimited && (
+                <div className="mt-4 p-3 bg-red-100 text-red-800 rounded-md dark:bg-red-800 dark:text-red-100">
+                  <p className="text-sm font-medium">
+                    {formData.language === "tr" 
+                      ? "Çok fazla doğrulama kodu isteği gönderdiniz. Lütfen bir süre bekleyin." 
+                      : "You have sent too many verification code requests. Please wait for a while."}
+                  </p>
+                </div>
+              )}
+
+              {!isCodeExpired && !isMaxAttemptsReached && !isRateLimited && (
+                <div className="text-center mt-4">
+                  <button
+                    type="button"
+                    onClick={handleResendCode}
+                    disabled={loading}
+                    className="text-sm text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300"
+                  >
+                    {formData.language === "tr" ? "Yeni kod gönder" : "Send new code"}
+                  </button>
+                </div>
+              )}
             </form>
           )}
         </>
