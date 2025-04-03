@@ -48,7 +48,10 @@ export function SiteHeader({ locale }: SiteHeaderProps) {
 
   return (
     <motion.header
-      className="sticky top-0 z-40 w-full border-b border-purple-900/40 bg-background/80 backdrop-blur-md"
+      className={cn(
+        "sticky top-0 z-40 w-full border-b border-purple-900/40",
+        "bg-background/80 backdrop-blur-md"
+      )}
       initial={{ y: -100 }}
       animate={{ y: 0 }}
       transition={{ duration: 0.5 }}
@@ -56,15 +59,16 @@ export function SiteHeader({ locale }: SiteHeaderProps) {
       <div className="container flex h-16 items-center justify-between">
         <div className="flex items-center gap-2">
           <Link href={getLocalizedPathname("/", locale)} className="flex items-center space-x-2">
-            <div className="relative w-10 h-10 overflow-hidden rounded-sm">
+            
               <Image 
                 src="/logo.png" 
                 alt="Talha Yüce Logo" 
-                fill
-                priority
-                style={{ objectFit: "contain" }}
+                width={70} 
+                height={70} 
+                className="rounded-full" 
               />
-            </div>
+  
+            
           </Link>
         </div>
         <nav className="hidden md:flex items-center gap-6">
@@ -105,15 +109,15 @@ export function SiteHeader({ locale }: SiteHeaderProps) {
         >
           <div className="container flex h-16 items-center justify-between">
             <Link href={getLocalizedPathname("/", locale)} className="flex items-center space-x-2">
-              <div className="relative w-10 h-10 overflow-hidden rounded-sm">
+              
                 <Image 
                   src="/logo.png" 
                   alt="Talha Yüce Logo" 
-                  fill
-                  priority
-                  style={{ objectFit: "contain" }}
+                  width={70} 
+                  height={70} 
+                  className="rounded-full" 
                 />
-              </div>
+  
             </Link>
             <div className="flex items-center gap-2">
               <LanguageSwitcher locale={locale} />

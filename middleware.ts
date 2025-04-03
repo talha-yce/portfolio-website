@@ -32,6 +32,6 @@ export const config = {
   // - API routes
   // - Static files (e.g. images, fonts, etc.)
   // - _next paths (Next.js internals)
-  matcher: ["/((?!api|_next/static|_next/image|favicon.ico|data/images).*)"],
+  matcher: ["/((?!api|_next/static|_next/image|favicon.ico|data/images|icon-|logo|apple-touch-icon).*)"],
 }
 
