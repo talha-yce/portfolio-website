@@ -69,6 +69,14 @@ const nextConfig = {
       },
     ];
   },
+  output: 'standalone',
+  webpack(config) {
+    config.module.rules.push({
+      test: /\.(ico|png|jpg|jpeg|gif)$/i,
+      type: 'asset/resource',
+    })
+    return config
+  },
 };
 
 mergeConfig(nextConfig, userConfig);
