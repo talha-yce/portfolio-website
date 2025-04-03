@@ -32,29 +32,13 @@ export const metadata: Metadata = {
     },
   ],
   creator: "Talha Yüce",
-  icons: {
-    icon: "/favicon.ico",
-    shortcut: "/favicon.ico",
-    apple: "/apple-touch-icon.png",
-    other: [
-      {
-        rel: "apple-touch-icon",
-        url: "/apple-touch-icon.png",
-      },
-      {
-        rel: "icon",
-        type: "image/png",
-        sizes: "32x32",
-        url: "/icon-32x32.png",
-      },
-      {
-        rel: "icon",
-        type: "image/png",
-        sizes: "16x16",
-        url: "/icon-16x16.png",
-      },
-    ],
-  },
+  metadataBase: new URL('https://talha-yuce.site'),
+  icons: [
+    { rel: "icon", url: "/icon-32x32.png" },
+    { rel: "icon", url: "/icon-16x16.png", sizes: "16x16", type: "image/png" },
+    { rel: "icon", url: "/icon-32x32.png", sizes: "32x32", type: "image/png" },
+    { rel: "apple-touch-icon", url: "/apple-touch-icon.png" }
+  ],
   manifest: "/manifest.json",
   openGraph: {
     type: "website",

@@ -70,6 +70,7 @@ const nextConfig = {
     ];
   },
   output: 'standalone',
+  assetPrefix: process.env.NODE_ENV === 'production' ? 'https://talha-yuce.site' : '',
   webpack(config) {
     config.module.rules.push({
       test: /\.(ico|png|jpg|jpeg|gif|svg)$/i,
