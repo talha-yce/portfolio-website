@@ -1,11 +1,11 @@
 "use client"
 
 import Link from "next/link"
+import Image from "next/image"
 import { usePathname } from "next/navigation"
 import { Code, FileText, Home, Menu, User, X } from "lucide-react"
 import { useState } from "react"
 import { motion } from "framer-motion"
-
 import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
 import { LanguageSwitcher } from "@/components/language-switcher"
@@ -56,9 +56,13 @@ export function SiteHeader({ locale }: SiteHeaderProps) {
       <div className="container flex h-16 items-center justify-between">
         <div className="flex items-center gap-2">
           <Link href={getLocalizedPathname("/", locale)} className="flex items-center space-x-2">
-            <span className="font-bold text-xl bg-clip-text text-transparent bg-gradient-to-r from-purple-400 to-green-400">
-              TY
-            </span>
+            <Image 
+              src="/logo.png" 
+              alt="Talha Yüce Logo" 
+              width={40} 
+              height={40} 
+              className="rounded-sm" 
+            />
           </Link>
         </div>
         <nav className="hidden md:flex items-center gap-6">
@@ -99,9 +103,13 @@ export function SiteHeader({ locale }: SiteHeaderProps) {
         >
           <div className="container flex h-16 items-center justify-between">
             <Link href={getLocalizedPathname("/", locale)} className="flex items-center space-x-2">
-              <span className="font-bold text-xl bg-clip-text text-transparent bg-gradient-to-r from-purple-400 to-green-400">
-                TY
-              </span>
+              <Image 
+                src="/logo.png" 
+                alt="Talha Yüce Logo" 
+                width={40} 
+                height={40} 
+                className="rounded-sm" 
+              />
             </Link>
             <div className="flex items-center gap-2">
               <LanguageSwitcher locale={locale} />
