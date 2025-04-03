@@ -72,10 +72,13 @@ const nextConfig = {
   output: 'standalone',
   webpack(config) {
     config.module.rules.push({
-      test: /\.(ico|png|jpg|jpeg|gif)$/i,
+      test: /\.(ico|png|jpg|jpeg|gif|svg)$/i,
       type: 'asset/resource',
-    })
-    return config
+      generator: {
+        filename: 'static/[path][name][ext]'
+      }
+    });
+    return config;
   },
 };
 

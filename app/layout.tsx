@@ -33,33 +33,25 @@ export const metadata: Metadata = {
   ],
   creator: "Talha Yüce",
   icons: {
-    icon: [
-      {
-        url: "/favicon.ico",
-        sizes: "32x32",
-      },
-      {
-        url: "/icon-16x16.png",
-        sizes: "16x16",
-        type: "image/png",
-      },
-      {
-        url: "/icon-32x32.png",
-        sizes: "32x32",
-        type: "image/png",
-      },
-    ],
-    apple: [
-      {
-        url: "/apple-touch-icon.png",
-        sizes: "180x180",
-        type: "image/png",
-      },
-    ],
+    icon: "/favicon.ico",
+    shortcut: "/favicon.ico",
+    apple: "/apple-touch-icon.png",
     other: [
       {
+        rel: "apple-touch-icon",
+        url: "/apple-touch-icon.png",
+      },
+      {
         rel: "icon",
-        url: "/favicon.ico",
+        type: "image/png",
+        sizes: "32x32",
+        url: "/icon-32x32.png",
+      },
+      {
+        rel: "icon",
+        type: "image/png",
+        sizes: "16x16",
+        url: "/icon-16x16.png",
       },
     ],
   },
