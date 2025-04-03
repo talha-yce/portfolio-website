@@ -56,13 +56,15 @@ export function SiteHeader({ locale }: SiteHeaderProps) {
       <div className="container flex h-16 items-center justify-between">
         <div className="flex items-center gap-2">
           <Link href={getLocalizedPathname("/", locale)} className="flex items-center space-x-2">
-            <Image 
-              src="/logo.png" 
-              alt="Talha Yüce Logo" 
-              width={40} 
-              height={40} 
-              className="rounded-sm" 
-            />
+            <div className="relative w-10 h-10 overflow-hidden rounded-sm">
+              <Image 
+                src="/logo.png" 
+                alt="Talha Yüce Logo" 
+                fill
+                priority
+                style={{ objectFit: "contain" }}
+              />
+            </div>
           </Link>
         </div>
         <nav className="hidden md:flex items-center gap-6">
@@ -103,13 +105,15 @@ export function SiteHeader({ locale }: SiteHeaderProps) {
         >
           <div className="container flex h-16 items-center justify-between">
             <Link href={getLocalizedPathname("/", locale)} className="flex items-center space-x-2">
-              <Image 
-                src="/logo.png" 
-                alt="Talha Yüce Logo" 
-                width={40} 
-                height={40} 
-                className="rounded-sm" 
-              />
+              <div className="relative w-10 h-10 overflow-hidden rounded-sm">
+                <Image 
+                  src="/logo.png" 
+                  alt="Talha Yüce Logo" 
+                  fill
+                  priority
+                  style={{ objectFit: "contain" }}
+                />
+              </div>
             </Link>
             <div className="flex items-center gap-2">
               <LanguageSwitcher locale={locale} />

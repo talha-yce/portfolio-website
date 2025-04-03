@@ -33,6 +33,7 @@ export const metadata: Metadata = {
   },
   icons: {
     icon: [
+      { url: "/favicon.ico", sizes: "any" },
       { url: "/icon-16x16.png", sizes: "16x16", type: "image/png" },
       { url: "/icon-32x32.png", sizes: "32x32", type: "image/png" },
       { url: "/icon-48x48.png", sizes: "48x48", type: "image/png" },
@@ -54,7 +55,10 @@ export default function RootLayout({
 }: {
   children: React.ReactNode
 }) {
-  return children
+  return (
+    <html lang="en" suppressHydrationWarning>
+      <head />
+      <body className={spaceGrotesk.className}>{children}</body>
+    </html>
+  )
 }
-
-import './globals.css'
