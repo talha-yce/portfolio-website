@@ -101,23 +101,21 @@ export function SiteHeader({ locale }: SiteHeaderProps) {
       </div>
       {isMenuOpen && (
         <motion.div
-          className="fixed inset-0 z-50 bg-background md:hidden"
+          className="fixed inset-0 z-50 bg-background/95 backdrop-blur-md md:hidden"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
           transition={{ duration: 0.2 }}
         >
-          <div className="container flex h-16 items-center justify-between">
+          <div className="container flex h-16 items-center justify-between border-b border-purple-900/40">
             <Link href={getLocalizedPathname("/", locale)} className="flex items-center space-x-2">
-              
-                <Image 
-                  src="/logo.png" 
-                  alt="Talha Yüce Logo" 
-                  width={70} 
-                  height={70} 
-                  className="rounded-full" 
-                />
-  
+              <Image 
+                src="/logo.png" 
+                alt="Talha Yüce Logo" 
+                width={70} 
+                height={70} 
+                className="rounded-full" 
+              />
             </Link>
             <div className="flex items-center gap-2">
               <LanguageSwitcher locale={locale} />
@@ -127,7 +125,7 @@ export function SiteHeader({ locale }: SiteHeaderProps) {
               </Button>
             </div>
           </div>
-          <nav className="container grid gap-6 py-6">
+          <nav className="container grid gap-6 py-6 bg-background">
             {routes.map((route, index) => (
               <motion.div
                 key={route.href}
@@ -139,7 +137,8 @@ export function SiteHeader({ locale }: SiteHeaderProps) {
                   href={route.href}
                   className={cn(
                     "flex items-center gap-2 text-lg font-medium transition-colors hover:text-purple-400",
-                    route.active ? "text-purple-400" : "text-muted-foreground",
+                    "p-2 rounded-md hover:bg-purple-900/20",
+                    route.active ? "text-purple-400 bg-purple-900/20" : "text-muted-foreground",
                   )}
                   onClick={() => setIsMenuOpen(false)}
                 >
