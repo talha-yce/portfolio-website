@@ -145,6 +145,38 @@ export default async function RootLayout({ children, params }: RootLayoutProps) 
         <link rel="icon" type="image/png" sizes="32x32" href="/icon-32x32.png" />
         <link rel="icon" type="image/png" sizes="16x16" href="/icon-16x16.png" />
         <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": "Person",
+              "name": "Talha Yüce",
+              "url": "https://www.talha-yuce.site",
+              "sameAs": [
+                "https://github.com/talhayuce",
+                "https://linkedin.com/in/talhayuce"
+              ],
+              "jobTitle": "Software Engineer",
+              "worksFor": {
+                "@type": "Organization",
+                "name": "Freelance"
+              },
+              "description": "Web Geliştirme, Oyun Geliştirme ve Yapay Zeka Uygulamaları konusunda uzmanlaşmış Yazılım Mühendisi",
+              "knowsAbout": [
+                "Web Development",
+                "Game Development",
+                "Artificial Intelligence",
+                "React",
+                "Next.js",
+                "TypeScript",
+                "Unity",
+                "C#",
+                "Python"
+              ]
+            })
+          }}
+        />
       </head>
       <body className={`${spaceGrotesk.className} bg-background text-foreground`}>
         <ThemeProvider attribute="class" defaultTheme="dark" enableSystem disableTransitionOnChange>
