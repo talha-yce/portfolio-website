@@ -78,6 +78,7 @@ export const metadata: Metadata = {
   manifest: undefined,
   icons: {
     icon: [
+      { url: '/favicon.ico', sizes: 'any' },
       { url: '/icon-16x16.png', sizes: '16x16', type: 'image/png' },
       { url: '/icon-32x32.png', sizes: '32x32', type: 'image/png' },
       { url: '/icon-48x48.png', sizes: '48x48', type: 'image/png' },
@@ -88,10 +89,8 @@ export const metadata: Metadata = {
       { url: '/icon-384x384.png', sizes: '384x384', type: 'image/png' },
       { url: '/icon-512x512.png', sizes: '512x512', type: 'image/png' },
     ],
-    shortcut: '/icon-512x512.png',
-    apple: [
-      { url: '/apple-touch-icon.png', sizes: '180x180', type: 'image/png' },
-    ],
+    shortcut: '/favicon.ico',
+    apple: '/apple-touch-icon.png'
   },
   appleWebApp: {
     capable: true,
@@ -121,8 +120,10 @@ export default async function RootLayout({ children, params }: RootLayoutProps) 
         <link rel="canonical" href="https://talha-yuce.vercel.app" />
         <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
         <meta name="theme-color" content="#000000" />
-        <link rel="icon" type="image/png" sizes="512x512" href="/icon-512x512.png" />
-        <link rel="apple-touch-icon" href="/icon-512x512.png" />
+        <link rel="icon" href="/favicon.ico" />
+        <link rel="icon" type="image/png" sizes="32x32" href="/icon-32x32.png" />
+        <link rel="icon" type="image/png" sizes="16x16" href="/icon-16x16.png" />
+        <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
       </head>
       <body className={`${spaceGrotesk.className} bg-background text-foreground`}>
         <ThemeProvider attribute="class" defaultTheme="dark" enableSystem disableTransitionOnChange>
