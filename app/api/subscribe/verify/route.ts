@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { Resend } from "resend";
 import { google } from "googleapis";
+import { getDictionary } from "@/lib/i18n/dictionaries";
 
 // Google Sheets API yapılandırması
 const auth = new google.auth.GoogleAuth({
@@ -24,6 +25,7 @@ const resend = new Resend(process.env.RESEND_API_KEY);
 export async function POST(request: Request) {
   try {
     const { firstName, lastName, email, verificationCode, language, interests } = await request.json();
+    const dictionary = await getDictionary(language as "tr" | "en");
     console.log("Doğrulama isteği:", { firstName, lastName, email, verificationCode, language, interests });
 
     if (!email || !verificationCode) {
@@ -151,57 +153,23 @@ export async function POST(request: Request) {
       to: [email],
       subject: language === "tr" ? "Bültenimize Hoş Geldiniz! 🎉" : "Welcome to Our Newsletter! 🎉",
       html: `
-        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; background-color: #f9f9f9; border-radius: 10px;">
-          <div style="text-align: center; margin-bottom: 30px;">
-            <h1 style="color: #2c3e50; margin-bottom: 10px;">${language === "tr" ? "Hoş Geldiniz! 🎉" : "Welcome! 🎉"}</h1>
-            <p style="color: #7f8c8d; font-size: 18px;">${language === "tr" 
-              ? `Sayın ${firstName} ${lastName}, bülten ailemize katıldığınız için teşekkür ederiz.`
-              : `Dear ${firstName} ${lastName}, thank you for joining our newsletter family.`}</p>
-          </div>
-
+        <div style="max-width: 600px; margin: 0 auto; padding: 20px; font-family: Arial, sans-serif; background-color: #f5f5f5;">
           <div style="background-color: white; padding: 25px; border-radius: 8px; margin-bottom: 25px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
-            <h2 style="color: #2c3e50; margin-top: 0;">${language === "tr" ? "Sizi Neler Bekliyor?" : "What Awaits You?"}</h2>
-            <ul style="color: #34495e; line-height: 1.6;">
-              <li>${language === "tr" ? "En güncel teknoloji haberleri ve makaleler" : "Latest technology news and articles"}</li>
-              <li>${language === "tr" ? "Web geliştirme ipuçları ve öğretici içerikler" : "Web development tips and tutorials"}</li>
-              <li>${language === "tr" ? "Yapay zeka ve oyun geliştirme konularında özel içerikler" : "Special content on AI and game development"}</li>
-              <li>${language === "tr" ? "Özel indirimler ve kampanyalar" : "Special discounts and campaigns"}</li>
-            </ul>
-          </div>
-
-          <div style="background-color: white; padding: 25px; border-radius: 8px; margin-bottom: 25px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
-            <h2 style="color: #2c3e50; margin-top: 0;">${language === "tr" ? "Seçtiğiniz İlgi Alanları" : "Your Selected Interests"}</h2>
+            <h2 style="color: #2c3e50; margin-top: 0;">${dictionary.newsletter.selectedInterests}</h2>
             <ul style="color: #34495e; line-height: 1.6;">
               ${interests.map((interest: string) => {
                 const interestText = {
-                  web: language === "tr" ? "Web Geliştirme" : "Web Development",
-                  oyun: language === "tr" ? "Oyun Geliştirme" : "Game Development",
-                  yapay_zeka: language === "tr" ? "Yapay Zeka" : "Artificial Intelligence"
+                  web: dictionary.newsletter.webDevelopment,
+                  oyun: dictionary.newsletter.gameDevelopment,
+                  yapay_zeka: dictionary.newsletter.artificialIntelligence
                 }[interest];
                 return `<li>${interestText}</li>`;
               }).join("")}
             </ul>
           </div>
 
-          <div style="background-color: white; padding: 25px; border-radius: 8px; margin-bottom: 25px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
-            <h2 style="color: #2c3e50; margin-top: 0;">${language === "tr" ? "Blog Kataloğumuz" : "Our Blog Catalog"}</h2>
-            <p style="color: #34495e; line-height: 1.6;">${language === "tr" 
-              ? "Sizin için hazırladığımız özel içerikleri keşfetmek için blog sayfamızı ziyaret edebilirsiniz:"
-              : "You can visit our blog page to explore the special content we have prepared for you:"}</p>
-            <div style="text-align: center; margin: 20px 0;">
-              <a href="https://talha-yuce.site/blog" style="display: inline-block; background-color: #3498db; color: white; padding: 12px 25px; text-decoration: none; border-radius: 5px; font-weight: bold;">
-                ${language === "tr" ? "Blog Sayfamızı Ziyaret Edin" : "Visit Our Blog"}
-              </a>
-            </div>
-          </div>
-
           <div style="text-align: center; margin-top: 30px; padding-top: 20px; border-top: 1px solid #eee;">
-            <p style="color: #7f8c8d; font-size: 14px;">${language === "tr" 
-              ? "Bu e-posta otomatik olarak gönderilmiştir. Lütfen yanıtlamayınız."
-              : "This email was sent automatically. Please do not reply."}</p>
-            <p style="color: #7f8c8d; font-size: 14px;">${language === "tr"
-              ? "Abonelikten çıkmak isterseniz, lütfen bize e-posta gönderin."
-              : "If you wish to unsubscribe, please send us an email."}</p>
+            <p style="color: #7f8c8d; font-size: 14px;">${dictionary.newsletter.autoEmailMessage}</p>
           </div>
         </div>
       `,

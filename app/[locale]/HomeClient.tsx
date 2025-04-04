@@ -142,7 +142,7 @@ export default function HomeClient({ params, dictionary, featuredProjects, recen
               <div className="flex justify-center space-x-4">
                 <SocialLinks />
               </div>
-              <p className="text-gray-400">Email: yucetalha00@gmail.com</p>
+              <p className="text-gray-400">{dictionary.common.email}</p>
             </div>
           </div>
         </div>

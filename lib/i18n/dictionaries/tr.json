@@ -11,7 +11,12 @@
     "viewAllProjects": "Tüm Projeleri Görüntüle",
     "viewAllPosts": "Tüm Yazıları Görüntüle",
     "backToProjects": "Projelere Dön",
-    "backToBlog": "Bloga Dön"
+    "backToBlog": "Bloga Dön",
+    "changeLanguage": "Dil değiştir",
+    "pageNotFound": "Sayfa bulunamadı",
+    "pageNotFoundDescription": "Aradığınız sayfa mevcut değil veya taşınmış olabilir.",
+    "goHome": "Ana Sayfaya Dön",
+    "email": "E-posta: yucet@talha-yuce.site"
   },
   "home": {
     "heroTitle": "Talha Yüce",
@@ -30,7 +35,8 @@
     "education": "Eğitim",
     "experience": "Deneyim",
     "skills": "Yetenekler",
-    "certifications": "Sertifikalar"
+    "certifications": "Sertifikalar",
+    "description": "Talha Yüce hakkında daha fazla bilgi edinin, web geliştirme, oyun geliştirme ve yapay zeka uygulamaları konusunda uzmanlaşmış bir yazılım mühendisi."
   },
   "projects": {
     "title": "Projeler",
@@ -40,6 +46,41 @@
     "title": "Blog",
     "description": "Web geliştirme, yapay zeka ve oyun geliştirme hakkında makaleler ve düşünceler.",
     "readingTime": "{time} dk okuma"
+  },
+  "newsletter": {
+    "securityVerification": "Güvenlik Doğrulaması",
+    "subscription": "Bülten Aboneliği",
+    "verificationCode": "Doğrulama Kodu",
+    "success": "Başarılı!",
+    "restart": "Yeniden Başlat",
+    "verifyNotRobot": "Lütfen robot olmadığınızı doğrulayın",
+    "subscriptionComplete": "Aboneliğiniz Başarıyla Tamamlandı!",
+    "welcomeMessage": "Bültenimize hoş geldiniz. En kısa sürede size ulaşacağız.",
+    "firstName": "Ad",
+    "lastName": "Soyad",
+    "email": "E-posta",
+    "languageSelection": "Dil Seçimi",
+    "turkish": "Türkçe",
+    "english": "İngilizce",
+    "interests": "İlgi Alanları",
+    "webDevelopment": "Web Geliştirme",
+    "gameDevelopment": "Oyun Geliştirme",
+    "artificialIntelligence": "Yapay Zeka",
+    "processing": "İşleniyor...",
+    "sendVerificationCode": "Doğrulama Kodu Gönder",
+    "enterVerificationCode": "6 haneli kodu girin",
+    "completeSubscription": "Aboneliği Tamamla",
+    "codeExpired": "Doğrulama kodunuzun süresi doldu.",
+    "sendNewCode": "Yeni Kod Gönder",
+    "tooManyFailedAttempts": "Çok fazla başarısız deneme yaptınız.",
+    "tooManyRequests": "Çok fazla doğrulama kodu isteği gönderdiniz. Lütfen bir süre bekleyin.",
+    "remainingAttempts": "Kalan deneme hakkı: {count}",
+    "verificationCodeSent": "Doğrulama kodunu e-posta adresinize gönderdik. Lütfen gelen kutunuzu kontrol edin.",
+    "checkSpamFolder": "Eğer kodu almadıysanız, lütfen spam klasörünüzü kontrol edin.",
+    "codeExpiresIn": "Doğrulama kodunun geçerlilik süresi 3 dakikadır.",
+    "timeRemaining": "Kalan süre: {time}",
+    "selectedInterests": "Seçtiğiniz İlgi Alanları",
+    "autoEmailMessage": "Bu e-posta otomatik olarak gönderilmiştir. Lütfen yanıtlamayınız."
   }
 }
 

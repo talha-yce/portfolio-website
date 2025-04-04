@@ -11,7 +11,12 @@
     "viewAllProjects": "View All Projects",
     "viewAllPosts": "View All Posts",
     "backToProjects": "Back to Projects",
-    "backToBlog": "Back to Blog"
+    "backToBlog": "Back to Blog",
+    "changeLanguage": "Change language",
+    "pageNotFound": "Page not found",
+    "pageNotFoundDescription": "The page you're looking for doesn't exist or has been moved.",
+    "goHome": "Go Home",
+    "email": "Email: yucet@talha-yuce.site"
   },
   "home": {
     "heroTitle": "Talha Yüce",
@@ -30,7 +35,8 @@
     "education": "Education",
     "experience": "Experience",
     "skills": "Skills",
-    "certifications": "Certifications"
+    "certifications": "Certifications",
+    "description": "Learn more about Talha Yüce, a software engineer specializing in web development, game development, and AI applications."
   },
   "projects": {
     "title": "Projects",
@@ -40,6 +46,41 @@
     "title": "Blog",
     "description": "Articles and thoughts on web development, AI, and game development.",
     "readingTime": "{time} min read"
+  },
+  "newsletter": {
+    "securityVerification": "Security Verification",
+    "subscription": "Newsletter Subscription",
+    "verificationCode": "Verification Code",
+    "success": "Success!",
+    "restart": "Restart",
+    "verifyNotRobot": "Please verify that you are not a robot",
+    "subscriptionComplete": "Your Subscription is Complete!",
+    "welcomeMessage": "Welcome to our newsletter. We will contact you soon.",
+    "firstName": "First Name",
+    "lastName": "Last Name",
+    "email": "Email",
+    "languageSelection": "Language Selection",
+    "turkish": "Turkish",
+    "english": "English",
+    "interests": "Interests",
+    "webDevelopment": "Web Development",
+    "gameDevelopment": "Game Development",
+    "artificialIntelligence": "Artificial Intelligence",
+    "processing": "Processing...",
+    "sendVerificationCode": "Send Verification Code",
+    "enterVerificationCode": "Enter 6-digit code",
+    "completeSubscription": "Complete Subscription",
+    "codeExpired": "Your verification code has expired.",
+    "sendNewCode": "Send New Code",
+    "tooManyFailedAttempts": "You have made too many failed attempts.",
+    "tooManyRequests": "You have sent too many verification code requests. Please wait for a while.",
+    "remainingAttempts": "Remaining attempts: {count}",
+    "verificationCodeSent": "We've sent a verification code to your email. Please check your inbox.",
+    "checkSpamFolder": "If you haven't received the code, please check your spam folder.",
+    "codeExpiresIn": "The verification code is valid for 3 minutes.",
+    "timeRemaining": "Time remaining: {time}",
+    "selectedInterests": "Your Selected Interests",
+    "autoEmailMessage": "This email was sent automatically. Please do not reply."
   }
 }
 

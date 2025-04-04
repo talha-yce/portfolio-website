@@ -1,8 +1,11 @@
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { defaultLocale } from "@/lib/i18n/config"
+import { getDictionary } from "@/lib/i18n/dictionaries"
 
-export default function NotFound() {
+export default async function NotFound() {
+  const dictionary = await getDictionary(defaultLocale)
+
   return (
     <div className="container flex flex-col items-center justify-center min-h-[calc(100vh-8rem)] gap-4 text-center">
       <div>
@@ -11,14 +14,16 @@ export default function NotFound() {
         </h1>
       </div>
       <div>
-        <p className="text-xl text-purple-300">Page not found</p>
+        <p className="text-xl text-purple-300">{dictionary.common.pageNotFound}</p>
       </div>
       <div>
-        <p className="text-gray-400">The page you're looking for doesn't exist or has been moved.</p>
+        <p className="text-gray-400">{dictionary.common.pageNotFoundDescription}</p>
       </div>
       <div>
         <Link href={`/${defaultLocale}`}>
-          <Button className="mt-4 bg-purple-600 text-white hover:bg-purple-700">Go Home</Button>
+          <Button className="mt-4 bg-purple-600 text-white hover:bg-purple-700">
+            {dictionary.common.goHome}
+          </Button>
         </Link>
       </div>
     </div>

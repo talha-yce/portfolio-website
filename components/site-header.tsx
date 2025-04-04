@@ -10,37 +10,39 @@ import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
 import { LanguageSwitcher } from "@/components/language-switcher"
 import { getLocalizedPathname, type Locale } from "@/lib/i18n/config"
+import type { Dictionary } from "@/lib/i18n/dictionaries"
 
 interface SiteHeaderProps {
   locale: Locale
+  dictionary: Dictionary
 }
 
-export function SiteHeader({ locale }: SiteHeaderProps) {
+export function SiteHeader({ locale, dictionary }: SiteHeaderProps) {
   const pathname = usePathname()
   const [isMenuOpen, setIsMenuOpen] = useState(false)
 
   const routes = [
     {
       href: getLocalizedPathname("/", locale),
-      label: "Home",
+      label: dictionary.common.home,
       icon: Home,
       active: pathname === getLocalizedPathname("/", locale),
     },
     {
       href: getLocalizedPathname("/about", locale),
-      label: "About",
+      label: dictionary.common.about,
       icon: User,
       active: pathname === getLocalizedPathname("/about", locale),
     },
     {
       href: getLocalizedPathname("/projects", locale),
-      label: "Projects",
+      label: dictionary.common.projects,
       icon: Code,
       active: pathname === getLocalizedPathname("/projects", locale) || pathname.includes("/projects/"),
     },
     {
       href: getLocalizedPathname("/blog", locale),
-      label: "Blog",
+      label: dictionary.common.blog,
       icon: FileText,
       active: pathname === getLocalizedPathname("/blog", locale) || pathname.includes("/blog/"),
     },
@@ -59,16 +61,13 @@ export function SiteHeader({ locale }: SiteHeaderProps) {
       <div className="container flex h-16 items-center justify-between">
         <div className="flex items-center gap-2">
           <Link href={getLocalizedPathname("/", locale)} className="flex items-center space-x-2">
-            
-              <Image 
-                src="/logo.png" 
-                alt="Talha Yüce Logo" 
-                width={70} 
-                height={70} 
-                className="rounded-full" 
-              />
-  
-            
+            <Image 
+              src="/logo.png" 
+              alt="Talha Yüce Logo" 
+              width={70} 
+              height={70} 
+              className="rounded-full" 
+            />
           </Link>
         </div>
         <nav className="hidden md:flex items-center gap-6">
@@ -92,7 +91,7 @@ export function SiteHeader({ locale }: SiteHeaderProps) {
           ))}
         </nav>
         <div className="flex items-center gap-2">
-          <LanguageSwitcher locale={locale} />
+          <LanguageSwitcher locale={locale} dictionary={dictionary} />
           <Button variant="ghost" size="icon" className="md:hidden" onClick={() => setIsMenuOpen(!isMenuOpen)}>
             <Menu className="h-5 w-5" />
             <span className="sr-only">Toggle menu</span>
@@ -118,14 +117,14 @@ export function SiteHeader({ locale }: SiteHeaderProps) {
               />
             </Link>
             <div className="flex items-center gap-2">
-              <LanguageSwitcher locale={locale} />
+              <LanguageSwitcher locale={locale} dictionary={dictionary} />
               <Button variant="ghost" size="icon" onClick={() => setIsMenuOpen(false)}>
                 <X className="h-5 w-5" />
                 <span className="sr-only">Close menu</span>
               </Button>
             </div>
           </div>
-          <nav className="container grid gap-6 py-6 bg-background">
+          <nav className="container flex flex-col gap-4 p-4">
             {routes.map((route, index) => (
               <motion.div
                 key={route.href}

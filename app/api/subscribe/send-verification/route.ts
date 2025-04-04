@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { Resend } from "resend";
 import { google } from "googleapis";
+import { getDictionary } from "@/lib/i18n/dictionaries";
 
 // Google Sheets API yapılandırması
 const auth = new google.auth.GoogleAuth({
@@ -25,6 +26,7 @@ const resend = new Resend(process.env.RESEND_API_KEY);
 export async function POST(request: Request) {
   try {
     const { email, firstName, lastName, interests, language } = await request.json();
+    const dictionary = await getDictionary(language as "tr" | "en");
 
     console.log("Gelen istek:", { email, firstName, lastName, interests, language });
 
@@ -38,28 +40,15 @@ export async function POST(request: Request) {
       to: [email],
       subject: language === "tr" ? "Bülten Aboneliği Doğrulama Kodu" : "Newsletter Subscription Verification Code",
       html: `
-        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; background-color: #f9f9f9; border-radius: 10px;">
-          <div style="text-align: center; margin-bottom: 30px;">
-            <h1 style="color: #2c3e50; margin-bottom: 10px;">${language === "tr" ? "Hoş Geldiniz!" : "Welcome!"} 🎉</h1>
-            <p style="color: #7f8c8d; font-size: 18px;">${language === "tr" 
-              ? `Sayın ${firstName} ${lastName}, bülten aboneliğinizi tamamlamak için doğrulama kodunuz:`
-              : `Dear ${firstName} ${lastName}, your verification code to complete your newsletter subscription:`}</p>
-          </div>
-
+        <div style="max-width: 600px; margin: 0 auto; padding: 20px; font-family: Arial, sans-serif; background-color: #f5f5f5;">
           <div style="background-color: white; padding: 25px; border-radius: 8px; margin-bottom: 25px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
-            <div style="text-align: center; background-color: #f4f4f4; padding: 20px; border-radius: 5px;">
-              <h2 style="color: #3498db; margin: 0;">${verificationCode}</h2>
-            </div>
-          </div>
-
-          <div style="background-color: white; padding: 25px; border-radius: 8px; margin-bottom: 25px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
-            <h2 style="color: #2c3e50; margin-top: 0;">${language === "tr" ? "Seçtiğiniz İlgi Alanları" : "Your Selected Interests"}</h2>
+            <h2 style="color: #2c3e50; margin-top: 0;">${dictionary.newsletter.selectedInterests}</h2>
             <ul style="color: #34495e; line-height: 1.6;">
               ${interests.map((interest: "web" | "oyun" | "yapay_zeka") => {
                 const interestText: Record<"web" | "oyun" | "yapay_zeka", string> = {
-                  web: language === "tr" ? "Web Geliştirme" : "Web Development",
-                  oyun: language === "tr" ? "Oyun Geliştirme" : "Game Development",
-                  yapay_zeka: language === "tr" ? "Yapay Zeka" : "Artificial Intelligence"
+                  web: dictionary.newsletter.webDevelopment,
+                  oyun: dictionary.newsletter.gameDevelopment,
+                  yapay_zeka: dictionary.newsletter.artificialIntelligence
                 };
                 return `<li>${interestText[interest]}</li>`;
               }).join("")}
@@ -67,9 +56,7 @@ export async function POST(request: Request) {
           </div>
 
           <div style="text-align: center; margin-top: 30px; padding-top: 20px; border-top: 1px solid #eee;">
-            <p style="color: #7f8c8d; font-size: 14px;">${language === "tr" 
-              ? "Bu e-posta otomatik olarak gönderilmiştir. Lütfen yanıtlamayınız."
-              : "This email was sent automatically. Please do not reply."}</p>
+            <p style="color: #7f8c8d; font-size: 14px;">${dictionary.newsletter.autoEmailMessage}</p>
           </div>
         </div>
       `,

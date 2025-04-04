@@ -5,6 +5,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import ReCAPTCHA from "react-google-recaptcha";
+import type { Dictionary } from "@/lib/i18n/dictionaries";
 
 const subscriptionSchema = z.object({
   firstName: z.string().min(2, "Ad en az 2 karakter olmalıdır"),
@@ -33,7 +34,7 @@ type FormData = {
   verificationCode?: string;
 };
 
-export function NewsletterSubscription() {
+export function NewsletterSubscription({ dictionary }: { dictionary: Dictionary }) {
   const [step, setStep] = useState<"recaptcha" | "form" | "verification" | "success">("recaptcha");
   const [verificationSent, setVerificationSent] = useState(false);
   const [success, setSuccess] = useState<string>("");
@@ -316,9 +317,9 @@ export function NewsletterSubscription() {
     <div className="w-full max-w-md mx-auto p-6 bg-white dark:bg-gray-800 rounded-lg shadow-md">
       <div className="flex justify-between items-center mb-6">
         <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
-          {step === "recaptcha" ? "Güvenlik Doğrulaması" : 
-           step === "form" ? "Bülten Aboneliği" : 
-           step === "verification" ? "Doğrulama Kodu" : "Başarılı!"}
+          {step === "recaptcha" ? dictionary.newsletter.securityVerification : 
+           step === "form" ? dictionary.newsletter.subscription : 
+           step === "verification" ? dictionary.newsletter.verificationCode : dictionary.newsletter.success}
         </h2>
         {step !== "success" && step !== "recaptcha" && (
           <button
@@ -326,7 +327,7 @@ export function NewsletterSubscription() {
             onClick={resetForm}
             className="text-sm text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300"
           >
-            Yeniden Başlat
+            {dictionary.newsletter.restart}
           </button>
         )}
       </div>
@@ -340,9 +341,7 @@ export function NewsletterSubscription() {
       {step === "recaptcha" ? (
         <div className="flex flex-col items-center justify-center space-y-4">
           <p className="text-gray-600 dark:text-gray-300 text-center">
-            {formData.language === "tr" 
-              ? "Lütfen robot olmadığınızı doğrulayın"
-              : "Please verify that you are not a robot"}
+            {dictionary.newsletter.verifyNotRobot}
           </p>
           <ReCAPTCHA
             sitekey={process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY || ""}
@@ -368,12 +367,10 @@ export function NewsletterSubscription() {
             </svg>
           </div>
           <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">
-            {formData.language === "tr" ? "Aboneliğiniz Başarıyla Tamamlandı!" : "Your Subscription is Complete!"}
+            {dictionary.newsletter.subscriptionComplete}
           </h3>
           <p className="text-gray-600 dark:text-gray-300">
-            {formData.language === "tr" 
-              ? "Bültenimize hoş geldiniz. En kısa sürede size ulaşacağız."
-              : "Welcome to our newsletter. We will contact you soon."}
+            {dictionary.newsletter.welcomeMessage}
           </p>
         </div>
       ) : (
@@ -383,7 +380,7 @@ export function NewsletterSubscription() {
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <label htmlFor="firstName" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                    Ad
+                    {dictionary.newsletter.firstName}
                   </label>
                   <input
                     type="text"
@@ -398,7 +395,7 @@ export function NewsletterSubscription() {
                 </div>
                 <div>
                   <label htmlFor="lastName" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                    Soyad
+                    {dictionary.newsletter.lastName}
                   </label>
                   <input
                     type="text"
@@ -415,7 +412,7 @@ export function NewsletterSubscription() {
 
               <div>
                 <label htmlFor="email" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                  E-posta
+                  {dictionary.newsletter.email}
                 </label>
                 <input
                   type="email"
@@ -431,7 +428,7 @@ export function NewsletterSubscription() {
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Dil Seçimi
+                  {dictionary.newsletter.languageSelection}
                 </label>
                 <div className="space-y-2">
                   <label className="inline-flex items-center mr-4">
@@ -442,7 +439,7 @@ export function NewsletterSubscription() {
                       className="form-radio text-blue-600"
                       defaultChecked
                     />
-                    <span className="ml-2">Türkçe</span>
+                    <span className="ml-2">{dictionary.newsletter.turkish}</span>
                   </label>
                   <label className="inline-flex items-center">
                     <input
@@ -451,7 +448,7 @@ export function NewsletterSubscription() {
                       {...registerSubscription("language")}
                       className="form-radio text-blue-600"
                     />
-                    <span className="ml-2">English</span>
+                    <span className="ml-2">{dictionary.newsletter.english}</span>
                   </label>
                 </div>
                 {subscriptionErrors.language && (
@@ -461,7 +458,7 @@ export function NewsletterSubscription() {
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  İlgi Alanları
+                  {dictionary.newsletter.interests}
                 </label>
                 <div className="space-y-2">
                   {["web", "oyun", "yapay_zeka"].map((interest) => (
@@ -473,7 +470,9 @@ export function NewsletterSubscription() {
                         className="rounded border-gray-300 text-blue-600 shadow-sm focus:border-blue-500 focus:ring-blue-500"
                       />
                       <span className="ml-2 text-sm text-gray-700">
-                        {interest === "web" ? "Web Geliştirme" : interest === "oyun" ? "Oyun Geliştirme" : "Yapay Zeka"}
+                        {interest === "web" ? dictionary.newsletter.webDevelopment : 
+                         interest === "oyun" ? dictionary.newsletter.gameDevelopment : 
+                         dictionary.newsletter.artificialIntelligence}
                       </span>
                     </label>
                   ))}
@@ -489,15 +488,15 @@ export function NewsletterSubscription() {
                 className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {loading 
-                  ? (formData.language === "tr" ? "İşleniyor..." : "Processing...") 
-                  : (formData.language === "tr" ? "Doğrulama Kodu Gönder" : "Send Verification Code")}
+                  ? dictionary.newsletter.processing 
+                  : dictionary.newsletter.sendVerificationCode}
               </button>
             </form>
           ) : (
             <form onSubmit={handleVerify} className="space-y-4">
               <div className="mt-4">
                 <label htmlFor="verificationCode" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                  {formData.language === "tr" ? "Doğrulama Kodu" : "Verification Code"}
+                  {dictionary.newsletter.verificationCode}
                 </label>
                 <div className="mt-1">
                   <input
@@ -508,38 +507,28 @@ export function NewsletterSubscription() {
                     value={verificationCode}
                     onChange={(e) => setVerificationCode(e.target.value)}
                     className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm dark:bg-gray-700 dark:border-gray-600 dark:text-white"
-                    placeholder={formData.language === "tr" ? "6 haneli kodu girin" : "Enter 6-digit code"}
+                    placeholder={dictionary.newsletter.enterVerificationCode}
                     disabled={loading || isCodeExpired || isMaxAttemptsReached || isRateLimited}
                   />
                 </div>
                 <div className="mt-2">
                   {remainingAttempts !== null && remainingAttempts > 0 && (
                     <p className="text-sm text-yellow-600 dark:text-yellow-400">
-                      {formData.language === "tr" 
-                        ? `Kalan deneme hakkı: ${remainingAttempts}`
-                        : `Remaining attempts: ${remainingAttempts}`}
+                      {dictionary.newsletter.remainingAttempts.replace("{count}", remainingAttempts.toString())}
                     </p>
                   )}
                   <p className="text-sm text-gray-500">
-                    {formData.language === "tr" 
-                      ? "Doğrulama kodunu e-posta adresinize gönderdik. Lütfen gelen kutunuzu kontrol edin."
-                      : "We've sent a verification code to your email. Please check your inbox."}
+                    {dictionary.newsletter.verificationCodeSent}
                   </p>
                   <p className="text-sm text-gray-500">
-                    {formData.language === "tr" 
-                      ? "Eğer kodu almadıysanız, lütfen spam klasörünüzü kontrol edin."
-                      : "If you haven't received the code, please check your spam folder."}
+                    {dictionary.newsletter.checkSpamFolder}
                   </p>
                   <p className="mt-2 text-sm text-gray-500">
-                    {formData.language === "tr" 
-                      ? "Doğrulama kodunun geçerlilik süresi 3 dakikadır."
-                      : "The verification code is valid for 3 minutes."}
+                    {dictionary.newsletter.codeExpiresIn}
                   </p>
                   {timeRemaining !== null && (
                     <p className="mt-2 text-sm font-medium text-red-600 dark:text-red-400">
-                      {formData.language === "tr" 
-                        ? `Kalan süre: ${formatTime(timeRemaining)}`
-                        : `Time remaining: ${formatTime(timeRemaining)}`}
+                      {dictionary.newsletter.timeRemaining.replace("{time}", formatTime(timeRemaining))}
                     </p>
                   )}
                 </div>
@@ -551,17 +540,14 @@ export function NewsletterSubscription() {
                 className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {loading 
-                  ? (formData.language === "tr" ? "İşleniyor..." : "Processing...") 
-                  : (formData.language === "tr" ? "Aboneliği Tamamla" : "Complete Subscription")}
+                  ? dictionary.newsletter.processing 
+                  : dictionary.newsletter.completeSubscription}
               </button>
 
-              {/* Durum mesajları */}
               {isCodeExpired && (
                 <div className="mt-4 p-3 bg-yellow-100 text-yellow-800 rounded-md dark:bg-yellow-800 dark:text-yellow-100">
                   <p className="text-sm font-medium">
-                    {formData.language === "tr" 
-                      ? "Doğrulama kodunuzun süresi doldu." 
-                      : "Your verification code has expired."}
+                    {dictionary.newsletter.codeExpired}
                   </p>
                   <button
                     type="button"
@@ -570,8 +556,8 @@ export function NewsletterSubscription() {
                     className="mt-2 w-full inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-yellow-600 hover:bg-yellow-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-yellow-500 disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     {loading 
-                      ? (formData.language === "tr" ? "İşleniyor..." : "Processing...") 
-                      : (formData.language === "tr" ? "Yeni Kod Gönder" : "Send New Code")}
+                      ? dictionary.newsletter.processing 
+                      : dictionary.newsletter.sendNewCode}
                   </button>
                 </div>
               )}
@@ -579,9 +565,7 @@ export function NewsletterSubscription() {
               {isMaxAttemptsReached && (
                 <div className="mt-4 p-3 bg-red-100 text-red-800 rounded-md dark:bg-red-800 dark:text-red-100">
                   <p className="text-sm font-medium">
-                    {formData.language === "tr" 
-                      ? "Çok fazla başarısız deneme yaptınız." 
-                      : "You have made too many failed attempts."}
+                    {dictionary.newsletter.tooManyFailedAttempts}
                   </p>
                   <button
                     type="button"
@@ -590,8 +574,8 @@ export function NewsletterSubscription() {
                     className="mt-2 w-full inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     {loading 
-                      ? (formData.language === "tr" ? "İşleniyor..." : "Processing...") 
-                      : (formData.language === "tr" ? "Yeni Kod Gönder" : "Send New Code")}
+                      ? dictionary.newsletter.processing 
+                      : dictionary.newsletter.sendNewCode}
                   </button>
                 </div>
               )}
@@ -599,9 +583,7 @@ export function NewsletterSubscription() {
               {isRateLimited && (
                 <div className="mt-4 p-3 bg-red-100 text-red-800 rounded-md dark:bg-red-800 dark:text-red-100">
                   <p className="text-sm font-medium">
-                    {formData.language === "tr" 
-                      ? "Çok fazla doğrulama kodu isteği gönderdiniz. Lütfen bir süre bekleyin." 
-                      : "You have sent too many verification code requests. Please wait for a while."}
+                    {dictionary.newsletter.tooManyRequests}
                   </p>
                 </div>
               )}
@@ -614,7 +596,7 @@ export function NewsletterSubscription() {
                     disabled={loading}
                     className="text-sm text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300"
                   >
-                    {formData.language === "tr" ? "Yeni kod gönder" : "Send new code"}
+                    {dictionary.newsletter.sendNewCode}
                   </button>
                 </div>
               )}

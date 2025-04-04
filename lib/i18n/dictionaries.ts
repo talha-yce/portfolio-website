@@ -16,6 +16,11 @@ export type Dictionary = {
     viewAllPosts: string
     backToProjects: string
     backToBlog: string
+    changeLanguage: string
+    pageNotFound: string
+    pageNotFoundDescription: string
+    goHome: string
+    email: string
   }
   home: {
     heroTitle: string
@@ -35,6 +40,7 @@ export type Dictionary = {
     experience: string
     skills: string
     certifications: string
+    description: string
   }
   projects: {
     title: string
@@ -44,6 +50,41 @@ export type Dictionary = {
     title: string
     description: string
     readingTime: string
+  }
+  newsletter: {
+    securityVerification: string
+    subscription: string
+    verificationCode: string
+    success: string
+    restart: string
+    verifyNotRobot: string
+    subscriptionComplete: string
+    welcomeMessage: string
+    firstName: string
+    lastName: string
+    email: string
+    languageSelection: string
+    turkish: string
+    english: string
+    interests: string
+    webDevelopment: string
+    gameDevelopment: string
+    artificialIntelligence: string
+    processing: string
+    sendVerificationCode: string
+    enterVerificationCode: string
+    completeSubscription: string
+    codeExpired: string
+    sendNewCode: string
+    tooManyFailedAttempts: string
+    tooManyRequests: string
+    remainingAttempts: string
+    verificationCodeSent: string
+    checkSpamFolder: string
+    codeExpiresIn: string
+    timeRemaining: string
+    selectedInterests: string
+    autoEmailMessage: string
   }
 }
 
