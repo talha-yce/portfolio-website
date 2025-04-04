@@ -21,13 +21,27 @@ const spaceGrotesk = Space_Grotesk({
 })
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://talha-yuce.vercel.app"),
+  metadataBase: new URL("https://www.talha-yuce.site"),
   title: {
     template: '%s | Talha Yüce',
-    default: 'Talha Yüce | Yazılım Mühendisi',
+    default: 'Talha Yüce | Yazılım Mühendisi & Web Geliştirici',
   },
-  description: 'Web Geliştirme, Oyun Geliştirme ve Yapay Zeka Uygulamaları konusunda uzmanlaşmış Yazılım Mühendisi',
-  keywords: ['yazılım mühendisi', 'web geliştirme', 'oyun geliştirme', 'yapay zeka', 'frontend', 'backend', 'fullstack', 'react', 'next.js', 'typescript', 'unity', 'c#', 'python'],
+  description: 'Talha Yüce - Web Geliştirme, Oyun Geliştirme ve Yapay Zeka Uygulamaları konusunda uzmanlaşmış Yazılım Mühendisi. React, Next.js, TypeScript ve Unity ile modern web ve oyun uygulamaları geliştiriyorum.',
+  keywords: [
+    'talha yüce',
+    'yazılım mühendisi',
+    'web geliştirici',
+    'frontend developer',
+    'react developer',
+    'next.js developer',
+    'typescript developer',
+    'unity developer',
+    'oyun geliştirici',
+    'yapay zeka',
+    'web uygulamaları',
+    'portfolio',
+    'kişisel website'
+  ],
   authors: [{ name: "Talha Yüce" }],
   creator: "Talha Yüce",
   publisher: "Talha Yüce",
@@ -39,23 +53,23 @@ export const metadata: Metadata = {
   openGraph: {
     type: "website",
     locale: "tr_TR",
-    url: "https://talha-yuce.vercel.app",
-    title: "Talha Yüce | Yazılım Mühendisi",
-    description: "Web Geliştirme, Oyun Geliştirme ve Yapay Zeka Uygulamaları konusunda uzmanlaşmış Yazılım Mühendisi",
+    url: "https://www.talha-yuce.site",
+    title: "Talha Yüce | Yazılım Mühendisi & Web Geliştirici",
+    description: "Web Geliştirme, Oyun Geliştirme ve Yapay Zeka Uygulamaları konusunda uzmanlaşmış Yazılım Mühendisi. React, Next.js, TypeScript ve Unity ile modern web ve oyun uygulamaları geliştiriyorum.",
     siteName: "Talha Yüce Portfolyo",
     images: [
       {
         url: "/og-image.jpg",
         width: 1200,
         height: 630,
-        alt: "Talha Yüce Portfolyo",
+        alt: "Talha Yüce - Yazılım Mühendisi & Web Geliştirici",
       },
     ],
   },
   twitter: {
     card: "summary_large_image",
-    title: "Talha Yüce | Yazılım Mühendisi",
-    description: "Web Geliştirme, Oyun Geliştirme ve Yapay Zeka Uygulamaları konusunda uzmanlaşmış Yazılım Mühendisi",
+    title: "Talha Yüce | Yazılım Mühendisi & Web Geliştirici",
+    description: "Web Geliştirme, Oyun Geliştirme ve Yapay Zeka Uygulamaları konusunda uzmanlaşmış Yazılım Mühendisi. React, Next.js, TypeScript ve Unity ile modern web ve oyun uygulamaları geliştiriyorum.",
     images: ["/og-image.jpg"],
     creator: "@talhayuce",
   },
@@ -74,7 +88,11 @@ export const metadata: Metadata = {
     google: "google-site-verification-code",
   },
   alternates: {
-    canonical: "https://talha-yuce.vercel.app",
+    canonical: "https://www.talha-yuce.site",
+    languages: {
+      'tr': 'https://www.talha-yuce.site/tr',
+      'en': 'https://www.talha-yuce.site/en',
+    },
   },
   manifest: undefined,
   icons: {
@@ -120,7 +138,7 @@ export default async function RootLayout({ children, params }: RootLayoutProps) 
   return (
     <html lang={locale} suppressHydrationWarning>
       <head>
-        <link rel="canonical" href="https://talha-yuce.vercel.app" />
+        <link rel="canonical" href="https://www.talha-yuce.site" />
         <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
         <meta name="theme-color" content="#000000" />
         <link rel="icon" href="/favicon.ico" />
