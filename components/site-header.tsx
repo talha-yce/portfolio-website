@@ -100,13 +100,13 @@ export function SiteHeader({ locale, dictionary }: SiteHeaderProps) {
       </div>
       {isMenuOpen && (
         <motion.div
-          className="fixed inset-0 z-50 bg-background backdrop-blur-md md:hidden"
+          className="fixed inset-0 z-50 bg-background/95 dark:bg-background/98 backdrop-blur-lg md:hidden"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
           transition={{ duration: 0.2 }}
         >
-          <div className="container flex h-16 items-center justify-between border-b border-purple-900/40">
+          <div className="container flex h-16 items-center justify-between border-b border-purple-900/40 bg-background/95 dark:bg-background/98">
             <Link href={getLocalizedPathname("/", locale)} className="flex items-center space-x-2">
               <Image 
                 src="/logo.png" 
@@ -124,7 +124,7 @@ export function SiteHeader({ locale, dictionary }: SiteHeaderProps) {
               </Button>
             </div>
           </div>
-          <nav className="container flex flex-col gap-4 p-4">
+          <nav className="container flex flex-col gap-4 p-4 bg-background/95 dark:bg-background/98">
             {routes.map((route, index) => (
               <motion.div
                 key={route.href}
