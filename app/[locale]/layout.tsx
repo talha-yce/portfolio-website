@@ -10,6 +10,7 @@ import { ThemeProvider } from "@/components/theme-provider"
 import { SiteHeader } from "@/components/site-header"
 import { SiteFooter } from "@/components/site-footer"
 import { locales, type Locale } from "@/lib/i18n/config"
+import { getDictionary } from "@/lib/i18n/dictionaries"
 
 import "../globals.css"
 
@@ -107,12 +108,14 @@ interface RootLayoutProps {
 }
 
 export default async function RootLayout({ children, params }: RootLayoutProps) {
-  const locale = (await params).locale as Locale
+  const locale = params.locale as Locale
 
   // Validate that the incoming `locale` parameter is valid
   if (!locales.includes(locale)) {
     notFound()
   }
+
+  const dictionary = await getDictionary(locale)
 
   return (
     <html lang={locale} suppressHydrationWarning>
@@ -128,9 +131,9 @@ export default async function RootLayout({ children, params }: RootLayoutProps) 
       <body className={`${spaceGrotesk.className} bg-background text-foreground`}>
         <ThemeProvider attribute="class" defaultTheme="dark" enableSystem disableTransitionOnChange>
           <div className="relative flex min-h-screen flex-col">
-            <SiteHeader locale={locale} />
+            <SiteHeader locale={locale} dictionary={dictionary} />
             <main className="flex-1">{children}</main>
-            <SiteFooter locale={locale} />
+            <SiteFooter locale={locale} dictionary={dictionary} />
           </div>
         </ThemeProvider>
         {process.env.NODE_ENV === "production" && (

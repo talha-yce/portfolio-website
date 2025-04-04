@@ -11,10 +11,11 @@ import { SocialLinks } from "@/components/social-links"
 import { AnimatedText } from "@/components/animated-text"
 import { type Locale, getLocalizedPathname } from "@/lib/i18n/config"
 import type { ContentMeta } from "@/lib/content-manager"
+import type { Dictionary } from "@/lib/i18n/dictionaries"
 
 interface HomeClientProps {
   params: { locale: Locale }
-  dictionary: any
+  dictionary: Dictionary
   featuredProjects: ContentMeta[]
   recentPosts: ContentMeta[]
 }

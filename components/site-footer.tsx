@@ -1,15 +1,17 @@
 import { SocialLinks } from "@/components/social-links"
 import { NewsletterSubscription } from "@/components/NewsletterSubscription"
+import type { Dictionary } from "@/lib/i18n/dictionaries"
 
 interface SiteFooterProps {
   locale: string
+  dictionary: Dictionary
 }
 
-export function SiteFooter({ locale }: SiteFooterProps) {
+export function SiteFooter({ locale, dictionary }: SiteFooterProps) {
   return (
     <>
       <div className="container mx-auto py-8">
-        <NewsletterSubscription />
+        <NewsletterSubscription dictionary={dictionary} />
       </div>
       <footer className="w-full border-t border-purple-900/40 bg-background py-6">
         <div className="container flex flex-col items-center justify-between gap-4 md:flex-row">
