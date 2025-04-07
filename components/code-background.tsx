@@ -1,7 +1,6 @@
 "use client"
 
 import { useEffect, useState } from "react"
-import Image from "next/image"
 
 const codeSnippets = [
   `// React Component
@@ -109,32 +108,47 @@ if (42 === answer) {
 ]
 
 
+const getRandomSnippets = (count: number) => {
+  const shuffled = [...codeSnippets].sort(() => 0.5 - Math.random());
+  return shuffled.slice(0, count);
+};
 
 export default function CodeBackground() {
-  const [mounted, setMounted] = useState(false)
+  const [mounted, setMounted] = useState(false);
+  const [snippets, setSnippets] = useState<string[]>([]);
 
   useEffect(() => {
-    setMounted(true)
-  }, [])
+    setMounted(true);
+    setSnippets(getRandomSnippets(7));
 
-  if (!mounted) return null
+    const interval = setInterval(() => {
+      setSnippets(getRandomSnippets(7));
+    }, 10000); // 10 saniyede bir yeni snippet'lar
+
+    return () => clearInterval(interval); // Cleanup
+  }, []);
+
+  if (!mounted) return null;
 
   return (
     <div className="fixed inset-0 overflow-hidden -z-10">
-      {codeSnippets.map((snippet, index) => (
+      {snippets.map((snippet, index) => (
         <pre
           key={index}
-          className="code-snippet"
+          className="code-snippet font-mono text-xs text-white"
           style={{
+            position: "absolute",
             top: `${Math.random() * 100}%`,
             left: `${Math.random() * 100}%`,
             transform: `rotate(${Math.random() * 360}deg)`,
+            opacity: 0.08,
+            whiteSpace: "pre-wrap",
+            pointerEvents: "none",
           }}
         >
           {snippet}
         </pre>
       ))}
-      
     </div>
-  )
+  );
 }
