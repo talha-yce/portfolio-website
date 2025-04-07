@@ -153,8 +153,8 @@ export async function POST(request: Request) {
       to: [email],
       subject: language === "tr" ? "Bültenimize Hoş Geldiniz! 🎉" : "Welcome to Our Newsletter! 🎉",
       html: `
-        <div style="max-width: 600px; margin: 0 auto; padding: 20px; font-family: Arial, sans-serif; background-color: #0c0c0d;">
-          <div style="background-color: #0c0c0d; padding: 25px; border-radius: 8px; margin-bottom: 25px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+        <div style="max-width: 600px; margin: 0 auto; padding: 20px; font-family: Arial, sans-serif; background-color: #f5f5f5;">
+          <div style="background-color: white; padding: 25px; border-radius: 8px; margin-bottom: 25px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
             <h2 style="color: #2c3e50; margin-top: 0;">${dictionary.newsletter.selectedInterests}</h2>
             <ul style="color: #34495e; line-height: 1.6;">
               ${interests.map((interest: string) => {
