@@ -128,7 +128,6 @@ interface RootLayoutProps {
 export default async function RootLayout({ children, params }: RootLayoutProps) {
   const locale = params.locale as Locale
 
-  // Validate that the incoming `locale` parameter is valid
   if (!locales.includes(locale)) {
     notFound()
   }
@@ -179,10 +178,12 @@ export default async function RootLayout({ children, params }: RootLayoutProps) 
         />
       </head>
       <body className={`${spaceGrotesk.className} bg-background text-foreground`}>
-        <ThemeProvider attribute="class" defaultTheme="dark" enableSystem disableTransitionOnChange>
+        <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
           <div className="relative flex min-h-screen flex-col">
             <SiteHeader locale={locale} dictionary={dictionary} />
-            <main className="flex-1">{children}</main>
+            <main className="flex-1">
+              {children}
+            </main>
             <SiteFooter locale={locale} dictionary={dictionary} />
           </div>
         </ThemeProvider>

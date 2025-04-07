@@ -23,32 +23,55 @@ export function ProjectCard({ project, locale, index = 0 }: ProjectCardProps) {
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5, delay: index * 0.1 }}
+      whileHover={{ scale: 1.02, transition: { duration: 0.2 } }}
     >
       <Card className="flex flex-col overflow-hidden border-purple-900/40 bg-black/20 backdrop-blur-sm transition-all duration-300 hover:border-purple-600/60 hover:shadow-[0_0_15px_rgba(147,51,234,0.15)]">
         <Link href={getLocalizedPathname(`/projects/${project.slug}`, locale)} className="overflow-hidden">
-          <div className="relative aspect-[3/2] w-full overflow-hidden">
+          <motion.div 
+            className="relative aspect-[3/2] w-full overflow-hidden"
+            whileHover={{ scale: 1.05 }}
+            transition={{ duration: 0.3 }}
+          >
             <Image
               src={project.coverImage || "/placeholder.svg?height=400&width=600"}
               alt={project.title}
               fill
               sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-              className="object-cover transition-transform duration-500 hover:scale-105"
+              className="object-cover transition-transform duration-500"
             />
-          </div>
+          </motion.div>
         </Link>
         <CardHeader>
-          <CardTitle className="text-xl text-purple-300">{project.title}</CardTitle>
-          <CardDescription className="text-gray-400">{project.formattedDate}</CardDescription>
+          <motion.div
+            initial={{ opacity: 0, x: -10 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.5, delay: 0.2 }}
+          >
+            <CardTitle className="text-xl text-purple-300">{project.title}</CardTitle>
+            <CardDescription className="text-gray-400">{project.formattedDate}</CardDescription>
+          </motion.div>
         </CardHeader>
         <CardContent className="flex-1">
-          <p className="text-sm text-gray-400 line-clamp-3">{project.description}</p>
-          <div className="mt-4 flex flex-wrap gap-2">
+          <motion.p 
+            className="text-sm text-gray-400 line-clamp-3"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.5, delay: 0.3 }}
+          >
+            {project.description}
+          </motion.p>
+          <motion.div 
+            className="mt-4 flex flex-wrap gap-2"
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.4 }}
+          >
             {project.tags.map((tag) => (
               <Badge key={tag} variant="outline" className="border-green-600/40 bg-green-950/20 text-green-400">
                 {tag}
               </Badge>
             ))}
-          </div>
+          </motion.div>
         </CardContent>
         <CardFooter className="flex gap-2">
           <Link href={getLocalizedPathname(`/projects/${project.slug}`, locale)} className="flex-1">
