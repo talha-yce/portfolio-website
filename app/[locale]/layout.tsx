@@ -5,10 +5,10 @@ import { notFound } from "next/navigation"
 import { Analytics } from '@vercel/analytics/react'
 import { SpeedInsights } from '@vercel/speed-insights/next'
 import { cn } from "@/lib/utils"
-
 import { ThemeProvider } from "@/components/theme-provider"
 import { SiteHeader } from "@/components/site-header"
 import { SiteFooter } from "@/components/site-footer"
+import  CodeBackground  from "@/components/code-background"
 import { locales, type Locale } from "@/lib/i18n/config"
 import { getDictionary } from "@/lib/i18n/dictionaries"
 
@@ -179,6 +179,7 @@ export default async function RootLayout({ children, params }: RootLayoutProps) 
       </head>
       <body className={`${spaceGrotesk.className} bg-background text-foreground`}>
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+          <CodeBackground />
           <div className="relative flex min-h-screen flex-col">
             <SiteHeader locale={locale} dictionary={dictionary} />
             <main className="flex-1">
