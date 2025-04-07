@@ -119,7 +119,7 @@ export default function CodeBackground() {
 
   useEffect(() => {
     setMounted(true);
-    setSnippets(getRandomSnippets(7));
+    setSnippets(getRandomSnippets(5));
 
     const interval = setInterval(() => {
       setSnippets(getRandomSnippets(7));

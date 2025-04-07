@@ -314,7 +314,7 @@ export function NewsletterSubscription({ dictionary }: { dictionary: Dictionary 
   };
 
   return (
-    <div className="w-full max-w-md mx-auto p-6 bg-white dark:bg-gray-800 rounded-lg shadow-md">
+    <div className="w-full max-w-md mx-auto p-6 bg-gray-50 dark:bg-gray-800 rounded-lg shadow-md">
       <div className="flex justify-between items-center mb-6">
         <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
           {step === "recaptcha" ? dictionary.newsletter.securityVerification : 
