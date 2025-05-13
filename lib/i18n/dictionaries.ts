@@ -77,6 +77,7 @@ export type Dictionary = {
     verificationCode: string
     success: string
     restart: string
+    back: string
     verifyNotRobot: string
     subscriptionComplete: string
     welcomeMessage: string

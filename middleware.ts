@@ -1,37 +1,74 @@
-import { type NextRequest, NextResponse } from "next/server"
+import { NextRequest, NextResponse } from 'next/server'
+import { match as matchLocale } from '@formatjs/intl-localematcher'
+import Negotiator from 'negotiator'
 import { locales, defaultLocale } from "@/lib/i18n/config"
+import jwt from 'jsonwebtoken'
+
+// JWT secret ile aynı olmalı
+const JWT_SECRET = process.env.JWT_SECRET || 'talha-yuce-portfolio-admin-secret-key-8290'
+
+function getLocale(request: NextRequest): string {
+  // Negotiator expects request headers object, not a NextRequest
+  const negotiatorHeaders: Record<string, string> = {}
+  request.headers.forEach((value, key) => (negotiatorHeaders[key] = value))
+
+  // Use negotiator and intl-localematcher to get best locale
+  let languages = new Negotiator({ headers: negotiatorHeaders }).languages()
+  return matchLocale(languages, locales, defaultLocale)
+}
 
 export function middleware(request: NextRequest) {
-  // Get the pathname from the request
-  const { pathname } = request.nextUrl
+  const pathname = request.nextUrl.pathname
 
-  // Skip middleware for sitemap.xml and robots.txt
-  if (pathname === "/sitemap.xml" || pathname === "/robots.txt") {
-    return NextResponse.next()
-  }
-
-  // Check if the pathname already has a locale
-  const pathnameHasLocale = locales.some((locale) => pathname.startsWith(`/${locale}/`) || pathname === `/${locale}`)
-
-  // If the pathname doesn't have a locale, redirect to the default locale
-  if (!pathnameHasLocale) {
-    // Special case for the root path
-    if (pathname === "/") {
-      return NextResponse.rewrite(new URL(`/${defaultLocale}`, request.url))
+  // Admin sayfalarını koru
+  if (pathname.startsWith('/admin') || pathname.startsWith('/tr/admin') || pathname.startsWith('/en/admin')) {
+    // Login sayfaları hariç tüm admin rotalarını koru
+    if (!pathname.includes('/admin/login')) {
+      const token = request.cookies.get('adminToken')?.value
+      
+      // Token yoksa login sayfasına yönlendir
+      if (!token) {
+        const locale = getLocale(request)
+        return NextResponse.redirect(new URL(`/${locale}/admin/login`, request.url))
+      }
+      
+      try {
+        // Token'ı doğrula
+        jwt.verify(token, JWT_SECRET)
+        // Token geçerliyse, işlemi devam ettir
+      } catch (error) {
+        // Token geçersiz veya süresi dolmuşsa login sayfasına yönlendir
+        const locale = getLocale(request)
+        return NextResponse.redirect(new URL(`/${locale}/admin/login`, request.url))
+      }
     }
-
-    // For all other paths, add the default locale
-    return NextResponse.rewrite(new URL(`/${defaultLocale}${pathname}`, request.url))
   }
 
-  return NextResponse.next()
+  // Yolu dil kodlarıyla eşleştir
+  const pathnameIsMissingLocale = locales.every(
+    (locale) => !pathname.startsWith(`/${locale}/`) && pathname !== `/${locale}`
+  )
+
+  // Locale yönlendirmesi yap
+  if (pathnameIsMissingLocale) {
+    // Locale'i belirle
+    const locale = getLocale(request)
+
+    // Mevcut URL'deki path'i al ve locale ile yeni URL oluştur
+    // Örnek: pathname = '/about' ve locale = 'tr' ise, yeni pathname = '/tr/about'
+    return NextResponse.redirect(
+      new URL(`/${locale}${pathname.startsWith('/') ? pathname : `/${pathname}`}`, request.url)
+    )
+  }
 }
 
 export const config = {
-  // Match all request paths except for:
-  // - API routes
-  // - Static files (e.g. images, fonts, etc.)
-  // - _next paths (Next.js internals)
-  matcher: ["/((?!api|_next/static|_next/image|favicon.ico|data/images|icon-|logo|apple-touch-icon).*)"],
+  matcher: [
+    // Locale'leri ve statik dosya isteklerini es geç
+    '/((?!api|_next/static|_next/image|favicon.ico|.*\\..*|sitemap.xml|robots.txt).*)',
+    // Admin rotalarını ekle
+    '/admin/:path*',
+    '/:locale/admin/:path*'
+  ],
 }
 

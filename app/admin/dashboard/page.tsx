@@ -10,20 +10,11 @@ export default function AdminDashboard() {
   const router = useRouter()
 
   useEffect(() => {
-    // Check if the admin token exists, redirect to login if not
-    const token = localStorage.getItem('adminToken')
-    if (!token) {
-      router.push('/admin/login')
-      return
-    }
-
     // Verify the token validity by making a request to a protected endpoint
-    const verifyToken = async () => {
+    const verifyAuth = async () => {
       try {
         const response = await fetch('/api/admin/protected-route', {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
+          credentials: 'include' // Cookie'leri dahil et
         })
 
         if (!response.ok) {
@@ -34,8 +25,6 @@ export default function AdminDashboard() {
         setAdminInfo(data.admin)
       } catch (error: any) {
         setError(error.message || 'Authentication failed')
-        // Clear invalid token
-        localStorage.removeItem('adminToken')
         // Redirect to login after a short delay
         setTimeout(() => {
           router.push('/admin/login')
@@ -45,12 +34,22 @@ export default function AdminDashboard() {
       }
     }
 
-    verifyToken()
+    verifyAuth()
   }, [router])
 
-  const handleLogout = () => {
-    localStorage.removeItem('adminToken')
-    router.push('/admin/login')
+  const handleLogout = async () => {
+    try {
+      // Çıkış yapma API'sini çağır
+      await fetch('/api/admin/logout', {
+        method: 'POST',
+        credentials: 'include'
+      })
+      
+      // Login sayfasına yönlendir
+      router.push('/admin/login')
+    } catch (error) {
+      console.error('Logout error:', error)
+    }
   }
 
   if (loading) {

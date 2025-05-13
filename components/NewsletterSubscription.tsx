@@ -311,13 +311,15 @@ export function NewsletterSubscription({ dictionary }: { dictionary: Dictionary 
 
   const handleRecaptchaSuccess = (token: string | null) => {
     if (token) {
-      onSubmitSubscription({
-        firstName: formData.firstName,
-        lastName: formData.lastName,
-        email: formData.email,
-        interests: formData.interests,
-        language: formData.language
-      } as SubscriptionForm);
+      // Form adımına geç
+      setStep("form");
+      
+      // Hata veya önceki durumları sıfırla
+      setError(null);
+      setVerificationSent(false);
+      setIsCodeExpired(false);
+      setIsRateLimited(false);
+      setIsMaxAttemptsReached(false);
     }
   };
 
@@ -497,15 +499,25 @@ export function NewsletterSubscription({ dictionary }: { dictionary: Dictionary 
                 </div>
               </div>
 
-              <button
-                type="submit"
-                disabled={loading}
-                className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                {loading 
-                  ? dictionary.newsletter.processing 
-                  : dictionary.newsletter.sendVerificationCode}
-              </button>
+              <div className="space-y-2">
+                <button
+                  type="submit"
+                  disabled={loading}
+                  className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  {loading 
+                    ? dictionary.newsletter.processing 
+                    : dictionary.newsletter.sendVerificationCode}
+                </button>
+                
+                <button
+                  type="button"
+                  onClick={() => setStep("recaptcha")}
+                  className="w-full text-center text-sm text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300"
+                >
+                  {dictionary.newsletter.back}
+                </button>
+              </div>
             </form>
           ) : (
             <form onSubmit={handleVerify} className="space-y-4">
@@ -557,6 +569,14 @@ export function NewsletterSubscription({ dictionary }: { dictionary: Dictionary 
                 {loading 
                   ? dictionary.newsletter.processing 
                   : dictionary.newsletter.completeSubscription}
+              </button>
+
+              <button
+                type="button"
+                onClick={() => setStep("form")}
+                className="w-full mt-2 text-center text-sm text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300"
+              >
+                {dictionary.newsletter.back}
               </button>
 
               {isCodeExpired && (

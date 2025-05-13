@@ -16,7 +16,7 @@
     "pageNotFound": "Page not found",
     "pageNotFoundDescription": "The page you're looking for doesn't exist or has been moved.",
     "goHome": "Go Home",
-    "email": "Email: yucet@talha-yuce.site"
+    "email": "Email: yucetalha00@gmail.com"
   },
   "home": {
     "heroTitle": "Talha Yüce",
@@ -73,6 +73,7 @@
     "verificationCode": "Verification Code",
     "success": "Success!",
     "restart": "Restart",
+    "back": "Back",
     "verifyNotRobot": "Please verify that you are not a robot",
     "subscriptionComplete": "Your Subscription is Complete!",
     "welcomeMessage": "Welcome to our newsletter. We will contact you soon.",

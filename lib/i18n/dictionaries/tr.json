@@ -16,7 +16,7 @@
     "pageNotFound": "Sayfa bulunamadı",
     "pageNotFoundDescription": "Aradığınız sayfa mevcut değil veya taşınmış olabilir.",
     "goHome": "Ana Sayfaya Dön",
-    "email": "E-posta: yucet@talha-yuce.site"
+    "email": "E-posta: yucetalha00@gmail.com"
   },
   "home": {
     "heroTitle": "Talha Yüce",
@@ -73,6 +73,7 @@
     "verificationCode": "Doğrulama Kodu",
     "success": "Başarılı!",
     "restart": "Yeniden Başlat",
+    "back": "Geri",
     "verifyNotRobot": "Lütfen robot olmadığınızı doğrulayın",
     "subscriptionComplete": "Aboneliğiniz Başarıyla Tamamlandı!",
     "welcomeMessage": "Bültenimize hoş geldiniz. En kısa sürede size ulaşacağız.",

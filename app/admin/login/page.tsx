@@ -22,6 +22,7 @@ export default function AdminLogin() {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({ email, password }),
+        credentials: 'include'
       })
 
       const data = await response.json()
@@ -30,10 +31,6 @@ export default function AdminLogin() {
         throw new Error(data.message || 'Authentication failed')
       }
 
-      // Store the token in localStorage
-      localStorage.setItem('adminToken', data.token)
-      
-      // Redirect to admin dashboard
       router.push('/admin/dashboard')
     } catch (error: any) {
       setError(error.message || 'An error occurred during login')

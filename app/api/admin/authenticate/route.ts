@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server'
 import connectToDatabase from '@/lib/mongodb'
 import AdminModel from '@/lib/models/Admin'
 import jwt from 'jsonwebtoken'
+import { cookies } from 'next/headers'
 
 // This secret should be in an environment variable in production
 const JWT_SECRET = process.env.JWT_SECRET || 'talha-yuce-portfolio-admin-secret-key-8290'
@@ -48,15 +49,28 @@ export async function POST(request: Request) {
       { expiresIn: '24h' }
     )
 
-    return NextResponse.json({
+    // Create response
+    const response = NextResponse.json({
       success: true,
-      token,
       user: {
         id: admin._id,
         email: admin.email,
         username: admin.username
       }
     })
+    
+    // Set an HTTP-only cookie with the token
+    response.cookies.set({
+      name: 'adminToken',
+      value: token,
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      maxAge: 60 * 60 * 24, // 24 hours in seconds
+      path: '/',
+      sameSite: 'strict'
+    })
+
+    return response
   } catch (error) {
     console.error('Authentication error:', error)
     return NextResponse.json(
