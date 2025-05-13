@@ -1,6 +1,7 @@
 import type { Metadata } from "next"
 import { notFound } from "next/navigation"
 import Link from "next/link"
+import Image from "next/image"
 import { ArrowLeft, Calendar, Clock, User, Share2, Tag, Edit, Bookmark } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
@@ -16,6 +17,7 @@ import RelatedPosts from "@/components/related-posts"
 import TableOfContents from "@/components/table-of-contents"
 import ShareButtons from "@/components/share-buttons"
 import AuthorCard from "@/components/author-card"
+import { PageTransition } from "@/components/page-transition"
 
 interface BlogPostPageProps {
   params: {
@@ -95,139 +97,167 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
   const url = typeof window !== 'undefined' ? window.location.href : ''
 
   return (
-    <div className="container py-12">
-      <Link href={getLocalizedPathname("/blog", locale)}>
-        <Button variant="ghost" className="mb-6 gap-2 text-muted-foreground hover:text-primary-600">
-          <ArrowLeft className="h-4 w-4" />
-          {dictionary.common.backToBlog}
-        </Button>
-      </Link>
-      
-      <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
-        {/* Sidebar */}
-        <aside className="lg:col-span-1 space-y-8">
-          <div className="lg:sticky lg:top-20">
-            {headings.length > 0 && (
-              <Card>
-                <CardContent className="pt-6">
-                  <h3 className="text-lg font-medium mb-3 text-foreground">{dictionary.blog.tableOfContents}</h3>
-                  <TableOfContents headings={headings} />
-                </CardContent>
-              </Card>
-            )}
-            
-            <Card className="mt-6">
-              <CardContent className="pt-6">
-                <h3 className="text-lg font-medium mb-3 text-foreground">{dictionary.blog.sharePost}</h3>
-                <ShareButtons url={url} title={post.title} />
-              </CardContent>
-            </Card>
-            
-            <Card className="mt-6">
-              <CardContent className="pt-6">
-                <h3 className="text-lg font-medium mb-3 text-foreground">{dictionary.blog.tags}</h3>
-                <div className="flex flex-wrap gap-2">
-                  {post.tags.length > 0 ? (
-                    post.tags.map((tag) => (
-                      <Badge key={tag} variant="outline" className="border-accent-400/30 bg-accent-100/50 text-accent-700">
-                        <Link href={getLocalizedPathname(`/blog/tag/${tag}`, locale)}>
-                          {tag}
-                        </Link>
-                      </Badge>
-                    ))
-                  ) : (
-                    <span className="text-muted-foreground">{dictionary.blog.noTags}</span>
-                  )}
-                </div>
-              </CardContent>
-            </Card>
-          </div>
-        </aside>
+    <PageTransition>
+      <div className="relative min-h-screen pb-20">
+        {/* Background Elements */}
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-accent-50/30 via-background to-background pointer-events-none"></div>
+        <div className="absolute top-1/4 right-1/4 w-64 h-64 bg-primary-300/10 rounded-full blur-3xl pointer-events-none"></div>
+        <div className="absolute bottom-1/3 left-1/4 w-64 h-64 bg-accent-300/10 rounded-full blur-3xl pointer-events-none"></div>
         
-        {/* Main Content */}
-        <article className="lg:col-span-3 max-w-3xl">
-          <div className="space-y-8">
-            {post.coverImage && (
-              <div className="overflow-hidden rounded-lg shadow-md">
-                <img 
-                  src={post.coverImage} 
-                  alt={post.coverImageAlt || post.title} 
-                  className="w-full h-auto object-cover max-h-[500px]"
-                />
-              </div>
-            )}
-            
-            <div>
-              <h1 className="text-4xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-primary-600 to-accent-600">
-                {post.title}
-              </h1>
-              
-              <div className="flex flex-wrap items-center gap-4 mt-4 text-sm text-muted-foreground">
-                <div className="flex items-center gap-2">
-                  <Calendar className="h-4 w-4" />
-                  <time dateTime={typeof post.date === 'string' ? post.date : new Date(post.date).toISOString()}>
-                    {formattedDate}
-                  </time>
-                </div>
+        <div className="container py-12 relative z-10">
+          <Link href={getLocalizedPathname("/blog", locale)}>
+            <Button variant="ghost" className="mb-10 gap-2 text-muted-foreground hover:text-accent-600 group transition-colors">
+              <ArrowLeft className="h-4 w-4 transition-transform group-hover:-translate-x-1" />
+              {dictionary.common.backToBlog}
+            </Button>
+          </Link>
+          
+          <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
+            {/* Sidebar */}
+            <aside className="lg:col-span-1 space-y-8 order-2 lg:order-1">
+              <div className="lg:sticky lg:top-20">
+                {headings.length > 0 && (
+                  <Card className="overflow-hidden border-border bg-white/60 backdrop-blur-sm shadow-sm">
+                    <CardContent className="pt-6">
+                      <h3 className="text-lg font-medium mb-3 text-foreground">{dictionary.blog.tableOfContents}</h3>
+                      <TableOfContents headings={headings} />
+                    </CardContent>
+                  </Card>
+                )}
                 
-                {formattedLastModified && (
-                  <div className="flex items-center gap-2">
-                    <Edit className="h-4 w-4" />
-                    <time dateTime={typeof post.lastModified === 'string' ? post.lastModified : new Date(post.lastModified).toISOString()}>
-                      {dictionary.blog.updated}: {formattedLastModified}
-                    </time>
+                <Card className="mt-6 overflow-hidden border-border bg-white/60 backdrop-blur-sm shadow-sm">
+                  <CardContent className="pt-6">
+                    <h3 className="text-lg font-medium mb-3 text-foreground">{dictionary.blog.sharePost}</h3>
+                    <ShareButtons url={url} title={post.title} />
+                  </CardContent>
+                </Card>
+                
+                <Card className="mt-6 overflow-hidden border-border bg-white/60 backdrop-blur-sm shadow-sm">
+                  <CardContent className="pt-6">
+                    <h3 className="text-lg font-medium mb-3 text-foreground">{dictionary.blog.tags}</h3>
+                    <div className="flex flex-wrap gap-2">
+                      {post.tags.length > 0 ? (
+                        post.tags.map((tag) => (
+                          <Badge 
+                            key={tag} 
+                            variant="outline" 
+                            className="px-2.5 py-0.5 text-xs font-medium rounded-full border-accent-400/30 bg-accent-100/50 text-accent-700 hover:bg-accent-200 transition-colors"
+                          >
+                            <Link href={getLocalizedPathname(`/blog/tag/${tag}`, locale)}>
+                              {tag}
+                            </Link>
+                          </Badge>
+                        ))
+                      ) : (
+                        <span className="text-muted-foreground">{dictionary.blog.noTags}</span>
+                      )}
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
+            </aside>
+            
+            {/* Main Content */}
+            <article className="lg:col-span-3 max-w-3xl mx-auto order-1 lg:order-2">
+              <div className="space-y-8">
+                {post.coverImage && (
+                  <div className="overflow-hidden rounded-xl shadow-lg relative">
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent opacity-50 z-10"></div>
+                    <Image 
+                      src={post.coverImage} 
+                      alt={post.coverImageAlt || post.title} 
+                      width={1200}
+                      height={630}
+                      priority
+                      className="w-full h-auto object-cover max-h-[500px]"
+                    />
                   </div>
                 )}
                 
-                <div className="flex items-center gap-2">
-                  <Clock className="h-4 w-4" />
-                  <span>{readingTimeText}</span>
+                <div>
+                  <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-accent-600 to-accent-800 leading-tight">
+                    {post.title}
+                  </h1>
+                  
+                  <div className="flex flex-wrap items-center gap-4 mt-6 text-sm text-muted-foreground">
+                    <div className="flex items-center gap-2 bg-white/60 px-3 py-1.5 rounded-full shadow-sm">
+                      <Calendar className="h-4 w-4 text-accent-500" />
+                      <time dateTime={typeof post.date === 'string' ? post.date : new Date(post.date).toISOString()}>
+                        {formattedDate}
+                      </time>
+                    </div>
+                    
+                    {formattedLastModified && (
+                      <div className="flex items-center gap-2 bg-white/60 px-3 py-1.5 rounded-full shadow-sm">
+                        <Edit className="h-4 w-4 text-accent-500" />
+                        <time dateTime={typeof post.lastModified === 'string' ? post.lastModified : new Date(post.lastModified).toISOString()}>
+                          {dictionary.blog.updated}: {formattedLastModified}
+                        </time>
+                      </div>
+                    )}
+                    
+                    <div className="flex items-center gap-2 bg-white/60 px-3 py-1.5 rounded-full shadow-sm">
+                      <Clock className="h-4 w-4 text-accent-500" />
+                      <span>{readingTimeText}</span>
+                    </div>
+                    
+                    <div className="flex items-center gap-2 bg-white/60 px-3 py-1.5 rounded-full shadow-sm">
+                      <User className="h-4 w-4 text-accent-500" />
+                      <span>{post.author || "Admin"}</span>
+                    </div>
+                  </div>
                 </div>
                 
-                <div className="flex items-center gap-2">
-                  <User className="h-4 w-4" />
-                  <span>{post.author || "Admin"}</span>
+                <div className="italic text-muted-foreground border-l-4 border-accent-500 pl-4 py-4 bg-accent-50/50 rounded-r-md text-lg">
+                  {post.excerpt}
+                </div>
+                
+                <Separator className="bg-border/50" />
+                
+                <div className="prose max-w-none prose-headings:text-foreground prose-headings:font-bold prose-h2:text-2xl prose-h3:text-xl prose-p:text-muted-foreground prose-a:text-accent-600 prose-a:no-underline hover:prose-a:underline prose-img:rounded-lg prose-strong:text-foreground">
+                  <BlogContent content={sanitizeForClient(post.content)} />
+                </div>
+                
+                <Separator className="bg-border/50" />
+                
+                <div className="bg-white/60 backdrop-blur-sm rounded-xl p-6 shadow-sm">
+                  <AuthorCard author={post.author} />
+                </div>
+                
+                <div className="flex flex-wrap gap-2 items-center mt-6 p-6 bg-white/60 backdrop-blur-sm rounded-xl shadow-sm">
+                  <span className="text-foreground font-medium mr-2">{dictionary.blog.keywordsTags}: </span>
+                  {post.keywords && post.keywords.length > 0 ? (
+                    post.keywords.map((keyword) => (
+                      <Badge 
+                        key={keyword} 
+                        variant="secondary" 
+                        className="border-primary-400/30 bg-primary-100/50 text-primary-700 rounded-full px-2.5 py-0.5"
+                      >
+                        {keyword}
+                      </Badge>
+                    ))
+                  ) : (
+                    <span className="text-muted-foreground">{dictionary.blog.noKeywords}</span>
+                  )}
                 </div>
               </div>
-            </div>
-            
-            <div className="italic text-gray-700 border-l-4 border-primary-500 pl-4 py-3 bg-primary-50/50 rounded-r-md">
-              {post.excerpt}
-            </div>
-            
-            <Separator className="bg-border" />
-            
-            <div className="prose max-w-none">
-              <BlogContent content={sanitizeForClient(post.content)} />
-            </div>
-            
-            <Separator className="bg-border" />
-            
-            <AuthorCard author={post.author} />
-            
-            <div className="flex flex-wrap gap-2 items-center mt-6">
-              <span className="text-gray-700 mr-2">{dictionary.blog.keywordsTags}: </span>
-              {post.keywords && post.keywords.length > 0 ? (
-                post.keywords.map((keyword) => (
-                  <Badge key={keyword} variant="secondary" className="border-primary-400/30 bg-primary-100/50 text-primary-700">
-                    {keyword}
-                  </Badge>
-                ))
-              ) : (
-                <span className="text-muted-foreground">{dictionary.blog.noKeywords}</span>
+              
+              {relatedPosts.length > 0 && (
+                <div className="mt-16">
+                  <div className="mb-8">
+                    <h2 className="text-2xl font-bold mb-2 bg-clip-text text-transparent bg-gradient-to-r from-accent-600 to-accent-800">
+                      {dictionary.blog.relatedPosts}
+                    </h2>
+                    <div className="h-1 w-16 bg-gradient-to-r from-accent-400 to-accent-600 rounded-full"></div>
+                  </div>
+                  <RelatedPosts posts={sanitizeForClient(relatedPosts)} locale={locale} dictionary={dictionary} />
+                </div>
               )}
-            </div>
+            </article>
           </div>
-          
-          {relatedPosts.length > 0 && (
-            <div className="mt-16">
-              <h2 className="text-2xl font-bold mb-6 text-foreground">{dictionary.blog.relatedPosts}</h2>
-              <RelatedPosts posts={sanitizeForClient(relatedPosts)} locale={locale} dictionary={dictionary} />
-            </div>
-          )}
-        </article>
+        </div>
       </div>
-    </div>
+    </PageTransition>
   )
 }
 

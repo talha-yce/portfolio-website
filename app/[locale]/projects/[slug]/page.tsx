@@ -2,13 +2,15 @@ import type { Metadata } from "next"
 import { notFound } from "next/navigation"
 import Link from "next/link"
 import Image from "next/image"
-import { ArrowLeft, Github, ExternalLink, Calendar } from "lucide-react"
+import { ArrowLeft, Github, ExternalLink, Calendar, Tag } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
+import { Separator } from "@/components/ui/separator"
 import { getAllContent, getContentItem } from "@/lib/content-manager"
 import { getDictionary } from "@/lib/i18n/dictionaries"
 import { type Locale, getLocalizedPathname } from "@/lib/i18n/config"
+import { PageTransition } from "@/components/page-transition"
 
 interface ProjectPageProps {
   params: {
@@ -54,72 +56,99 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
   }
 
   return (
-    <div className="container py-12">
-      <Link href={getLocalizedPathname("/projects", locale)}>
-        <Button variant="ghost" className="mb-6 gap-2 text-gray-400 hover:text-purple-400">
-          <ArrowLeft className="h-4 w-4" />
-          {dictionary.common.backToProjects}
-        </Button>
-      </Link>
-      <div className="space-y-8">
-        <div>
-          <h1 className="text-4xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-purple-400 to-green-400">
-            {project.title}
-          </h1>
-          <div className="mt-2 flex items-center gap-2 text-gray-400">
-            <Calendar className="h-4 w-4" />
-            <p>{project.formattedDate}</p>
+    <PageTransition>
+      <div className="relative min-h-screen pb-20">
+        {/* Background Elements */}
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_left,_var(--tw-gradient-stops))] from-primary-50/40 via-background to-background pointer-events-none"></div>
+        <div className="absolute top-1/4 right-1/4 w-64 h-64 bg-primary-300/10 rounded-full blur-3xl pointer-events-none"></div>
+        <div className="absolute bottom-1/3 left-1/4 w-64 h-64 bg-accent-300/10 rounded-full blur-3xl pointer-events-none"></div>
+        
+        <div className="container py-12 relative z-10">
+          <Link href={getLocalizedPathname("/projects", locale)}>
+            <Button variant="ghost" className="mb-10 gap-2 text-muted-foreground hover:text-primary-600 group transition-colors">
+              <ArrowLeft className="h-4 w-4 transition-transform group-hover:-translate-x-1" />
+              {dictionary.common.backToProjects}
+            </Button>
+          </Link>
+          
+          <div className="max-w-4xl mx-auto space-y-10">
+            <div>
+              <div className="flex items-center gap-2 mb-2">
+                <div className="inline-block rounded-full px-3 py-1 text-sm font-medium bg-primary-100 text-primary-800">
+                  {dictionary.common.projects}
+                </div>
+                <div className="flex items-center gap-2 text-muted-foreground text-sm">
+                  <Calendar className="h-4 w-4 text-primary-500" />
+                  <time dateTime={new Date(project.date).toISOString()}>{project.formattedDate}</time>
+                </div>
+              </div>
+              
+              <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-primary-600 to-primary-800 leading-tight">
+                {project.title}
+              </h1>
+            </div>
+
+            {project.coverImage && (
+              <div className="relative aspect-[16/9] w-full overflow-hidden rounded-xl border border-primary-200 shadow-lg">
+                <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent opacity-50 z-10"></div>
+                <Image 
+                  src={project.coverImage || "/placeholder.svg?height=630&width=1200"} 
+                  alt={project.title} 
+                  fill 
+                  sizes="100vw"
+                  priority
+                  className="object-cover transition-all duration-700 hover:scale-105" 
+                />
+              </div>
+            )}
+
+            <div className="flex flex-wrap items-center gap-3">
+              <div className="flex items-center gap-2 text-primary-700">
+                <Tag className="h-4 w-4" />
+                <span className="text-sm font-medium">{locale === "tr" ? "Teknolojiler" : "Technologies"}:</span>
+              </div>
+              {project.tags.map((tag) => (
+                <Badge 
+                  key={tag} 
+                  variant="outline" 
+                  className="px-2.5 py-0.5 text-xs font-medium rounded-full border-primary-400/30 bg-primary-100/50 text-primary-700 hover:bg-primary-200 transition-colors"
+                >
+                  {tag}
+                </Badge>
+              ))}
+            </div>
+
+            <div className="bg-white/80 backdrop-blur-sm rounded-xl p-8 shadow-md border border-primary-100">
+              <div className="prose max-w-none prose-headings:text-foreground prose-headings:font-bold prose-h2:text-2xl prose-h3:text-xl prose-p:text-muted-foreground prose-a:text-primary-600 prose-a:no-underline hover:prose-a:underline prose-img:rounded-lg prose-strong:text-foreground">
+                <div dangerouslySetInnerHTML={{ __html: project.content }} />
+              </div>
+            </div>
+
+            <div className="flex flex-wrap gap-4 mt-8">
+              {project.github && (
+                <Link href={project.github} target="_blank" rel="noopener noreferrer">
+                  <Button className="gap-2 bg-gradient-to-r from-primary-600 to-primary-700 text-white hover:from-primary-700 hover:to-primary-800 shadow-md shadow-primary-500/20 hover:shadow-lg hover:shadow-primary-500/30 transition-all duration-300">
+                    <Github className="h-4 w-4" />
+                    {locale === "tr" ? "GitHub'da Görüntüle" : "View on GitHub"}
+                  </Button>
+                </Link>
+              )}
+              {project.link && (
+                <Link href={project.link} target="_blank" rel="noopener noreferrer">
+                  <Button
+                    variant="outline"
+                    className="gap-2 border-primary-200 hover:bg-primary-50 hover:border-primary-300 hover:text-primary-700 transition-all duration-300"
+                  >
+                    <ExternalLink className="h-4 w-4" />
+                    {locale === "tr" ? "Projeyi Ziyaret Et" : "Visit Project"}
+                  </Button>
+                </Link>
+              )}
+            </div>
           </div>
-        </div>
-
-        {project.coverImage && (
-          <div className="relative aspect-[16/9] w-full overflow-hidden rounded-lg border border-purple-900/40 shadow-[0_0_15px_rgba(147,51,234,0.15)]">
-            <Image 
-              src={project.coverImage || "/placeholder.svg?height=630&width=1200"} 
-              alt={project.title} 
-              fill 
-              sizes="100vw"
-              priority
-              className="object-cover" 
-            />
-          </div>
-        )}
-
-        <div className="flex flex-wrap gap-2">
-          {project.tags.map((tag) => (
-            <Badge key={tag} variant="outline" className="border-green-600/40 bg-green-950/20 text-green-400">
-              {tag}
-            </Badge>
-          ))}
-        </div>
-
-        <div className="prose prose-invert prose-purple max-w-none">
-          <div dangerouslySetInnerHTML={{ __html: project.content }} />
-        </div>
-
-        <div className="flex flex-wrap gap-4">
-          {project.github && (
-            <Link href={project.github} target="_blank" rel="noopener noreferrer">
-              <Button className="gap-2 bg-purple-600 text-white hover:bg-purple-700">
-                <Github className="h-4 w-4" />
-                {locale === "tr" ? "GitHub'da Görüntüle" : "View on GitHub"}
-              </Button>
-            </Link>
-          )}
-          {project.link && (
-            <Link href={project.link} target="_blank" rel="noopener noreferrer">
-              <Button
-                variant="outline"
-                className="gap-2 border-purple-600 hover:bg-purple-950/20 hover:text-purple-400"
-              >
-                <ExternalLink className="h-4 w-4" />
-                {locale === "tr" ? "Projeyi Ziyaret Et" : "Visit Project"}
-              </Button>
-            </Link>
-          )}
         </div>
       </div>
-    </div>
+    </PageTransition>
   )
 }
 

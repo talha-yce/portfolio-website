@@ -37,73 +37,124 @@ export default function HomeClient({ params, dictionary, featuredProjects, recen
 
   return (
     <PageTransition>
-      <section ref={scrollRef} className="relative overflow-hidden">
+      <section ref={scrollRef} className="relative min-h-[90vh] flex items-center overflow-hidden">
         {/* Hero Section */}
+        <div className="absolute inset-0 w-full h-full bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-primary-50/40 via-background to-accent-50/30 pointer-events-none z-0" />
+        
         <motion.div
           style={{ y, opacity }}
-          className="container relative"
+          className="container relative z-10"
         >
-          <div className="grid gap-4 py-16 md:py-20 lg:py-40 lg:gap-8 lg:grid-cols-[1fr_400px]">
-            <div className="space-y-4">
-              <h1 className="text-4xl font-bold tracking-tighter md:text-5xl lg:text-6xl bg-clip-text text-transparent bg-gradient-to-r from-primary-600 to-accent-600">
-                {dictionary.home.heroTitle}
-              </h1>
-              <p className="text-muted-foreground text-lg md:text-xl">
+          <div className="grid gap-6 py-16 md:py-24 lg:py-16 lg:gap-12 lg:grid-cols-[1fr_400px]">
+            <div className="space-y-6">
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6 }}
+              >
+                <h1 className="text-5xl font-bold tracking-tight md:text-6xl lg:text-7xl">
+                  <span className="inline-block bg-clip-text text-transparent bg-gradient-to-r from-primary-600 to-accent-600 pb-2">
+                    {dictionary.home.heroTitle}
+                  </span>
+                </h1>
+              </motion.div>
+              
+              <motion.p 
+                className="text-muted-foreground text-lg md:text-xl max-w-2xl leading-relaxed"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6, delay: 0.2 }}
+              >
                 {dictionary.home.heroSubtitle}
-              </p>
-              <div className="flex gap-2 pt-4">
+              </motion.p>
+              
+              <motion.div 
+                className="flex flex-wrap gap-4 pt-6"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6, delay: 0.4 }}
+              >
                 <Link href={getLocalizedPathname("/projects", locale)}>
-                  <Button variant="default" className="gap-2">
+                  <Button variant="default" className="gap-2 rounded-full px-6 text-base shadow-lg shadow-primary-500/20 hover:shadow-primary-500/40 transition-all duration-300">
                     {dictionary.common.projects}
-                    <ArrowRight className="h-4 w-4" />
+                    <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
                   </Button>
                 </Link>
                 <Link href={getLocalizedPathname("/blog", locale)}>
-                  <Button variant="outline" className="gap-2">
+                  <Button variant="outline" className="gap-2 rounded-full px-6 text-base border-primary-200 hover:bg-primary-50 transition-all duration-300">
                     {dictionary.common.blog}
-                    <ArrowRight className="h-4 w-4" />
+                    <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
                   </Button>
                 </Link>
-              </div>
-              <div className="py-4">
+              </motion.div>
+              
+              <motion.div 
+                className="py-6"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6, delay: 0.6 }}
+              >
                 <SocialLinks size={24} />
-              </div>
+              </motion.div>
             </div>
+            
             {/* Decorative Code Elements - Hidden on Mobile */}
-            <div className="hidden lg:flex items-center justify-center relative p-8 bg-primary-50/80 rounded-2xl shadow-xl">
-              <CodeBackground />
-            </div>
+            <motion.div 
+              className="hidden lg:flex items-center justify-center relative p-8 rounded-2xl z-10"
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.8, delay: 0.5 }}
+            >
+              <div className="absolute inset-0 bg-white/50 backdrop-blur-sm rounded-2xl border border-primary-100 shadow-xl"></div>
+              <div className="relative z-10">
+                <CodeBackground />
+              </div>
+            </motion.div>
           </div>
         </motion.div>
         
-        {/* Gradient Background */}
-        <div className="absolute inset-0 bg-gradient-to-b from-background via-background to-accent-50/30 pointer-events-none" />
+        {/* Decorative Elements */}
+        <div className="absolute top-1/4 left-8 w-64 h-64 bg-primary-300/10 rounded-full blur-3xl z-0"></div>
+        <div className="absolute bottom-1/4 right-8 w-64 h-64 bg-accent-300/10 rounded-full blur-3xl z-0"></div>
       </section>
 
       {/* Projects Section */}
-      <section className="py-20">
-        <div className="container">
-          <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-8">
-            <div>
-              <h2 className="text-3xl font-bold mb-2 bg-clip-text text-transparent bg-gradient-to-r from-primary-600 to-accent-600">
+      <section className="py-24 relative">
+        <div className="absolute inset-0 bg-gradient-to-b from-background via-white to-background pointer-events-none"></div>
+        <div className="container relative z-10">
+          <motion.div 
+            className="mb-12 md:flex md:justify-between md:items-end"
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6 }}
+          >
+            <div className="max-w-2xl">
+              <div className="inline-block rounded-full px-3 py-1 text-sm font-medium bg-primary-100 text-primary-800 mb-3">
+                {dictionary.common.projects}
+              </div>
+              <h2 className="text-3xl md:text-4xl font-bold mb-3 bg-clip-text text-transparent bg-gradient-to-r from-primary-600 to-primary-800">
                 {dictionary.home.featuredProjects}
               </h2>
-              <p className="text-muted-foreground">{dictionary.home.projectsSubtitle}</p>
+              <p className="text-muted-foreground text-base md:text-lg">{dictionary.home.projectsSubtitle}</p>
             </div>
-            <Link href={getLocalizedPathname("/projects", locale)} className="mt-4 md:mt-0">
-              <Button variant="outline">
+            <Link href={getLocalizedPathname("/projects", locale)} className="mt-6 md:mt-0 inline-block">
+              <Button variant="outline" className="gap-2 rounded-full group border-primary-200 hover:border-primary-400 hover:bg-primary-50 transition-all duration-300">
                 {dictionary.common.viewAllProjects}
+                <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
               </Button>
             </Link>
-          </div>
+          </motion.div>
 
-          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+          <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
             {featuredProjects.map((project, index) => (
               <motion.div
                 key={project.slug}
                 initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
                 transition={{ duration: 0.5, delay: index * 0.1 }}
+                className="group"
               >
                 <ProjectCard project={project} locale={locale} />
               </motion.div>
@@ -113,31 +164,44 @@ export default function HomeClient({ params, dictionary, featuredProjects, recen
       </section>
 
       {/* Blog Posts Section */}
-      <section className="py-20 bg-accent-50/30">
-        <div className="container">
-          <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-8">
-            <div>
-              <h2 className="text-3xl font-bold mb-2 bg-clip-text text-transparent bg-gradient-to-r from-primary-600 to-accent-600">
+      <section className="py-24 relative">
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_left,_var(--tw-gradient-stops))] from-accent-50/30 via-white to-background pointer-events-none"></div>
+        <div className="container relative z-10">
+          <motion.div 
+            className="mb-12 md:flex md:justify-between md:items-end"
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6 }}
+          >
+            <div className="max-w-2xl">
+              <div className="inline-block rounded-full px-3 py-1 text-sm font-medium bg-accent-100 text-accent-800 mb-3">
+                {dictionary.common.blog}
+              </div>
+              <h2 className="text-3xl md:text-4xl font-bold mb-3 bg-clip-text text-transparent bg-gradient-to-r from-accent-600 to-accent-800">
                 {dictionary.home.latestArticles}
               </h2>
-              <p className="text-muted-foreground">{dictionary.home.articlesSubtitle}</p>
+              <p className="text-muted-foreground text-base md:text-lg">{dictionary.home.articlesSubtitle}</p>
             </div>
-            <Link href={getLocalizedPathname("/blog", locale)} className="mt-4 md:mt-0">
-              <Button variant="outline">
+            <Link href={getLocalizedPathname("/blog", locale)} className="mt-6 md:mt-0 inline-block">
+              <Button variant="outline" className="gap-2 rounded-full group border-accent-200 hover:border-accent-400 hover:bg-accent-50 transition-all duration-300">
                 {dictionary.common.viewAllPosts}
+                <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
               </Button>
             </Link>
-          </div>
+          </motion.div>
 
-          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+          <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
             {recentPosts.map((post, index) => {
               const readingTimeText = dictionary.blog.readingTime.replace("{time}", post.readingTime?.toString() || "0")
               return (
                 <motion.div
                   key={post.slug}
                   initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
                   transition={{ duration: 0.5, delay: index * 0.1 }}
+                  className="group"
                 >
                   <BlogCard post={post} locale={locale} readingTimeText={readingTimeText} />
                 </motion.div>
@@ -148,24 +212,51 @@ export default function HomeClient({ params, dictionary, featuredProjects, recen
       </section>
 
       {/* Contact Section */}
-      <section className="py-20">
-        <div className="container">
-          <Card className="bg-primary-50/50 border-primary-100">
-            <CardHeader>
-              <CardTitle className="text-2xl font-bold">{dictionary.common.getInTouch}</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="mb-6 text-muted-foreground">{dictionary.home.contactDescription}</p>
-              <div className="flex flex-col md:flex-row gap-4">
-                <Link href="mailto:yucet@talha-yuce.site">
-                  <Button className="w-full md:w-auto">{dictionary.common.email}</Button>
-                </Link>
-                <div className="flex items-center gap-2">
-                  <SocialLinks />
+      <section className="py-24 relative">
+        <div className="absolute inset-0 bg-gradient-to-b from-background to-primary-50/30 pointer-events-none"></div>
+        <div className="container relative z-10">
+          <motion.div
+            className="max-w-4xl mx-auto"
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6 }}
+          >
+            <Card className="overflow-hidden border-none shadow-xl bg-white backdrop-blur-sm">
+              <div className="absolute top-0 right-0 w-40 h-40 bg-primary-100 rounded-full -translate-y-1/2 translate-x-1/4 blur-3xl pointer-events-none"></div>
+              <div className="absolute bottom-0 left-0 w-40 h-40 bg-accent-100 rounded-full translate-y-1/2 -translate-x-1/4 blur-3xl pointer-events-none"></div>
+              
+              <CardHeader className="pb-6 relative z-10">
+                <div className="flex justify-center mb-4">
+                  <div className="inline-block rounded-full px-4 py-1.5 text-sm font-medium bg-gradient-to-r from-primary-600 to-accent-600 text-white">
+                    {dictionary.common.getInTouch}
+                  </div>
                 </div>
-              </div>
-            </CardContent>
-          </Card>
+                <CardTitle className="text-3xl font-bold text-center bg-clip-text text-transparent bg-gradient-to-r from-primary-700 to-accent-700">
+                  {dictionary.common.contact}
+                </CardTitle>
+              </CardHeader>
+              
+              <CardContent className="relative z-10">
+                <p className="mb-8 text-muted-foreground text-center max-w-2xl mx-auto">{dictionary.home.contactDescription}</p>
+                <div className="flex flex-wrap justify-center gap-4">
+                  <Link href="mailto:yucet@talha-yuce.site">
+                    <Button className="gap-2 rounded-full px-6 shadow-lg shadow-primary-500/10 hover:shadow-primary-500/20 transition-all duration-300">
+                      <span>{dictionary.common.email}</span>
+                      <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
+                    </Button>
+                  </Link>
+                  <div className="flex items-center">
+                    <SocialLinks size={20} />
+                  </div>
+                </div>
+                
+                <div className="mt-10 pt-6 border-t border-primary-100">
+                  <p className="text-center text-sm text-muted-foreground">© {new Date().getFullYear()} Talha Yüce. All rights reserved.</p>
+                </div>
+              </CardContent>
+            </Card>
+          </motion.div>
         </div>
       </section>
     </PageTransition>

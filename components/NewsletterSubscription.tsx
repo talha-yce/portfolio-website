@@ -309,6 +309,18 @@ export function NewsletterSubscription({ dictionary }: { dictionary: Dictionary 
     return `${minutes.toString().padStart(2, '0')}:${remainingSeconds.toString().padStart(2, '0')}`;
   };
 
+  const handleRecaptchaSuccess = (token: string | null) => {
+    if (token) {
+      onSubmitSubscription({
+        firstName: formData.firstName,
+        lastName: formData.lastName,
+        email: formData.email,
+        interests: formData.interests,
+        language: formData.language
+      } as SubscriptionForm);
+    }
+  };
+
   return (
     <div className="w-full max-w-md mx-auto p-6 bg-gray-50 dark:bg-gray-800 rounded-lg shadow-md">
       <div className="flex justify-between items-center mb-6">
@@ -339,20 +351,6 @@ export function NewsletterSubscription({ dictionary }: { dictionary: Dictionary 
         </div>
       )}
 
-      {/* ReCAPTCHA step is commented out for now
-      {step === "recaptcha" ? (
-        <div className="flex flex-col items-center justify-center space-y-4">
-          <p className="text-gray-600 dark:text-gray-300 text-center">
-            {dictionary.newsletter.verifyNotRobot}
-          </p>
-          <ReCAPTCHA
-            sitekey={process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY || ""}
-            onChange={handleRecaptchaSuccess}
-            className="flex justify-center"
-          />
-        </div>
-      ) : */}
-      
       {step === "success" ? (
         <div className="text-center">
           <div className="mb-4 text-green-500">
@@ -379,7 +377,18 @@ export function NewsletterSubscription({ dictionary }: { dictionary: Dictionary 
         </div>
       ) : (
         <>
-          {step === "form" ? (
+          {step === "recaptcha" ? (
+            <div className="flex flex-col items-center justify-center space-y-4">
+              <p className="text-gray-600 dark:text-gray-300 text-center">
+                {dictionary.newsletter.verifyNotRobot}
+              </p>
+              <ReCAPTCHA
+                sitekey={process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY || ""}
+                onChange={handleRecaptchaSuccess}
+                className="flex justify-center"
+              />
+            </div>
+          ) : step === "form" ? (
             <form onSubmit={handleSubmitSubscription(onSubmitSubscription)} className="space-y-4">
               <div className="grid grid-cols-2 gap-4">
                 <div>
