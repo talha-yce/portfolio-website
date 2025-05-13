@@ -25,11 +25,19 @@ export function middleware(request: NextRequest) {
     // Login sayfaları hariç tüm admin rotalarını koru
     if (!pathname.includes('/admin/login')) {
       const token = request.cookies.get('adminToken')?.value
+      const locale = getLocale(request)
       
       // Token yoksa login sayfasına yönlendir
       if (!token) {
-        const locale = getLocale(request)
-        return NextResponse.redirect(new URL(`/${locale}/admin/login`, request.url))
+        // Eğer URL zaten yerelleştirilmiş bir formatta ise (ör. /tr/admin/...)
+        if (locales.some(loc => pathname.startsWith(`/${loc}/admin`))) {
+          // Şu anki yerelleştirmeyi koru
+          const currentLocale = pathname.split('/')[1]
+          return NextResponse.redirect(new URL(`/${currentLocale}/admin/login`, request.url))
+        } else {
+          // Global admin rotasından yerelleştirilmiş rotaya yönlendir
+          return NextResponse.redirect(new URL(`/${locale}/admin/login`, request.url))
+        }
       }
       
       try {
@@ -38,9 +46,20 @@ export function middleware(request: NextRequest) {
         // Token geçerliyse, işlemi devam ettir
       } catch (error) {
         // Token geçersiz veya süresi dolmuşsa login sayfasına yönlendir
-        const locale = getLocale(request)
-        return NextResponse.redirect(new URL(`/${locale}/admin/login`, request.url))
+        // Eğer URL zaten yerelleştirilmiş bir formatta ise
+        if (locales.some(loc => pathname.startsWith(`/${loc}/admin`))) {
+          // Şu anki yerelleştirmeyi koru
+          const currentLocale = pathname.split('/')[1]
+          return NextResponse.redirect(new URL(`/${currentLocale}/admin/login`, request.url))
+        } else {
+          // Global admin rotasından yerelleştirilmiş rotaya yönlendir
+          return NextResponse.redirect(new URL(`/${locale}/admin/login`, request.url))
+        }
       }
+    } else if (pathname === '/admin/login') {
+      // Global admin login sayfası isteği için yerelleştirilmiş sayfaya yönlendir
+      const locale = getLocale(request)
+      return NextResponse.redirect(new URL(`/${locale}/admin/login`, request.url))
     }
   }
 

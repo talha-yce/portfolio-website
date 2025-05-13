@@ -1,13 +1,15 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { useRouter } from 'next/navigation'
+import { useRouter, useParams } from 'next/navigation'
 
 export default function AdminDashboard() {
   const [loading, setLoading] = useState(true)
   const [adminInfo, setAdminInfo] = useState<{ email: string; username: string } | null>(null)
   const [error, setError] = useState('')
   const router = useRouter()
+  const params = useParams()
+  const locale = params.locale as string
 
   useEffect(() => {
     // Verify the token validity by making a request to a protected endpoint
@@ -27,7 +29,7 @@ export default function AdminDashboard() {
         setError(error.message || 'Authentication failed')
         // Redirect to login after a short delay
         setTimeout(() => {
-          router.push('/admin/login')
+          router.push(`/${locale}/admin/login`)
         }, 2000)
       } finally {
         setLoading(false)
@@ -35,7 +37,7 @@ export default function AdminDashboard() {
     }
 
     verifyAuth()
-  }, [router])
+  }, [router, locale])
 
   const handleLogout = async () => {
     try {
@@ -46,7 +48,7 @@ export default function AdminDashboard() {
       })
       
       // Login sayfasına yönlendir
-      router.push('/admin/login')
+      router.push(`/${locale}/admin/login`)
     } catch (error) {
       console.error('Logout error:', error)
     }
@@ -124,7 +126,7 @@ export default function AdminDashboard() {
                   </div>
                   <div className="bg-gray-50 px-5 py-3 dark:bg-gray-700">
                     <div className="text-sm">
-                      <a href="/admin/blog" className="font-medium text-blue-600 hover:text-blue-500 dark:text-blue-400">
+                      <a href={`/${locale}/admin/blog`} className="font-medium text-blue-600 hover:text-blue-500 dark:text-blue-400">
                         View all
                       </a>
                     </div>
@@ -149,7 +151,7 @@ export default function AdminDashboard() {
                   </div>
                   <div className="bg-gray-50 px-5 py-3 dark:bg-gray-700">
                     <div className="text-sm">
-                      <a href="/admin/users" className="font-medium text-blue-600 hover:text-blue-500 dark:text-blue-400">
+                      <a href={`/${locale}/admin/users`} className="font-medium text-blue-600 hover:text-blue-500 dark:text-blue-400">
                         View all
                       </a>
                     </div>
@@ -175,7 +177,7 @@ export default function AdminDashboard() {
                   </div>
                   <div className="bg-gray-50 px-5 py-3 dark:bg-gray-700">
                     <div className="text-sm">
-                      <a href="/admin/settings" className="font-medium text-blue-600 hover:text-blue-500 dark:text-blue-400">
+                      <a href={`/${locale}/admin/settings`} className="font-medium text-blue-600 hover:text-blue-500 dark:text-blue-400">
                         View all
                       </a>
                     </div>

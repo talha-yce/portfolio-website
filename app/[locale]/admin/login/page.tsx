@@ -2,6 +2,12 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
+import { useParams } from 'next/navigation'
+import type { Dictionary } from '@/lib/i18n/dictionaries'
+
+interface AdminLoginProps {
+  dictionary: Dictionary
+}
 
 export default function AdminLogin() {
   const [email, setEmail] = useState('')
@@ -9,6 +15,8 @@ export default function AdminLogin() {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
   const router = useRouter()
+  const params = useParams()
+  const locale = params.locale as string
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -31,7 +39,7 @@ export default function AdminLogin() {
         throw new Error(data.message || 'Authentication failed')
       }
 
-      router.push('/admin/dashboard')
+      router.push(`/${locale}/admin/dashboard`)
     } catch (error: any) {
       setError(error.message || 'An error occurred during login')
     } finally {
