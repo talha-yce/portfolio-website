@@ -9,7 +9,19 @@ const JWT_SECRET = process.env.JWT_SECRET || 'talha-yuce-portfolio-admin-secret-
 
 export async function POST(request: Request) {
   try {
-    const { email, password } = await request.json()
+    // Request içeriğini parse etmeyi dene
+    let email, password;
+    try {
+      const body = await request.json();
+      email = body.email;
+      password = body.password;
+    } catch (parseError) {
+      console.error('JSON parse error:', parseError);
+      return NextResponse.json(
+        { success: false, message: 'Invalid request body' },
+        { status: 400 }
+      );
+    }
     
     // Validate input
     if (!email || !password) {
@@ -20,7 +32,15 @@ export async function POST(request: Request) {
     }
 
     // Connect to the database
-    await connectToDatabase()
+    try {
+      await connectToDatabase()
+    } catch (dbError) {
+      console.error('Database connection error:', dbError);
+      return NextResponse.json(
+        { success: false, message: 'Database connection failed' },
+        { status: 500 }
+      );
+    }
 
     // Find the admin
     const admin = await AdminModel.findOne({ email })

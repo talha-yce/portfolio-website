@@ -33,7 +33,14 @@ export default function AdminLogin() {
         credentials: 'include'
       })
 
-      const data = await response.json()
+      // Check for empty responses
+      const text = await response.text()
+      if (!text) {
+        throw new Error('Server returned an empty response')
+      }
+      
+      // Parse the JSON response safely
+      const data = text ? JSON.parse(text) : {}
 
       if (!response.ok) {
         throw new Error(data.message || 'Authentication failed')
@@ -41,6 +48,7 @@ export default function AdminLogin() {
 
       router.push(`/${locale}/admin/dashboard`)
     } catch (error: any) {
+      console.error('Login error:', error)
       setError(error.message || 'An error occurred during login')
     } finally {
       setLoading(false)
