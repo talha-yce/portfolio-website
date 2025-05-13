@@ -115,7 +115,7 @@ Bu proje MIT lisansı altında lisanslanmıştır. Daha fazla bilgi için `LICEN
 
 ## 📞 İletişim
 
-Talha Yüce - [@talhayuce](https://twitter.com/talhayuce) - yucet@talha-yuce.site
+Talha Yüce - yucetalha00@gmail.com
 
 Proje Linki: [https://github.com/talhayuce/portfolio-website](https://github.com/talhayuce/portfolio-website)
 

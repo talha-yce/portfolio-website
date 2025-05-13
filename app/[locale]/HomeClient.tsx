@@ -240,7 +240,7 @@ export default function HomeClient({ params, dictionary, featuredProjects, recen
               <CardContent className="relative z-10">
                 <p className="mb-8 text-muted-foreground text-center max-w-2xl mx-auto">{dictionary.home.contactDescription}</p>
                 <div className="flex flex-wrap justify-center gap-4">
-                  <Link href="mailto:yucet@talha-yuce.site">
+                  <Link href="mailto:yucetalha00@gmail.com">
                     <Button className="gap-2 rounded-full px-6 shadow-lg shadow-primary-500/10 hover:shadow-primary-500/20 transition-all duration-300">
                       <span>{dictionary.common.email}</span>
                       <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
