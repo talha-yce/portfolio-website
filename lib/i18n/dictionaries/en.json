@@ -45,7 +45,23 @@
   "blog": {
     "title": "Blog",
     "description": "Articles and thoughts on web development, AI, and game development.",
-    "readingTime": "{time} min read"
+    "readingTime": "{time} min read",
+    "relatedPosts": "Related Posts",
+    "tableOfContents": "Table of Contents",
+    "sharePost": "Share Post",
+    "tags": "Tags",
+    "noTags": "No tags",
+    "keywordsTags": "Keywords",
+    "noKeywords": "No keywords",
+    "updated": "Updated",
+    "authorInfo": "Author Information",
+    "publishedOn": "Published on",
+    "categories": "Categories",
+    "showMore": "Show More",
+    "relatedArticles": "You might also like",
+    "nextRead": "Next Read",
+    "previousArticle": "Previous Article",
+    "nextArticle": "Next Article"
   },
   "newsletter": {
     "securityVerification": "Security Verification",

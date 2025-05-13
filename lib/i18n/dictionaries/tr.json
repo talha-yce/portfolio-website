@@ -45,7 +45,23 @@
   "blog": {
     "title": "Blog",
     "description": "Web geliştirme, yapay zeka ve oyun geliştirme hakkında makaleler ve düşünceler.",
-    "readingTime": "{time} dk okuma"
+    "readingTime": "{time} dk okuma",
+    "relatedPosts": "İlgili Yazılar",
+    "tableOfContents": "İçindekiler",
+    "sharePost": "Paylaş",
+    "tags": "Etiketler",
+    "noTags": "Etiket yok",
+    "keywordsTags": "Anahtar Kelimeler",
+    "noKeywords": "Anahtar kelime yok",
+    "updated": "Güncellendi",
+    "authorInfo": "Yazar Bilgisi",
+    "publishedOn": "Yayınlanma Tarihi",
+    "categories": "Kategoriler",
+    "showMore": "Daha Fazla Göster",
+    "relatedArticles": "İlginizi Çekebilir",
+    "nextRead": "Sıradaki Yazı",
+    "previousArticle": "Önceki Yazı",
+    "nextArticle": "Sonraki Yazı"
   },
   "newsletter": {
     "securityVerification": "Güvenlik Doğrulaması",

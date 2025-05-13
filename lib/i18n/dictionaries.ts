@@ -12,7 +12,7 @@ export type Dictionary = {
     getInTouch: string
     viewAll: string
     viewDetails: string
-    viewAllProjects: string
+    viewAllProjects?: string
     viewAllPosts: string
     backToProjects: string
     backToBlog: string
@@ -50,6 +50,22 @@ export type Dictionary = {
     title: string
     description: string
     readingTime: string
+    relatedPosts?: string
+    tableOfContents: string
+    sharePost: string
+    tags: string
+    noTags: string
+    keywordsTags: string
+    noKeywords: string
+    updated: string
+    authorInfo: string
+    publishedOn: string
+    categories: string
+    showMore: string
+    relatedArticles: string
+    nextRead: string
+    previousArticle: string
+    nextArticle: string
   }
   newsletter: {
     securityVerification: string

@@ -8,7 +8,6 @@ import { cn } from "@/lib/utils"
 import { ThemeProvider } from "@/components/theme-provider"
 import { SiteHeader } from "@/components/site-header"
 import { SiteFooter } from "@/components/site-footer"
-import  CodeBackground  from "@/components/code-background"
 import { locales, type Locale } from "@/lib/i18n/config"
 import { getDictionary } from "@/lib/i18n/dictionaries"
 
@@ -139,7 +138,7 @@ export default async function RootLayout({ children, params }: RootLayoutProps) 
       <head>
         <link rel="canonical" href="https://www.talha-yuce.site" />
         <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
-        <meta name="theme-color" content="#000000" />
+        <meta name="theme-color" content="#f8f9fa" />
         <link rel="icon" href="/favicon.ico" />
         <link rel="icon" type="image/png" sizes="32x32" href="/icon-32x32.png" />
         <link rel="icon" type="image/png" sizes="16x16" href="/icon-16x16.png" />
@@ -178,8 +177,7 @@ export default async function RootLayout({ children, params }: RootLayoutProps) 
         />
       </head>
       <body className={`${spaceGrotesk.className} bg-background text-foreground`}>
-        <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
-          <CodeBackground />
+        <ThemeProvider attribute="class" defaultTheme="light" enableSystem={false}>
           <div className="relative flex min-h-screen flex-col">
             <SiteHeader locale={locale} dictionary={dictionary} />
             <main className="flex-1">
@@ -204,8 +202,8 @@ export default async function RootLayout({ children, params }: RootLayoutProps) 
               description: "Web Geliştirme, Oyun Geliştirme ve Yapay Zeka Uygulamaları konusunda uzmanlaşmış Yazılım Mühendisi",
               start_url: "/",
               display: "standalone",
-              background_color: "#000000",
-              theme_color: "#000000",
+              background_color: "#f8f9fa",
+              theme_color: "#f8f9fa",
               orientation: "portrait",
               icons: [
                 {

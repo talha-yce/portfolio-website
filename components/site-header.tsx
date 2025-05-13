@@ -51,7 +51,7 @@ export function SiteHeader({ locale, dictionary }: SiteHeaderProps) {
   return (
     <motion.header
       className={cn(
-        "sticky top-0 z-40 w-full border-b border-purple-900/40",
+        "sticky top-0 z-40 w-full border-b border-border",
         "bg-background/80 backdrop-blur-md"
       )}
       initial={{ y: -100 }}
@@ -61,13 +61,21 @@ export function SiteHeader({ locale, dictionary }: SiteHeaderProps) {
       <div className="container flex h-16 items-center justify-between">
         <div className="flex items-center gap-2">
           <Link href={getLocalizedPathname("/", locale)} className="flex items-center space-x-2">
-            <Image 
-              src="/logo.png" 
-              alt="Talha Yüce Logo" 
-              width={70} 
-              height={70} 
-              className="rounded-full" 
-            />
+            <div className="relative group">
+              <div className="absolute -inset-0.5 rounded-full bg-gradient-to-r from-primary-500 to-accent-500 opacity-70 blur-sm group-hover:opacity-100 transition duration-300"></div>
+              <div className="relative">
+                <Image 
+                  src="/logo.png" 
+                  alt="Talha Yüce Logo" 
+                  width={42} 
+                  height={42} 
+                  className="rounded-full" 
+                />
+              </div>
+            </div>
+            <span className="hidden sm:inline-block font-semibold text-lg bg-clip-text text-transparent bg-gradient-to-r from-primary-500 to-accent-500">
+              Talha Yüce
+            </span>
           </Link>
         </div>
         <nav className="hidden md:flex items-center gap-6">
@@ -76,14 +84,14 @@ export function SiteHeader({ locale, dictionary }: SiteHeaderProps) {
               key={route.href}
               href={route.href}
               className={cn(
-                "text-sm font-medium transition-colors hover:text-purple-400 relative group",
-                route.active ? "text-purple-400" : "text-muted-foreground",
+                "text-sm font-medium transition-colors hover:text-primary-600 relative group",
+                route.active ? "text-primary-600" : "text-muted-foreground",
               )}
             >
               {route.label}
               <span
                 className={cn(
-                  "absolute -bottom-1 left-0 w-0 h-0.5 bg-gradient-to-r from-purple-400 to-green-400 transition-all duration-300 group-hover:w-full",
+                  "absolute -bottom-1 left-0 w-0 h-0.5 bg-gradient-to-r from-primary-500 to-accent-500 transition-all duration-300 group-hover:w-full",
                   route.active ? "w-full" : "",
                 )}
               />
@@ -92,7 +100,12 @@ export function SiteHeader({ locale, dictionary }: SiteHeaderProps) {
         </nav>
         <div className="flex items-center gap-2">
           <LanguageSwitcher locale={locale} dictionary={dictionary} />
-          <Button variant="ghost" size="icon" className="md:hidden" onClick={() => setIsMenuOpen(!isMenuOpen)}>
+          <Button 
+            variant="ghost" 
+            size="icon" 
+            className="md:hidden hover:bg-primary-100" 
+            onClick={() => setIsMenuOpen(!isMenuOpen)}
+          >
             <Menu className="h-5 w-5" />
             <span className="sr-only">Toggle menu</span>
           </Button>
@@ -100,31 +113,44 @@ export function SiteHeader({ locale, dictionary }: SiteHeaderProps) {
       </div>
       {isMenuOpen && (
         <motion.div
-          className="fixed inset-0 z-50 bg-background/95 dark:bg-background/98 backdrop-blur-lg md:hidden"
+          className="fixed inset-0 z-50 bg-background/95 backdrop-blur-lg md:hidden"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
           transition={{ duration: 0.2 }}
         >
-          <div className="container flex h-16 items-center justify-between border-b border-purple-900/40 bg-background/95 dark:bg-background/98">
+          <div className="container flex h-16 items-center justify-between border-b border-border">
             <Link href={getLocalizedPathname("/", locale)} className="flex items-center space-x-2">
-              <Image 
-                src="/logo.png" 
-                alt="Talha Yüce Logo" 
-                width={70} 
-                height={70} 
-                className="rounded-full" 
-              />
+              <div className="relative">
+                <div className="absolute -inset-0.5 rounded-full bg-gradient-to-r from-primary-500 to-accent-500 opacity-70 blur-sm"></div>
+                <div className="relative">
+                  <Image 
+                    src="/logo.png" 
+                    alt="Talha Yüce Logo" 
+                    width={42} 
+                    height={42} 
+                    className="rounded-full" 
+                  />
+                </div>
+              </div>
+              <span className="font-semibold text-lg bg-clip-text text-transparent bg-gradient-to-r from-primary-500 to-accent-500">
+                Talha Yüce
+              </span>
             </Link>
             <div className="flex items-center gap-2">
               <LanguageSwitcher locale={locale} dictionary={dictionary} />
-              <Button variant="ghost" size="icon" onClick={() => setIsMenuOpen(false)}>
+              <Button 
+                variant="ghost" 
+                size="icon" 
+                className="hover:bg-primary-100"
+                onClick={() => setIsMenuOpen(false)}
+              >
                 <X className="h-5 w-5" />
                 <span className="sr-only">Close menu</span>
               </Button>
             </div>
           </div>
-          <nav className="container flex flex-col gap-4 p-4 bg-background/95 dark:bg-background/98">
+          <nav className="container flex flex-col gap-4 p-4">
             {routes.map((route, index) => (
               <motion.div
                 key={route.href}
@@ -135,9 +161,9 @@ export function SiteHeader({ locale, dictionary }: SiteHeaderProps) {
                 <Link
                   href={route.href}
                   className={cn(
-                    "flex items-center gap-2 text-lg font-medium transition-colors hover:text-purple-400",
-                    "p-2 rounded-md hover:bg-purple-900/20",
-                    route.active ? "text-purple-400 bg-purple-900/20" : "text-muted-foreground",
+                    "flex items-center gap-2 text-lg font-medium transition-colors hover:text-primary-600",
+                    "p-2 rounded-md hover:bg-primary-100/50",
+                    route.active ? "text-primary-600 bg-primary-100/30" : "text-muted-foreground",
                   )}
                   onClick={() => setIsMenuOpen(false)}
                 >

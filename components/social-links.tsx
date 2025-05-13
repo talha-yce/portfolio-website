@@ -3,10 +3,16 @@
 import Link from "next/link"
 import { Github, Linkedin, Mail } from "lucide-react"
 import { motion } from "framer-motion"
+import { cn } from "@/lib/utils"
 
 import { Button } from "@/components/ui/button"
 
-export function SocialLinks() {
+interface SocialLinksProps {
+  className?: string
+  size?: number
+}
+
+export function SocialLinks({ className, size = 20 }: SocialLinksProps) {
   const socialLinks = [
     {
       href: "https://github.com/talha-yce",
@@ -26,7 +32,7 @@ export function SocialLinks() {
   ]
 
   return (
-    <div className="flex items-center gap-4">
+    <div className={cn("flex items-center", className)}>
       {socialLinks.map((link, index) => (
         <motion.div 
           key={link.label} 
@@ -44,12 +50,12 @@ export function SocialLinks() {
             <Button
               variant="ghost"
               size="icon"
-              className="relative group text-muted-foreground hover:text-purple-400 transition-colors"
+              className="relative group text-muted-foreground hover:text-primary-600 transition-colors"
             >
               <motion.div
-                className="absolute inset-0 rounded-full bg-purple-400/10 scale-0 group-hover:scale-100 transition-transform duration-300"
+                className="absolute inset-0 rounded-full bg-primary-100 scale-0 group-hover:scale-100 transition-transform duration-300"
               />
-              <link.icon className="h-5 w-5 relative z-10" />
+              <link.icon style={{ width: `${size}px`, height: `${size}px` }} className="relative z-10" />
               <span className="sr-only">{link.label}</span>
             </Button>
           </Link>

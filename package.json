@@ -6,7 +6,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "migrate-blog": "ts-node -r tsconfig-paths/register --project tsconfig.json scripts/migrate-blog-to-mongodb.ts"
   },
   "dependencies": {
     "@emotion/is-prop-valid": "latest",
@@ -39,6 +40,7 @@
     "@radix-ui/react-toggle-group": "^1.1.1",
     "@radix-ui/react-tooltip": "^1.1.6",
     "@tailwindcss/typography": "latest",
+    "@types/uuid": "^10.0.0",
     "@vercel/analytics": "^1.5.0",
     "@vercel/speed-insights": "^1.2.0",
     "autoprefixer": "^10.4.20",
@@ -50,9 +52,11 @@
     "framer-motion": "latest",
     "fs": "latest",
     "googleapis": "^148.0.0",
-    "gray-matter": "latest",
+    "gray-matter": "^4.0.3",
     "input-otp": "1.4.1",
     "lucide-react": "^0.454.0",
+    "mongodb": "^6.8.0",
+    "mongoose": "^8.14.2",
     "next": "15.1.0",
     "next-themes": "latest",
     "nodemailer": "^6.10.0",
@@ -63,6 +67,7 @@
     "react-google-recaptcha": "^3.1.0",
     "react-hook-form": "^7.54.2",
     "react-resizable-panels": "^2.1.7",
+    "react-syntax-highlighter": "^15.5.0",
     "recharts": "2.15.0",
     "remark": "latest",
     "remark-html": "latest",
@@ -71,6 +76,7 @@
     "sonner": "^1.7.1",
     "tailwind-merge": "^2.5.5",
     "tailwindcss-animate": "^1.0.7",
+    "uuid": "^11.1.0",
     "vaul": "^0.9.6",
     "zod": "^3.24.2"
   },
@@ -79,9 +85,12 @@
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "@types/react-google-recaptcha": "^2.1.9",
+    "@types/react-syntax-highlighter": "^15.5.13",
     "json-loader": "^0.5.7",
     "postcss": "^8",
     "tailwindcss": "^3.4.17",
+    "ts-node": "^10.9.2",
+    "tsconfig-paths": "^4.2.0",
     "typescript": "^5"
   }
 }

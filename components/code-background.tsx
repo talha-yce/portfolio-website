@@ -28,7 +28,7 @@ async function fetchData() {
 }`,
   `// Tailwind CSS
 const styles = {
-  button: 'bg-purple-500 hover:bg-purple-700 
+  button: 'bg-blue-500 hover:bg-blue-700 
     text-white font-bold py-2 px-4 rounded'
 }`,
   `// React Hook
@@ -135,7 +135,7 @@ export default function CodeBackground() {
       {snippets.map((snippet, index) => (
         <pre
           key={index}
-          className="code-snippet font-mono text-xs text-white"
+          className="code-snippet font-mono text-xs text-primary-600"
           style={{
             position: "absolute",
             top: `${Math.random() * 100}%`,

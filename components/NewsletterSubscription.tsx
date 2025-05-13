@@ -35,7 +35,7 @@ type FormData = {
 };
 
 export function NewsletterSubscription({ dictionary }: { dictionary: Dictionary }) {
-  const [step, setStep] = useState<"recaptcha" | "form" | "verification" | "success">("recaptcha");
+  const [step, setStep] = useState<"recaptcha" | "form" | "verification" | "success">("form");
   const [verificationSent, setVerificationSent] = useState(false);
   const [success, setSuccess] = useState<string>("");
   const [error, setError] = useState<string | null>(null);
@@ -76,7 +76,7 @@ export function NewsletterSubscription({ dictionary }: { dictionary: Dictionary 
   });
 
   const resetForm = () => {
-    setStep("recaptcha");
+    setStep("form");
     setVerificationSent(false);
     setError(null);
     setLoading(false);
@@ -309,16 +309,11 @@ export function NewsletterSubscription({ dictionary }: { dictionary: Dictionary 
     return `${minutes.toString().padStart(2, '0')}:${remainingSeconds.toString().padStart(2, '0')}`;
   };
 
-  const handleRecaptchaSuccess = () => {
-    setStep("form");
-  };
-
   return (
     <div className="w-full max-w-md mx-auto p-6 bg-gray-50 dark:bg-gray-800 rounded-lg shadow-md">
       <div className="flex justify-between items-center mb-6">
         <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
-          {step === "recaptcha" ? dictionary.newsletter.securityVerification : 
-           step === "form" ? dictionary.newsletter.subscription : 
+          {step === "form" ? dictionary.newsletter.subscription : 
            step === "verification" ? dictionary.newsletter.verificationCode : dictionary.newsletter.success}
         </h2>
         {step !== "success" && step !== "recaptcha" && (
@@ -338,6 +333,13 @@ export function NewsletterSubscription({ dictionary }: { dictionary: Dictionary 
         </div>
       )}
 
+      {success && (
+        <div className="mb-4 p-4 bg-green-100 border border-green-400 text-green-700 rounded">
+          {success}
+        </div>
+      )}
+
+      {/* ReCAPTCHA step is commented out for now
       {step === "recaptcha" ? (
         <div className="flex flex-col items-center justify-center space-y-4">
           <p className="text-gray-600 dark:text-gray-300 text-center">
@@ -349,7 +351,9 @@ export function NewsletterSubscription({ dictionary }: { dictionary: Dictionary 
             className="flex justify-center"
           />
         </div>
-      ) : step === "success" ? (
+      ) : */}
+      
+      {step === "success" ? (
         <div className="text-center">
           <div className="mb-4 text-green-500">
             <svg
