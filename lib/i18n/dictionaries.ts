@@ -66,6 +66,10 @@ export type Dictionary = {
     nextRead: string
     previousArticle: string
     nextArticle: string
+    postsTaggedWith: string
+    browsePostsTagged: string
+    post: string
+    posts: string
   }
   newsletter: {
     securityVerification: string

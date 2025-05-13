@@ -61,7 +61,11 @@
     "relatedArticles": "You might also like",
     "nextRead": "Next Read",
     "previousArticle": "Previous Article",
-    "nextArticle": "Next Article"
+    "nextArticle": "Next Article",
+    "postsTaggedWith": "Posts Tagged With",
+    "browsePostsTagged": "Browse all posts tagged with",
+    "post": "post",
+    "posts": "posts"
   },
   "newsletter": {
     "securityVerification": "Security Verification",

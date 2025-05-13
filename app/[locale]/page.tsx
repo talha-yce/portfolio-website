@@ -3,6 +3,8 @@ import HomeClient from "./HomeClient"
 import { getDictionary } from "@/lib/i18n/dictionaries"
 import type { Locale } from "@/lib/i18n/config"
 import { getAllContent, type ContentMeta } from "@/lib/content-manager"
+import { getAllBlogPosts } from "@/lib/services/blogService"
+import { BlogPost, transformToBlogPost } from "@/lib/types"
 
 export async function generateMetadata({ params }: { params: { locale: Locale } }): Promise<Metadata> {
   const awaitedParams = await params
@@ -27,14 +29,25 @@ export default async function Home({ params }: { params: { locale: Locale } }) {
   }
   const featuredProjects = projects.slice(0, 3)
 
-  // Fetch posts with error handling
-  let posts: ContentMeta[] = []
+  // Fetch posts from database with error handling
+  let recentPosts: BlogPost[] = []
   try {
-    posts = await getAllContent("blog", awaitedParams.locale)
+    const dbPosts = await getAllBlogPosts(awaitedParams.locale)
+    // Map database posts to ContentMeta format
+    recentPosts = dbPosts.slice(0, 3).map(post => transformToBlogPost(post))
   } catch (error) {
-    console.error("Error fetching blog posts:", error)
+    console.error("Error fetching blog posts from database:", error)
+    // Fallback to static content if database fetch fails
+    try {
+      const staticPosts = await getAllContent("blog", awaitedParams.locale)
+      recentPosts = staticPosts.slice(0, 3).map(post => ({
+        ...post,
+        formattedDate: post.formattedDate || new Date(post.date).toLocaleDateString()
+      }))
+    } catch (fallbackError) {
+      console.error("Error fetching fallback blog posts:", fallbackError)
+    }
   }
-  const recentPosts = posts.slice(0, 3)
 
   return (
     <HomeClient params={awaitedParams} dictionary={dictionary} featuredProjects={featuredProjects} recentPosts={recentPosts} />

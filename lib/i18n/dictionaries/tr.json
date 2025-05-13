@@ -61,7 +61,11 @@
     "relatedArticles": "İlginizi Çekebilir",
     "nextRead": "Sıradaki Yazı",
     "previousArticle": "Önceki Yazı",
-    "nextArticle": "Sonraki Yazı"
+    "nextArticle": "Sonraki Yazı",
+    "postsTaggedWith": "Etiketlenen Yazılar",
+    "browsePostsTagged": "Etiketli tüm yazıları görüntüle",
+    "post": "yazı",
+    "posts": "yazı"
   },
   "newsletter": {
     "securityVerification": "Güvenlik Doğrulaması",

@@ -5,16 +5,18 @@ import { BlogCard } from "@/components/blog-card"
 import { PageTransition } from "@/components/page-transition"
 import { type Locale } from "@/lib/i18n/config"
 import type { Dictionary } from "@/lib/i18n/dictionaries"
-import type { ContentMeta } from "@/lib/content-manager"
+import { BlogPost } from "@/lib/types"
 
 interface BlogPageClientProps {
-  params: { locale: Locale }
+  locale: Locale
   dictionary: Dictionary
-  posts: ContentMeta[]
+  posts: BlogPost[]
+  params?: { locale: Locale }
 }
 
-export default function BlogPageClient({ params, dictionary, posts }: BlogPageClientProps) {
-  const locale = params.locale
+export default function BlogPageClient({ locale, dictionary, posts, params }: BlogPageClientProps) {
+  // Use either the provided locale directly or from params
+  const currentLocale = locale || (params?.locale)
 
   return (
     <PageTransition>
@@ -35,7 +37,7 @@ export default function BlogPageClient({ params, dictionary, posts }: BlogPageCl
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: index * 0.1 }}
               >
-                <BlogCard post={post} locale={locale} readingTimeText={readingTimeText} />
+                <BlogCard post={post} locale={currentLocale} readingTimeText={readingTimeText} />
               </motion.div>
             )
           })}

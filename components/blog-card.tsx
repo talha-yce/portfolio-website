@@ -3,11 +3,11 @@ import { Calendar, Clock, ArrowRight } from "lucide-react"
 
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import type { ContentMeta } from "@/lib/content-manager"
 import { type Locale, getLocalizedPathname } from "@/lib/i18n/config"
+import { BlogPost } from "@/lib/types"
 
 interface BlogCardProps {
-  post: ContentMeta
+  post: BlogPost
   locale: Locale
   readingTimeText: string
 }
@@ -32,14 +32,19 @@ export function BlogCard({ post, locale, readingTimeText }: BlogCardProps) {
         </CardContent>
         <CardFooter className="flex flex-col items-start gap-4 p-6 pt-0">
           <div className="flex flex-wrap gap-2">
-            {post.tags.map((tag) => (
-              <Badge 
-                key={tag} 
-                variant="outline" 
-                className="border-accent-400/30 bg-accent-100/50 text-accent-700 hover:bg-accent-100"
+            {post.tags.map((tag: string) => (
+              <Link
+                key={tag}
+                href={getLocalizedPathname(`/blog/tag/${tag}`, locale)}
+                onClick={(e) => e.stopPropagation()}
               >
-                {tag}
-              </Badge>
+                <Badge 
+                  variant="outline" 
+                  className="border-accent-400/30 bg-accent-100/50 text-accent-700 hover:bg-accent-200 transition-colors"
+                >
+                  {tag}
+                </Badge>
+              </Link>
             ))}
           </div>
           <div className="flex items-center justify-between w-full">
