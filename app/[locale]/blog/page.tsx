@@ -8,7 +8,8 @@ import { sanitizeForClient } from "@/lib/utils"
 import { BlogPost, transformToBlogPost } from "@/lib/types"
 
 export async function generateMetadata({ params }: { params: { locale: Locale } }): Promise<Metadata> {
-  const dictionary = await getDictionary(params.locale)
+  const awaitedParams = await params
+  const dictionary = await getDictionary(awaitedParams.locale)
 
   return {
     title: `${dictionary.blog.title} | Talha Yüce`,
@@ -17,12 +18,13 @@ export async function generateMetadata({ params }: { params: { locale: Locale } 
 }
 
 export default async function BlogPage({ params }: { params: { locale: Locale } }) {
-  const dictionary = await getDictionary(params.locale)
+  const awaitedParams = await params
+  const dictionary = await getDictionary(awaitedParams.locale)
   
   // Fetch posts from database with error handling
   let posts: BlogPost[] = []
   try {
-    const dbPosts = await getAllBlogPosts(params.locale)
+    const dbPosts = await getAllBlogPosts(awaitedParams.locale)
     
     // Transform DB posts to compatible format
     posts = dbPosts.map(post => transformToBlogPost(post))
@@ -30,7 +32,7 @@ export default async function BlogPage({ params }: { params: { locale: Locale } 
     console.error("Error fetching blog posts from database:", error)
     // Fallback to static content if database fetch fails
     try {
-      const staticPosts = await getAllContent("blog", params.locale)
+      const staticPosts = await getAllContent("blog", awaitedParams.locale)
       posts = staticPosts.map(post => ({
         ...post,
         formattedDate: post.formattedDate || new Date(post.date).toLocaleDateString()
@@ -50,7 +52,7 @@ export default async function BlogPage({ params }: { params: { locale: Locale } 
       </div>
       
       <BlogPageClient 
-        locale={params.locale}
+        locale={awaitedParams.locale}
         dictionary={dictionary}
         posts={sanitizeForClient(posts)}
       />
