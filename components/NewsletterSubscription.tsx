@@ -35,7 +35,7 @@ type FormData = {
 };
 
 export function NewsletterSubscription({ dictionary }: { dictionary: Dictionary }) {
-  const [step, setStep] = useState<"recaptcha" | "form" | "verification" | "success">("form");
+  const [step, setStep] = useState<"recaptcha" | "form" | "verification" | "success">("recaptcha");
   const [verificationSent, setVerificationSent] = useState(false);
   const [success, setSuccess] = useState<string>("");
   const [error, setError] = useState<string | null>(null);
@@ -76,7 +76,7 @@ export function NewsletterSubscription({ dictionary }: { dictionary: Dictionary 
   });
 
   const resetForm = () => {
-    setStep("form");
+    setStep("recaptcha");
     setVerificationSent(false);
     setError(null);
     setLoading(false);
@@ -326,9 +326,11 @@ export function NewsletterSubscription({ dictionary }: { dictionary: Dictionary 
       <div className="flex justify-between items-center mb-6">
         <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
           {step === "form" ? dictionary.newsletter.subscription : 
-           step === "verification" ? dictionary.newsletter.verificationCode : dictionary.newsletter.success}
+           step === "verification" ? dictionary.newsletter.verificationCode : 
+           step === "recaptcha" ? dictionary.newsletter.subscription :
+           dictionary.newsletter.success}
         </h2>
-        {step !== "success" && step !== "recaptcha" && (
+        {step !== "success" && (
           <button
             type="button"
             onClick={resetForm}
