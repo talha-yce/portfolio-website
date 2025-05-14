@@ -52,7 +52,7 @@ export default function HomeClient({ params, dictionary, featuredProjects, recen
           className="container relative z-20"
         >
           <div className="grid gap-6 py-16 md:py-24 lg:py-16 lg:gap-12 lg:grid-cols-[1fr_400px]">
-            <div className="space-y-6 relative z-30">
+            <div className="space-y-6 relative z-40">
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -75,18 +75,18 @@ export default function HomeClient({ params, dictionary, featuredProjects, recen
               </motion.p>
               
               <motion.div 
-                className="flex flex-wrap gap-4 pt-6 relative z-30"
+                className="flex flex-wrap gap-4 pt-6 relative z-50"
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.6, delay: 0.4 }}
               >
-                <Link href={getLocalizedPathname("/projects", locale)} className="relative z-30">
+                <Link href={getLocalizedPathname("/projects", locale)} className="relative z-50">
                   <Button variant="default" className="gap-2 rounded-full px-6 text-base shadow-lg shadow-primary-500/20 hover:shadow-primary-500/40 transition-all duration-300">
                     {dictionary.common.projects}
                     <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
                   </Button>
                 </Link>
-                <Link href={getLocalizedPathname("/blog", locale)} className="relative z-30">
+                <Link href={getLocalizedPathname("/blog", locale)} className="relative z-50">
                   <Button variant="outline" className="gap-2 rounded-full px-6 text-base border-primary-200 hover:bg-primary-50 transition-all duration-300">
                     {dictionary.common.blog}
                     <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
@@ -95,7 +95,7 @@ export default function HomeClient({ params, dictionary, featuredProjects, recen
               </motion.div>
               
               <motion.div 
-                className="py-6 relative z-30"
+                className="py-6 relative z-50"
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.6, delay: 0.6 }}
@@ -106,7 +106,7 @@ export default function HomeClient({ params, dictionary, featuredProjects, recen
             
             {/* Profile Card instead of Code Elements */}
             <motion.div 
-              className="flex items-center justify-center relative p-2 md:p-4 lg:p-8 rounded-2xl z-10 mt-6 lg:mt-0"
+              className="flex items-center justify-center relative p-2 md:p-4 lg:p-8 rounded-2xl z-40 mt-6 lg:mt-0"
               initial={{ opacity: 0, scale: 0.9 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ duration: 0.8, delay: 0.5 }}
@@ -122,7 +122,7 @@ export default function HomeClient({ params, dictionary, featuredProjects, recen
           </div>
         </motion.div>
         
-        {/* Reduce number of decorative elements */}
+        {/* Reduce number of decorative elements and ensure they don't block interactions */}
         <div className="absolute top-1/4 left-8 w-64 h-64 bg-primary-300/10 rounded-full blur-3xl pointer-events-none z-0"></div>
       </section>
 
@@ -146,7 +146,7 @@ export default function HomeClient({ params, dictionary, featuredProjects, recen
               </h2>
               <p className="text-muted-foreground text-base md:text-lg">{dictionary.home.projectsSubtitle}</p>
             </div>
-            <Link href={getLocalizedPathname("/projects", locale)} className="mt-6 md:mt-0 inline-block relative z-30">
+            <Link href={getLocalizedPathname("/projects", locale)} className="mt-6 md:mt-0 inline-block relative z-50">
               <Button variant="outline" className="gap-2 rounded-full group border-primary-200 hover:border-primary-400 hover:bg-primary-50 transition-all duration-300">
                 {dictionary.common.viewAllProjects}
                 <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
@@ -162,7 +162,7 @@ export default function HomeClient({ params, dictionary, featuredProjects, recen
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true, margin: "0px 0px -100px 0px" }}
                 transition={{ duration: 0.5, delay: index * 0.1 }}
-                className="group relative z-10"
+                className="group relative z-40"
               >
                 <MemoizedProjectCard project={project} locale={locale} />
               </motion.div>
@@ -191,7 +191,7 @@ export default function HomeClient({ params, dictionary, featuredProjects, recen
               </h2>
               <p className="text-muted-foreground text-base md:text-lg">{dictionary.home.articlesSubtitle}</p>
             </div>
-            <Link href={getLocalizedPathname("/blog", locale)} className="mt-6 md:mt-0 inline-block relative z-30">
+            <Link href={getLocalizedPathname("/blog", locale)} className="mt-6 md:mt-0 inline-block relative z-50">
               <Button variant="outline" className="gap-2 rounded-full group border-accent-200 hover:border-accent-400 hover:bg-accent-50 transition-all duration-300">
                 {dictionary.common.viewAllPosts}
                 <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
@@ -209,7 +209,7 @@ export default function HomeClient({ params, dictionary, featuredProjects, recen
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true, margin: "0px 0px -100px 0px" }}
                   transition={{ duration: 0.5, delay: index * 0.1 }}
-                  className="group relative z-10"
+                  className="group relative z-40"
                 >
                   <MemoizedBlogCard post={post} locale={locale} readingTimeText={readingTimeText} />
                 </motion.div>
@@ -233,7 +233,7 @@ export default function HomeClient({ params, dictionary, featuredProjects, recen
             <Card className="overflow-hidden border-none shadow-xl bg-white backdrop-blur-sm">
               <div className="absolute top-0 right-0 w-40 h-40 bg-primary-100 rounded-full -translate-y-1/2 translate-x-1/4 blur-3xl pointer-events-none"></div>
               
-              <CardHeader className="pb-6 relative z-10">
+              <CardHeader className="pb-6 relative z-40">
                 <div className="flex justify-center mb-4">
                   <div className="inline-block rounded-full px-4 py-1.5 text-sm font-medium bg-gradient-to-r from-primary-600 to-accent-600 text-white">
                     {dictionary.common.getInTouch}
@@ -244,16 +244,16 @@ export default function HomeClient({ params, dictionary, featuredProjects, recen
                 </CardTitle>
               </CardHeader>
               
-              <CardContent className="relative z-10">
+              <CardContent className="relative z-40">
                 <p className="mb-8 text-muted-foreground text-center max-w-2xl mx-auto">{dictionary.home.contactDescription}</p>
                 <div className="flex flex-wrap justify-center gap-4">
-                  <Link href="mailto:yucetalha00@gmail.com" className="relative z-30">
+                  <Link href="mailto:yucetalha00@gmail.com" className="relative z-50">
                     <Button className="gap-2 rounded-full px-6 shadow-lg shadow-primary-500/10 hover:shadow-primary-500/20 transition-all duration-300">
                       <span>{dictionary.common.email}</span>
                       <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
                     </Button>
                   </Link>
-                  <div className="flex items-center relative z-30">
+                  <div className="flex items-center relative z-50">
                     <SocialLinks size={20} />
                   </div>
                 </div>

@@ -42,6 +42,14 @@ export async function POST(request: Request) {
       html: `
         <div style="max-width: 600px; margin: 0 auto; padding: 20px; font-family: Arial, sans-serif; background-color: #f5f5f5;">
           <div style="background-color: white; padding: 25px; border-radius: 8px; margin-bottom: 25px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+            <h2 style="color: #2c3e50; margin-top: 0;">${dictionary.newsletter.verificationCode}</h2>
+            <div style="text-align: center; padding: 20px; margin: 20px 0; background-color: #f8f9fa; border-radius: 8px; border: 1px solid #e9ecef;">
+              <p style="font-size: 32px; font-weight: bold; letter-spacing: 5px; color: #4a6da7; margin: 0;">${verificationCode}</p>
+            </div>
+            <p style="color: #34495e; margin-bottom: 20px;">${dictionary.newsletter.codeExpiresIn}</p>
+          </div>
+          
+          <div style="background-color: white; padding: 25px; border-radius: 8px; margin-bottom: 25px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
             <h2 style="color: #2c3e50; margin-top: 0;">${dictionary.newsletter.selectedInterests}</h2>
             <ul style="color: #34495e; line-height: 1.6;">
               ${interests.map((interest: "web" | "oyun" | "yapay_zeka") => {

@@ -107,63 +107,105 @@ if (42 === answer) {
 }`,
 ]
 
+// Generate a random position for each snippet
+const getRandomPosition = () => {
+  return {
+    x: Math.random() * 100,
+    y: Math.random() * 100,
+    rotation: Math.random() * 360,
+    scale: 0.8 + Math.random() * 0.4,
+    opacity: 0.2 + Math.random() * 0.2,
+    animationDuration: 20 + Math.random() * 40,
+    animationDelay: Math.random() * 10,
+    xMovement: Math.random() * 20 - 10,
+    yMovement: Math.random() * 20 - 10
+  }
+}
 
 const getRandomSnippets = (count: number) => {
   const shuffled = [...codeSnippets].sort(() => 0.5 - Math.random());
-  return shuffled.slice(0, count);
+  return shuffled.slice(0, count).map(snippet => ({
+    code: snippet,
+    ...getRandomPosition()
+  }));
 };
+
+interface CodeSnippet {
+  code: string
+  x: number
+  y: number
+  rotation: number
+  scale: number
+  opacity: number
+  animationDuration: number
+  animationDelay: number
+  xMovement: number
+  yMovement: number
+}
 
 export default function CodeBackground() {
   const [mounted, setMounted] = useState(false);
-  const [snippets, setSnippets] = useState<string[]>([]);
+  const [snippets, setSnippets] = useState<CodeSnippet[]>([]);
 
   useEffect(() => {
     setMounted(true);
-    setSnippets(getRandomSnippets(12));
+    setSnippets(getRandomSnippets(18)); // Increased number of snippets for fuller effect
 
+    // Periodically add new snippets and remove old ones for a dynamic effect
     const interval = setInterval(() => {
-      setSnippets(getRandomSnippets(12));
-    }, 15000); // 15 saniyede bir yeni snippet'lar
+      setSnippets(prevSnippets => {
+        // Remove 3 random snippets
+        const remainingSnippets = [...prevSnippets];
+        for (let i = 0; i < 3; i++) {
+          if (remainingSnippets.length > 0) {
+            const randomIndex = Math.floor(Math.random() * remainingSnippets.length);
+            remainingSnippets.splice(randomIndex, 1);
+          }
+        }
+        
+        // Add 3 new snippets
+        return [...remainingSnippets, ...getRandomSnippets(3)];
+      });
+    }, 8000); // Every 8 seconds
 
-    return () => clearInterval(interval); // Cleanup
+    return () => clearInterval(interval);
   }, []);
 
   if (!mounted) return null;
 
   return (
-    <div className="fixed inset-0 w-full h-full overflow-hidden -z-10 opacity-10 bg-transparent pointer-events-none">
+    <div className="fixed inset-0 w-full h-full overflow-hidden -z-10 pointer-events-none">
       {snippets.map((snippet, index) => (
         <pre
           key={index}
-          className="code-snippet font-mono text-xs text-primary-600"
+          className="code-snippet font-mono text-xs text-primary-600 dark:text-primary-400 absolute pointer-events-none"
           style={{
-            position: "absolute",
-            top: `${Math.random() * 100}%`,
-            left: `${Math.random() * 100}%`,
-            transform: `rotate(${Math.random() * 360}deg) scale(${0.8 + Math.random() * 0.5})`,
-            opacity: 0.3 + Math.random() * 0.3,
-            maxWidth: "50%", 
+            top: `${snippet.y}%`,
+            left: `${snippet.x}%`,
+            transform: `rotate(${snippet.rotation}deg) scale(${snippet.scale})`,
+            opacity: snippet.opacity,
+            maxWidth: "300px", 
             whiteSpace: "pre-wrap",
-            pointerEvents: "none",
-            transition: "opacity 1s ease-in-out, transform 15s ease-in-out",
-            animation: `float ${5 + Math.random() * 15}s infinite ease-in-out`
+            animation: `float-${index} ${snippet.animationDuration}s infinite ease-in-out ${snippet.animationDelay}s`,
           }}
         >
-          {snippet}
+          {snippet.code}
         </pre>
       ))}
       <style jsx>{`
-        @keyframes float {
-          0% {
-            transform: translate(0, 0) rotate(${Math.random() * 360}deg);
+        ${snippets.map((snippet, index) => `
+          @keyframes float-${index} {
+            0% {
+              transform: translate(0, 0) rotate(${snippet.rotation}deg) scale(${snippet.scale});
+            }
+            50% {
+              transform: translate(${snippet.xMovement}px, ${snippet.yMovement}px) rotate(${snippet.rotation + 5}deg) scale(${snippet.scale});
+            }
+            100% {
+              transform: translate(0, 0) rotate(${snippet.rotation}deg) scale(${snippet.scale});
+            }
           }
-          50% {
-            transform: translate(${Math.random() * 20 - 10}px, ${Math.random() * 20 - 10}px) rotate(${Math.random() * 360 + 5}deg);
-          }
-          100% {
-            transform: translate(0, 0) rotate(${Math.random() * 360}deg);
-          }
-        }
+        `).join('\n')}
       `}</style>
     </div>
   );
