@@ -103,44 +103,66 @@ export default function BlogEditor() {
         date: new Date().toISOString(),
       }
       
-      console.log('Sending blog post data:', { title: blogPostData.title, slug: blogPostData.slug })
+      console.log('[Client] Blog yazısı oluşturma işlemi başlatılıyor:', { 
+        title: blogPostData.title,
+        slug: blogPostData.slug,
+        locale: blogPostData.locale,
+        contentSections: contentSections.length
+      })
       
       // Submit to API
-      const response = await fetch('/api/blog', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(blogPostData),
-      })
+      console.log('[Client] API isteği gönderiliyor: POST /api/blog')
+      let response
+      try {
+        response = await fetch('/api/blog', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(blogPostData),
+        })
+        console.log(`[Client] API yanıtı alındı: ${response.status} ${response.statusText}`)
+      } catch (fetchError) {
+        console.error('[Client] API isteği gönderilirken ağ hatası:', fetchError)
+        throw new Error('Network error. Please check your internet connection.')
+      }
       
       let responseData
       try {
         responseData = await response.json()
+        console.log('[Client] API yanıt detayları:', responseData)
       } catch (parseError) {
-        console.error('Error parsing response:', parseError)
+        console.error('[Client] API yanıtı ayrıştırma hatası:', parseError)
         throw new Error('Failed to parse server response. The server might be unavailable.')
       }
       
       if (!response.ok) {
+        console.error('[Client] API hata yanıtı:', { status: response.status, data: responseData })
         throw new Error(responseData.error || 'Failed to create blog post')
       }
       
       // Success
-      console.log('Blog post created successfully:', responseData)
+      console.log('[Client] Blog yazısı başarıyla oluşturuldu:', responseData)
       toast.success('Blog post created successfully!')
       
-      // Navigate to the blog management page first to show success
+      // Navigate to the blog management page after successful creation
+      console.log('[Client] Yönlendiriliyor: Admin blog sayfası')
       setTimeout(() => {
         router.push(`/${data.locale}/admin/blog`)
       }, 1000)
     } catch (error) {
-      console.error('Error creating blog post:', error)
+      console.error('[Client] Blog yazısı oluşturma hatası:', error)
       
-      // Show a more helpful error message
+      // Show a more detailed error message
       if (error instanceof Error) {
+        console.error('[Client] Hata detayları:', { 
+          name: error.name,
+          message: error.message,
+          stack: error.stack
+        })
         toast.error(`Error: ${error.message}`)
       } else {
+        console.error('[Client] Bilinmeyen hata tipi:', error)
         toast.error('An unexpected error occurred while creating the blog post')
       }
       

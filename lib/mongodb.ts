@@ -5,8 +5,11 @@ import mongoose from 'mongoose';
 const MONGODB_URI = process.env.MONGODB_URI || 'mongodb+srv://210541018:7sor4YST3m7N5GyV@ads-test.mnm2j0z.mongodb.net/web';
 
 if (!MONGODB_URI) {
+  console.error('[MongoDB] MONGODB_URI çevresel değişkeni eksik!');
   throw new Error('Please define the MONGODB_URI environment variable');
 }
+
+console.log('[MongoDB] Kullanılan MongoDB URI:', MONGODB_URI.replace(/\/\/([^:]+):([^@]+)@/, '//***:***@'));
 
 /**
  * Global is used here to maintain a cached connection across hot reloads
@@ -32,6 +35,7 @@ if (!global.mongoose) {
 async function connectToDatabase() {
   // Eğer zaten bağlıysak, mevcut bağlantıyı döndür
   if (cached.conn) {
+    console.log('[MongoDB] Mevcut bağlantı kullanılıyor');
     return cached.conn;
   }
 
@@ -50,40 +54,74 @@ async function connectToDatabase() {
       heartbeatFrequencyMS: 10000, // 10 saniyede bir kalp atışı
     };
 
-    console.log('Connecting to MongoDB...');
+    console.log('[MongoDB] Yeni bir MongoDB bağlantısı kurulmaya çalışılıyor...');
     
     cached.promise = mongoose.connect(MONGODB_URI, opts)
       .then((mongoose) => {
-        console.log('MongoDB connected successfully');
+        console.log('[MongoDB] MongoDB bağlantısı başarılı!');
+        console.log(`[MongoDB] Bağlantı durumu: ${mongoose.connection.readyState === 1 ? 'Bağlı' : 'Bağlı değil'}`);
+        
+        // Veritabanı adını güvenli bir şekilde al
+        if (mongoose.connection.db) {
+          console.log(`[MongoDB] Bağlantı veritabanı adı: ${mongoose.connection.db.databaseName}`);
+          
+          // MongoDB versiyonunu almaya çalış
+          try {
+            mongoose.connection.db.admin().serverInfo()
+              .then(info => console.log(`[MongoDB] Sunucu versiyonu: ${info.version}`))
+              .catch(err => console.log('[MongoDB] Sunucu versiyonu alınamadı'));
+          } catch (e) {
+            console.log('[MongoDB] Sunucu versiyonu alınamadı');
+          }
+        } else {
+          console.log('[MongoDB] Veritabanı bağlantısı henüz hazır değil');
+        }
         
         // Bağlantı hata olayı dinleyicisi
         mongoose.connection.on('error', (err) => {
-          console.error('MongoDB connection error:', err);
+          console.error('[MongoDB] Bağlantı hatası:', err);
         });
         
         // Bağlantı kesme olayı dinleyicisi
         mongoose.connection.on('disconnected', () => {
-          console.warn('MongoDB disconnected, attempting to reconnect...');
+          console.warn('[MongoDB] Bağlantı kesildi, yeniden bağlanmaya çalışılıyor...');
         });
         
         // Yeniden bağlanma olayı dinleyicisi
         mongoose.connection.on('reconnected', () => {
-          console.log('MongoDB reconnected successfully');
+          console.log('[MongoDB] Yeniden bağlantı başarılı');
         });
         
         return mongoose;
       })
       .catch((error) => {
-        console.error('MongoDB connection error:', error);
+        console.error('[MongoDB] Bağlantı hatası:', error);
+        
+        // Bağlantı URL'sini kontrol et (güvenlik açısından şifreyi gizliyoruz)
+        const hiddenUri = MONGODB_URI.replace(/\/\/([^:]+):([^@]+)@/, '//***:***@');
+        console.error(`[MongoDB] URL: ${hiddenUri}`);
+        
+        // Daha detaylı hata bilgisi için
+        if (error instanceof Error) {
+          console.error(`[MongoDB] Hata tipi: ${error.name}`);
+          console.error(`[MongoDB] Hata mesajı: ${error.message}`);
+          console.error(`[MongoDB] Yığın: ${error.stack || 'Yok'}`);
+        }
+        
         throw error;
       });
   }
   
   try {
+    console.log('[MongoDB] Bağlantı çözümleniyor...');
     cached.conn = await cached.promise;
+    console.log('[MongoDB] Bağlantı başarıyla çözümlendi');
   } catch (error) {
     cached.promise = null;
-    console.error('Failed to resolve MongoDB connection:', error);
+    console.error('[MongoDB] Bağlantı çözümlenirken hata oluştu:', error);
+    if (error instanceof Error) {
+      console.error(`[MongoDB] Hata detayları: ${error.message}`);
+    }
     throw error;
   }
 

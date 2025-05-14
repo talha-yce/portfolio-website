@@ -24,8 +24,12 @@ const formatDate = (date: Date | string, locale: Locale): string => {
 // Get all blog posts for a locale
 export async function getAllBlogPosts(locale: Locale) {
   try {
+    console.log(`[BlogService] getAllBlogPosts("${locale}") başladı`);
+    console.log('[BlogService] MongoDB bağlantısı kuruluyor...');
     await connectToDatabase()
+    console.log('[BlogService] MongoDB bağlantısı kuruldu');
     
+    console.log(`[BlogService] Blog yazıları sorgulanıyor: { locale: ${locale}, isPublished: true }`);
     const posts = await BlogPost.find({ 
       locale, 
       isPublished: true 
@@ -33,6 +37,7 @@ export async function getAllBlogPosts(locale: Locale) {
     .sort({ date: -1 })
     .lean()
     
+    console.log(`[BlogService] ${posts.length} blog yazısı bulundu`);
     return posts.map(post => ({
       ...post,
       _id: post._id.toString(),
@@ -40,7 +45,7 @@ export async function getAllBlogPosts(locale: Locale) {
       relatedPosts: post.relatedPosts?.map(id => id.toString()),
     }))
   } catch (error) {
-    console.error('Error fetching blog posts:', error)
+    console.error('[BlogService] Blog yazılarını getirirken hata:', error)
     return []
   }
 }
@@ -48,16 +53,24 @@ export async function getAllBlogPosts(locale: Locale) {
 // Get a single blog post by slug
 export async function getBlogPostBySlug(slug: string, locale: Locale) {
   try {
+    console.log(`[BlogService] getBlogPostBySlug("${slug}", "${locale}") başladı`);
+    console.log('[BlogService] MongoDB bağlantısı kuruluyor...');
     await connectToDatabase()
+    console.log('[BlogService] MongoDB bağlantısı kuruldu');
     
+    console.log(`[BlogService] Blog yazısı sorgulanıyor: { slug: ${slug}, locale: ${locale}, isPublished: true }`);
     const post = await BlogPost.findOne({ 
       slug,
       locale,
       isPublished: true
     }).lean()
     
-    if (!post) return null
+    if (!post) {
+      console.log(`[BlogService] Blog yazısı bulunamadı: ${slug}`);
+      return null
+    }
     
+    console.log(`[BlogService] Blog yazısı bulundu: ${post.title}`);
     return {
       ...post,
       _id: post._id.toString(),
@@ -65,7 +78,7 @@ export async function getBlogPostBySlug(slug: string, locale: Locale) {
       relatedPosts: post.relatedPosts?.map(id => id.toString()),
     }
   } catch (error) {
-    console.error(`Error fetching blog post ${slug}:`, error)
+    console.error(`[BlogService] "${slug}" sluglı blog yazısını getirirken hata:`, error)
     return null
   }
 }
@@ -73,7 +86,10 @@ export async function getBlogPostBySlug(slug: string, locale: Locale) {
 // Get related blog posts
 export async function getRelatedBlogPosts(postId: string, tags: string[], locale: Locale, limit = 3) {
   try {
+    console.log(`[BlogService] getRelatedBlogPosts başladı`);
+    console.log('[BlogService] MongoDB bağlantısı kuruluyor...');
     await connectToDatabase()
+    console.log('[BlogService] MongoDB bağlantısı kuruldu');
     
     // Find posts with matching tags, excluding the current post
     const relatedPosts = await BlogPost.find({
@@ -86,6 +102,7 @@ export async function getRelatedBlogPosts(postId: string, tags: string[], locale
     .limit(limit)
     .lean()
     
+    console.log(`[BlogService] ${relatedPosts.length} ilgili blog yazısı bulundu`);
     return relatedPosts.map(post => ({
       ...post,
       _id: post._id.toString(),
@@ -93,7 +110,7 @@ export async function getRelatedBlogPosts(postId: string, tags: string[], locale
       relatedPosts: post.relatedPosts?.map(id => id.toString()),
     }))
   } catch (error) {
-    console.error('Error fetching related posts:', error)
+    console.error('[BlogService] İlgili blog yazılarını getirirken hata:', error)
     return []
   }
 }
@@ -101,7 +118,10 @@ export async function getRelatedBlogPosts(postId: string, tags: string[], locale
 // Get blog posts by tag
 export async function getBlogPostsByTag(tag: string, locale: Locale) {
   try {
+    console.log(`[BlogService] getBlogPostsByTag("${tag}", "${locale}") başladı`);
+    console.log('[BlogService] MongoDB bağlantısı kuruluyor...');
     await connectToDatabase()
+    console.log('[BlogService] MongoDB bağlantısı kuruldu');
     
     const posts = await BlogPost.find({
       tags: tag,
@@ -111,6 +131,7 @@ export async function getBlogPostsByTag(tag: string, locale: Locale) {
     .sort({ date: -1 })
     .lean()
     
+    console.log(`[BlogService] ${posts.length} blog yazısı bulundu (tag: ${tag})`);
     return posts.map(post => ({
       ...post,
       _id: post._id.toString(),
@@ -118,7 +139,7 @@ export async function getBlogPostsByTag(tag: string, locale: Locale) {
       relatedPosts: post.relatedPosts?.map(id => id.toString()),
     }))
   } catch (error) {
-    console.error(`Error fetching posts by tag ${tag}:`, error)
+    console.error(`[BlogService] "${tag}" etiketli blog yazılarını getirirken hata:`, error)
     return []
   }
 }
@@ -126,15 +147,28 @@ export async function getBlogPostsByTag(tag: string, locale: Locale) {
 // Create a new blog post
 export async function createBlogPost(postData: Partial<IBlogPost>) {
   try {
+    console.log('[BlogService] createBlogPost başladı');
+    console.log('[BlogService] Blog yazısı verileri:', {
+      title: postData.title,
+      slug: postData.slug,
+      locale: postData.locale,
+      excerpt: postData.excerpt?.substring(0, 30) + '...',
+      contentSections: postData.content?.length || 0
+    });
+    
+    console.log('[BlogService] MongoDB bağlantısı kuruluyor...');
     await connectToDatabase()
+    console.log('[BlogService] MongoDB bağlantısı kuruldu');
     
     // Ensure slug isn't already taken for this locale
+    console.log(`[BlogService] Aynı slug kontrolü: { slug: ${postData.slug}, locale: ${postData.locale} }`);
     const existingPost = await BlogPost.findOne({
       slug: postData.slug,
       locale: postData.locale
     }).lean();
     
     if (existingPost) {
+      console.log(`[BlogService] HATA: ${postData.slug} slug'ı zaten kullanılıyor`);
       const error = new Error(`A blog post with slug "${postData.slug}" already exists in ${postData.locale} locale`);
       (error as any).code = 11000; // Set code to make detection easier
       (error as any).name = 'MongoServerError';
@@ -142,12 +176,28 @@ export async function createBlogPost(postData: Partial<IBlogPost>) {
     }
     
     // Create the blog post
-    const newPost = new BlogPost(postData);
-    await newPost.save();
-    
-    return newPost;
+    console.log('[BlogService] Yeni blog post oluşturuluyor...');
+    try {
+      const newPost = new BlogPost(postData);
+      console.log('[BlogService] Yeni blog modeli oluşturuldu, kaydediliyor...');
+      await newPost.save();
+      console.log(`[BlogService] Blog yazısı başarıyla oluşturuldu. ID: ${newPost._id}`);
+      return newPost;
+    } catch (error: any) {
+      console.error('[BlogService] Blog yazısını kaydetme hatası:', error);
+      
+      // Add extra debugging info for mongoose validation errors
+      if (error?.name === 'ValidationError' && error.errors) {
+        console.log('[BlogService] Şema doğrulama hatası:');
+        for (const field in error.errors) {
+          console.log(`[BlogService] Alan: ${field}, Hata: ${error.errors[field].message}`);
+        }
+      }
+      
+      throw error;
+    }
   } catch (error) {
-    console.error('Error creating blog post:', error);
+    console.error('[BlogService] Blog yazısı oluşturma hatası:', error);
     throw error;
   }
 }
@@ -155,10 +205,20 @@ export async function createBlogPost(postData: Partial<IBlogPost>) {
 // Update a blog post
 export async function updateBlogPost(id: string, postData: Partial<IBlogPost>) {
   try {
+    console.log(`[BlogService] updateBlogPost("${id}") başladı`);
+    console.log('[BlogService] Güncellenecek veri:', {
+      title: postData.title,
+      slug: postData.slug,
+      locale: postData.locale
+    });
+    
+    console.log('[BlogService] MongoDB bağlantısı kuruluyor...');
     await connectToDatabase()
+    console.log('[BlogService] MongoDB bağlantısı kuruldu');
     
     // Check if updating slug and ensure it's not taken
     if (postData.slug) {
+      console.log(`[BlogService] Slug güncellemesi için kontrol yapılıyor: ${postData.slug}`);
       const existingPost = await BlogPost.findOne({
         slug: postData.slug,
         locale: postData.locale,
@@ -166,10 +226,12 @@ export async function updateBlogPost(id: string, postData: Partial<IBlogPost>) {
       }).lean();
       
       if (existingPost) {
+        console.log(`[BlogService] HATA: ${postData.slug} slug'ı zaten kullanılıyor`);
         throw new Error(`A blog post with slug "${postData.slug}" already exists in ${postData.locale} locale`);
       }
     }
     
+    console.log(`[BlogService] Blog yazısı güncelleniyor ID: ${id}...`);
     const updatedPost = await BlogPost.findByIdAndUpdate(
       id,
       { 
@@ -178,9 +240,16 @@ export async function updateBlogPost(id: string, postData: Partial<IBlogPost>) {
       },
       { new: true, runValidators: true }
     )
+    
+    if (updatedPost) {
+      console.log(`[BlogService] Blog yazısı başarıyla güncellendi: ${updatedPost.title}`);
+    } else {
+      console.log(`[BlogService] Güncellenecek blog yazısı bulunamadı: ${id}`);
+    }
+    
     return updatedPost
   } catch (error) {
-    console.error(`Error updating blog post ${id}:`, error)
+    console.error(`[BlogService] Blog yazısı güncelleme hatası (ID: ${id}):`, error)
     throw error
   }
 }
@@ -188,12 +257,18 @@ export async function updateBlogPost(id: string, postData: Partial<IBlogPost>) {
 // Delete a blog post
 export async function deleteBlogPost(id: string) {
   try {
-    await connectToDatabase()
+    console.log(`[BlogService] deleteBlogPost("${id}") başladı`);
     
+    console.log('[BlogService] MongoDB bağlantısı kuruluyor...');
+    await connectToDatabase()
+    console.log('[BlogService] MongoDB bağlantısı kuruldu');
+    
+    console.log(`[BlogService] Blog yazısı siliniyor ID: ${id}...`);
     await BlogPost.findByIdAndDelete(id)
+    console.log(`[BlogService] Blog yazısı başarıyla silindi ID: ${id}`);
     return { success: true }
   } catch (error) {
-    console.error(`Error deleting blog post ${id}:`, error)
+    console.error(`[BlogService] Blog yazısı silme hatası (ID: ${id}):`, error)
     throw error
   }
 } 
