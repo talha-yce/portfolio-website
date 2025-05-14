@@ -1,184 +1,203 @@
 import { NextRequest, NextResponse } from "next/server";
-import { 
-  getAllBlogPosts, 
-  getBlogPostBySlug, 
-  createBlogPost, 
-  updateBlogPost, 
-  deleteBlogPost 
-} from "@/lib/services/blogService";
-import { sanitizeForClient } from "@/lib/utils";
+import mongoose from 'mongoose';
 
-// GET all blog posts
-export async function GET(request: NextRequest) {
-  console.log('[API] GET /api/blog başladı');
-  const url = new URL(request.url);
-  const locale = url.searchParams.get('locale') || 'en';
-  const slug = url.searchParams.get('slug');
-  
-  console.log(`[API] GET parametreleri: locale=${locale}, slug=${slug || 'null'}`);
-  
+// MongoDB bağlantı bilgileri
+const MONGODB_URI = process.env.MONGODB_URI || 'mongodb+srv://210541018:7sor4YST3m7N5GyV@ads-test.mnm2j0z.mongodb.net/web';
+
+// BlogPost şeması (basitleştirilmiş)
+const BlogPostSchema = new mongoose.Schema({
+  title: { type: String, required: true },
+  slug: { type: String, required: true },
+  excerpt: { type: String, required: true },
+  content: { type: Array, default: [] },
+  tags: { type: [String], default: [] },
+  keywords: { type: [String], default: [] },
+  locale: { type: String, required: true, default: 'en' },
+  date: { type: Date, default: Date.now },
+  isPublished: { type: Boolean, default: true },
+  author: { type: String, default: 'Admin' }
+}, {
+  timestamps: true
+});
+
+// Direkt MongoDB bağlantısı kur
+const connectDB = async () => {
+  console.log('[API] MongoDB bağlantı girişimi...');
   try {
-    if (slug) {
-      // Get a specific blog post by slug
-      console.log(`[API] getBlogPostBySlug("${slug}", "${locale}") çağrılıyor`);
-      const post = await getBlogPostBySlug(slug, locale as any);
-      
-      if (!post) {
-        console.log(`[API] Blog yazısı bulunamadı: ${slug}`);
-        return NextResponse.json({ error: 'Post not found' }, { status: 404 });
-      }
-      
-      console.log(`[API] Blog yazısı bulundu: ${post.title}`);
-      return NextResponse.json(sanitizeForClient(post));
+    if (mongoose.connection.readyState === 1) {
+      console.log('[API] Zaten bağlı, mevcut bağlantı kullanılıyor');
+      return mongoose;
     }
     
-    // Get all blog posts
-    console.log(`[API] getAllBlogPosts("${locale}") çağrılıyor`);
-    const posts = await getAllBlogPosts(locale as any);
-    console.log(`[API] ${posts.length} blog yazısı getirildi`);
-    return NextResponse.json(sanitizeForClient(posts));
+    const conn = await mongoose.connect(MONGODB_URI);
+    console.log('[API] MongoDB bağlantısı başarılı', {
+      host: conn.connection.host,
+      name: conn.connection.name,
+      readyState: conn.connection.readyState
+    });
+    return conn;
   } catch (error) {
-    console.error('[API] Blog yazılarını getirirken hata:', error);
-    return NextResponse.json({ error: 'Failed to fetch blog posts' }, { status: 500 });
+    console.error('[API] MongoDB bağlantı hatası:', error);
+    throw error;
+  }
+};
+
+// GET blog posts
+export async function GET(request: NextRequest) {
+  console.log('[API] GET isteği alındı');
+  try {
+    await connectDB();
+    let BlogPost;
+    try {
+      BlogPost = mongoose.model('BlogPost');
+    } catch (e) {
+      BlogPost = mongoose.model('BlogPost', BlogPostSchema);
+    }
+    
+    const posts = await BlogPost.find({ isPublished: true }).lean();
+    console.log(`[API] ${posts.length} blog yazısı bulundu`);
+    
+    return NextResponse.json(posts);
+  } catch (error) {
+    console.error('[API] GET hatası:', error);
+    return NextResponse.json({ error: 'Blog yazıları alınamadı' }, { status: 500 });
   }
 }
 
-// POST to create a new blog post
+// POST to create a blog post
 export async function POST(request: NextRequest) {
-  console.log('[API] POST /api/blog başladı - Blog yazısı oluşturma isteği alındı');
-  
+  console.log('[API] POST isteği alındı');
   try {
-    console.log('[API] İstek gövdesini ayrıştırma');
     const data = await request.json();
     console.log('[API] Blog yazısı verileri:', {
       title: data.title,
       slug: data.slug,
-      locale: data.locale,
-      contentLength: data.content ? data.content.length : 0,
-      tags: data.tags
+      locale: data.locale
     });
     
-    // Basic validation for required fields
-    if (!data.title || !data.slug || !data.excerpt) {
-      console.log('[API] Eksik alanlar:', {
-        title: !data.title,
-        slug: !data.slug,
-        excerpt: !data.excerpt
-      });
+    // Bağlantı kur
+    await connectDB();
+    console.log('[API] MongoDB bağlantısı kuruldu');
+    
+    // Model oluştur veya al
+    let BlogPost;
+    try {
+      BlogPost = mongoose.model('BlogPost');
+      console.log('[API] Mevcut BlogPost modeli kullanılıyor');
+    } catch (e) {
+      BlogPost = mongoose.model('BlogPost', BlogPostSchema);
+      console.log('[API] Yeni BlogPost modeli oluşturuldu');
+    }
+    
+    // Mevcut slug kontrolü
+    const existing = await BlogPost.findOne({ slug: data.slug, locale: data.locale }).lean();
+    if (existing) {
+      console.log(`[API] Bu slug zaten kullanılıyor: ${data.slug}`);
       return NextResponse.json(
-        { error: 'Missing required fields: title, slug, excerpt' }, 
-        { status: 400 }
+        { error: 'Bu slug zaten kullanılıyor' },
+        { status: 409 }
       );
     }
     
-    // Create the blog post - basic error handling
-    try {
-      console.log('[API] createBlogPost fonksiyonu çağrılıyor');
-      const newPost = await createBlogPost(data);
-      console.log('[API] Blog yazısı başarıyla oluşturuldu:', {
-        id: newPost._id ? String(newPost._id) : 'unknown',
-        title: newPost.title
-      });
-      
-      // Return a simplified response to avoid serialization issues
-      return NextResponse.json({ 
-        success: true, 
-        _id: String(newPost._id),
-        title: data.title,
-        slug: data.slug,
-        message: 'Blog post created successfully'
-      }, { status: 201 });
-    } catch (error: any) {
-      console.error('[API] Blog yazısı oluşturma hatası (iç try-catch):', error);
-      console.log('[API] Hata detayları:', {
-        name: error?.name,
-        message: error?.message,
-        code: error?.code
-      });
-      
-      // Check for duplicate key error (common issue)
-      if (error?.name === 'MongoServerError' && error?.code === 11000) {
-        console.log('[API] Tekrar eden slug hatası tespit edildi');
-        return NextResponse.json(
-          { error: 'A blog post with this slug already exists' },
-          { status: 409 }
-        );
-      }
-      
-      throw error; // Re-throw to be caught by outer handler
-    }
+    // Doğrudan veritabanına ekle (validasyon olmadan)
+    console.log('[API] Blog yazısı oluşturuluyor...');
+    const blogDoc = new BlogPost({
+      title: data.title,
+      slug: data.slug,
+      excerpt: data.excerpt,
+      content: data.content || [],
+      tags: data.tags || [],
+      keywords: data.keywords || [],
+      locale: data.locale,
+      date: new Date(),
+      isPublished: data.isPublished !== false
+    });
+    
+    const savedBlog = await blogDoc.save();
+    console.log('[API] Blog yazısı başarıyla oluşturuldu:', {
+      id: savedBlog._id.toString(),
+      title: savedBlog.title
+    });
+    
+    return NextResponse.json({
+      success: true,
+      _id: savedBlog._id.toString(),
+      title: savedBlog.title,
+      slug: savedBlog.slug
+    }, { status: 201 });
   } catch (error) {
-    console.error('[API] Blog yazısı oluşturma hatası (dış try-catch):', error);
+    console.error('[API] POST hatası:', error);
+    
+    // Hata detaylarını logla
     if (error instanceof Error) {
-      console.log('[API] Hata mesajı:', error.message);
-      console.log('[API] Hata yığını:', error.stack);
+      console.error('[API] Hata tipi:', error.name);
+      console.error('[API] Hata mesajı:', error.message);
+      console.error('[API] Hata yığını:', error.stack);
     }
     
     return NextResponse.json({ 
-      error: 'Failed to create blog post',
-      details: error instanceof Error ? error.message : 'Unknown error'
+      error: 'Blog yazısı oluşturulamadı',
+      details: error instanceof Error ? error.message : 'Bilinmeyen hata'
     }, { status: 500 });
   }
 }
 
 // PUT to update a blog post
 export async function PUT(request: NextRequest) {
-  console.log('[API] PUT /api/blog başladı - Blog yazısı güncelleme isteği alındı');
-  
+  console.log('[API] PUT isteği alındı');
   try {
-    console.log('[API] İstek gövdesini ayrıştırma');
     const data = await request.json();
-    console.log('[API] Güncellenecek blog:', {
-      id: data._id,
-      title: data.title,
-      slug: data.slug
-    });
     
-    // Validate required fields
-    if (!data._id) {
-      console.log('[API] Blog ID eksik');
-      return NextResponse.json({ error: 'Missing post ID' }, { status: 400 });
+    await connectDB();
+    
+    let BlogPost;
+    try {
+      BlogPost = mongoose.model('BlogPost');
+    } catch (e) {
+      BlogPost = mongoose.model('BlogPost', BlogPostSchema);
     }
     
-    // Update the blog post
-    console.log('[API] updateBlogPost fonksiyonu çağrılıyor');
-    const updatedPost = await updateBlogPost(data._id, data);
+    const updatedPost = await BlogPost.findByIdAndUpdate(
+      data._id,
+      { ...data, lastModified: new Date() },
+      { new: true }
+    );
     
     if (!updatedPost) {
-      console.log('[API] Güncellenecek blog bulunamadı');
-      return NextResponse.json({ error: 'Post not found' }, { status: 404 });
+      return NextResponse.json({ error: 'Blog yazısı bulunamadı' }, { status: 404 });
     }
     
-    console.log('[API] Blog yazısı başarıyla güncellendi');
-    return NextResponse.json(sanitizeForClient(updatedPost));
+    return NextResponse.json(updatedPost);
   } catch (error) {
-    console.error('[API] Blog yazısı güncelleme hatası:', error);
-    if (error instanceof Error) {
-      console.log('[API] Hata mesajı:', error.message);
-    }
-    return NextResponse.json({ error: 'Failed to update blog post' }, { status: 500 });
+    console.error('[API] PUT hatası:', error);
+    return NextResponse.json({ error: 'Blog yazısı güncellenemedi' }, { status: 500 });
   }
 }
 
 // DELETE a blog post
 export async function DELETE(request: NextRequest) {
-  console.log('[API] DELETE /api/blog başladı');
+  console.log('[API] DELETE isteği alındı');
   const url = new URL(request.url);
   const id = url.searchParams.get('id');
-  console.log(`[API] Silinecek blog ID: ${id}`);
   
   if (!id) {
-    console.log('[API] Blog ID eksik');
-    return NextResponse.json({ error: 'Missing post ID' }, { status: 400 });
+    return NextResponse.json({ error: 'ID eksik' }, { status: 400 });
   }
   
   try {
-    console.log('[API] deleteBlogPost fonksiyonu çağrılıyor');
-    await deleteBlogPost(id);
-    console.log('[API] Blog yazısı başarıyla silindi');
+    await connectDB();
+    
+    let BlogPost;
+    try {
+      BlogPost = mongoose.model('BlogPost');
+    } catch (e) {
+      BlogPost = mongoose.model('BlogPost', BlogPostSchema);
+    }
+    
+    await BlogPost.findByIdAndDelete(id);
     return NextResponse.json({ success: true });
   } catch (error) {
-    console.error('[API] Blog yazısı silme hatası:', error);
-    return NextResponse.json({ error: 'Failed to delete blog post' }, { status: 500 });
+    console.error('[API] DELETE hatası:', error);
+    return NextResponse.json({ error: 'Blog yazısı silinemedi' }, { status: 500 });
   }
 } 
