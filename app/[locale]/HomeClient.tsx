@@ -49,7 +49,7 @@ export default function HomeClient({ params, dictionary, featuredProjects, recen
       
       <section ref={scrollRef} className="relative min-h-[90vh] flex items-center overflow-hidden">
         {/* Hero Section */}
-        <div className="absolute inset-0 w-full h-full bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-primary-50/40 via-background to-accent-50/30 pointer-events-none z-0" />
+        <div className="absolute inset-0 w-full h-full bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-primary-50/40 via-background/30 to-accent-50/30 pointer-events-none z-0" />
         
         <motion.div
           style={{ y, opacity }}
@@ -127,12 +127,13 @@ export default function HomeClient({ params, dictionary, featuredProjects, recen
         </motion.div>
         
         {/* Reduce number of decorative elements and ensure they don't block interactions */}
-        <div className="absolute top-1/4 left-8 w-64 h-64 bg-primary-300/10 rounded-full blur-3xl pointer-events-none z-0"></div>
+        <div className="absolute top-1/4 left-8 w-64 h-64 bg-primary-300/5 rounded-full blur-3xl pointer-events-none z-0"></div>
       </section>
 
       {/* Projects Section - Implement lazy loading with IntersectionObserver */}
       <section className="py-24 relative">
-        <div className="absolute inset-0 bg-gradient-to-b from-background via-white to-background pointer-events-none z-0"></div>
+        {/* Daha şeffaf arka plan */}
+        <div className="absolute inset-0 bg-gradient-to-b from-background/20 via-white/10 to-background/20 pointer-events-none z-0"></div>
         <div className="container relative z-20">
           <motion.div 
             className="mb-12 md:flex md:justify-between md:items-end"
@@ -141,7 +142,7 @@ export default function HomeClient({ params, dictionary, featuredProjects, recen
             viewport={{ once: true, margin: "0px 0px -200px 0px" }}
             transition={{ duration: 0.6 }}
           >
-            <div className="max-w-2xl">
+            <div className="max-w-2xl backdrop-blur-[2px] bg-white/30 p-3 rounded-xl">
               <div className="inline-block rounded-full px-3 py-1 text-sm font-medium bg-primary-100 text-primary-800 mb-3">
                 {dictionary.common.projects}
               </div>
@@ -177,7 +178,8 @@ export default function HomeClient({ params, dictionary, featuredProjects, recen
 
       {/* Blog Posts Section - Implement lazy loading with IntersectionObserver */}
       <section className="py-24 relative">
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_left,_var(--tw-gradient-stops))] from-accent-50/30 via-white to-background pointer-events-none z-0"></div>
+        {/* Daha şeffaf arka plan */}
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_left,_var(--tw-gradient-stops))] from-accent-50/10 via-white/5 to-background/10 pointer-events-none z-0"></div>
         <div className="container relative z-20">
           <motion.div 
             className="mb-12 md:flex md:justify-between md:items-end"
@@ -186,7 +188,7 @@ export default function HomeClient({ params, dictionary, featuredProjects, recen
             viewport={{ once: true, margin: "0px 0px -200px 0px" }}
             transition={{ duration: 0.6 }}
           >
-            <div className="max-w-2xl">
+            <div className="max-w-2xl backdrop-blur-[2px] bg-white/30 p-3 rounded-xl">
               <div className="inline-block rounded-full px-3 py-1 text-sm font-medium bg-accent-100 text-accent-800 mb-3">
                 {dictionary.common.blog}
               </div>
@@ -225,7 +227,7 @@ export default function HomeClient({ params, dictionary, featuredProjects, recen
 
       {/* Contact Section - Implement lazy loading with IntersectionObserver */}
       <section className="py-24 relative">
-        <div className="absolute inset-0 bg-gradient-to-b from-background to-primary-50/30 pointer-events-none z-0"></div>
+        <div className="absolute inset-0 bg-gradient-to-b from-background/30 to-primary-50/20 pointer-events-none z-0"></div>
         <div className="container relative z-20">
           <motion.div
             className="max-w-4xl mx-auto"
@@ -234,8 +236,8 @@ export default function HomeClient({ params, dictionary, featuredProjects, recen
             viewport={{ once: true, margin: "0px 0px -200px 0px" }}
             transition={{ duration: 0.6 }}
           >
-            <Card className="overflow-hidden border-none shadow-xl bg-white backdrop-blur-sm">
-              <div className="absolute top-0 right-0 w-40 h-40 bg-primary-100 rounded-full -translate-y-1/2 translate-x-1/4 blur-3xl pointer-events-none"></div>
+            <Card className="overflow-hidden border-none shadow-xl bg-white/80 backdrop-blur-sm">
+              <div className="absolute top-0 right-0 w-40 h-40 bg-primary-100/60 rounded-full -translate-y-1/2 translate-x-1/4 blur-3xl pointer-events-none"></div>
               
               <CardHeader className="pb-6 relative z-40">
                 <div className="flex justify-center mb-4">
