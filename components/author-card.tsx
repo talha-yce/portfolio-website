@@ -1,6 +1,7 @@
 'use client'
 
 import { User } from 'lucide-react'
+import Image from 'next/image'
 import { Card, CardContent } from '@/components/ui/card'
 
 interface AuthorCardProps {
@@ -11,7 +12,7 @@ const authors = {
   'Admin': {
     name: 'Admin',
     bio: 'Site yöneticisi ve içerik editörü.',
-    avatar: '/images/avatar-admin.jpg',
+    avatar: '/data/images/profile/talha-yuce.jpg',
     social: {
       twitter: 'https://twitter.com/',
       github: 'https://github.com/',
@@ -39,11 +40,15 @@ export default function AuthorCard({ author }: AuthorCardProps) {
         <div className="flex items-start gap-4">
           <div className="flex-shrink-0">
             {authorInfo.avatar ? (
-              <img 
-                src={authorInfo.avatar} 
-                alt={authorInfo.name} 
-                className="h-14 w-14 rounded-full object-cover border-2 border-primary-500"
-              />
+              <div className="relative h-14 w-14 rounded-full border-2 border-primary-500 overflow-hidden">
+                <Image 
+                  src={authorInfo.avatar} 
+                  alt={authorInfo.name} 
+                  fill
+                  sizes="56px"
+                  className="object-cover"
+                />
+              </div>
             ) : (
               <div className="h-14 w-14 rounded-full bg-primary-100 border-2 border-primary-500 flex items-center justify-center">
                 <User className="h-6 w-6 text-primary-600" />
