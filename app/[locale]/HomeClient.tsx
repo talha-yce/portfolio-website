@@ -16,6 +16,7 @@ import type { Dictionary } from "@/lib/i18n/dictionaries"
 import type { ContentMeta } from "@/lib/content-manager"
 import { BlogPost } from "@/lib/types"
 import ProfileCard from "@/components/profile-card"
+import CodeBackground from "@/components/code-background"
 
 interface HomeClientProps {
   params: { locale: Locale }
@@ -43,6 +44,9 @@ export default function HomeClient({ params, dictionary, featuredProjects, recen
 
   return (
     <PageTransition>
+      {/* Background code animation */}
+      <CodeBackground />
+      
       <section ref={scrollRef} className="relative min-h-[90vh] flex items-center overflow-hidden">
         {/* Hero Section */}
         <div className="absolute inset-0 w-full h-full bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-primary-50/40 via-background to-accent-50/30 pointer-events-none z-0" />

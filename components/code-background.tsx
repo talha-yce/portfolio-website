@@ -110,15 +110,15 @@ if (42 === answer) {
 // Generate a random position for each snippet
 const getRandomPosition = () => {
   return {
-    x: Math.random() * 100,
-    y: Math.random() * 100,
-    rotation: Math.random() * 360,
-    scale: 0.8 + Math.random() * 0.4,
-    opacity: 0.2 + Math.random() * 0.2,
-    animationDuration: 20 + Math.random() * 40,
-    animationDelay: Math.random() * 10,
-    xMovement: Math.random() * 20 - 10,
-    yMovement: Math.random() * 20 - 10
+    x: Math.random() * 90 + 5, // Keep snippets within 5% of edges
+    y: Math.random() * 90 + 5,
+    rotation: Math.random() * 10 - 5, // Less extreme rotation (-5 to 5 degrees)
+    scale: 0.9 + Math.random() * 0.3, // Larger scale for better visibility
+    opacity: 0.35 + Math.random() * 0.25, // Increased opacity range
+    animationDuration: 30 + Math.random() * 30, // Slower animations
+    animationDelay: Math.random() * 5,
+    xMovement: Math.random() * 30 - 15, // Larger movement range
+    yMovement: Math.random() * 30 - 15
   }
 }
 
@@ -149,24 +149,24 @@ export default function CodeBackground() {
 
   useEffect(() => {
     setMounted(true);
-    setSnippets(getRandomSnippets(18)); // Increased number of snippets for fuller effect
+    setSnippets(getRandomSnippets(12)); // Fewer but more visible snippets
 
     // Periodically add new snippets and remove old ones for a dynamic effect
     const interval = setInterval(() => {
       setSnippets(prevSnippets => {
-        // Remove 3 random snippets
+        // Remove 2 random snippets
         const remainingSnippets = [...prevSnippets];
-        for (let i = 0; i < 3; i++) {
+        for (let i = 0; i < 2; i++) {
           if (remainingSnippets.length > 0) {
             const randomIndex = Math.floor(Math.random() * remainingSnippets.length);
             remainingSnippets.splice(randomIndex, 1);
           }
         }
         
-        // Add 3 new snippets
-        return [...remainingSnippets, ...getRandomSnippets(3)];
+        // Add 2 new snippets
+        return [...remainingSnippets, ...getRandomSnippets(2)];
       });
-    }, 8000); // Every 8 seconds
+    }, 10000); // Every 10 seconds
 
     return () => clearInterval(interval);
   }, []);
@@ -174,19 +174,21 @@ export default function CodeBackground() {
   if (!mounted) return null;
 
   return (
-    <div className="fixed inset-0 w-full h-full overflow-hidden -z-10 pointer-events-none">
+    <div className="fixed inset-0 w-full h-full overflow-hidden -z-10 pointer-events-none bg-gradient-to-br from-blue-50/30 via-transparent to-purple-50/30">
       {snippets.map((snippet, index) => (
         <pre
           key={index}
-          className="code-snippet font-mono text-xs text-primary-600 dark:text-primary-400 absolute pointer-events-none"
+          className="code-snippet font-mono text-sm text-primary-700 dark:text-primary-400 absolute pointer-events-none shadow-sm bg-white/5 p-2 rounded-md"
           style={{
             top: `${snippet.y}%`,
             left: `${snippet.x}%`,
             transform: `rotate(${snippet.rotation}deg) scale(${snippet.scale})`,
             opacity: snippet.opacity,
-            maxWidth: "300px", 
+            maxWidth: "350px", 
             whiteSpace: "pre-wrap",
             animation: `float-${index} ${snippet.animationDuration}s infinite ease-in-out ${snippet.animationDelay}s`,
+            border: '1px solid rgba(59, 130, 246, 0.1)',
+            backdropFilter: 'blur(2px)'
           }}
         >
           {snippet.code}
@@ -199,7 +201,7 @@ export default function CodeBackground() {
               transform: translate(0, 0) rotate(${snippet.rotation}deg) scale(${snippet.scale});
             }
             50% {
-              transform: translate(${snippet.xMovement}px, ${snippet.yMovement}px) rotate(${snippet.rotation + 5}deg) scale(${snippet.scale});
+              transform: translate(${snippet.xMovement}px, ${snippet.yMovement}px) rotate(${snippet.rotation + 2}deg) scale(${snippet.scale + 0.05});
             }
             100% {
               transform: translate(0, 0) rotate(${snippet.rotation}deg) scale(${snippet.scale});
