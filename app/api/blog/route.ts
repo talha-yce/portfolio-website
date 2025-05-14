@@ -16,6 +16,9 @@ interface IBlogPost {
   date: Date;
   isPublished: boolean;
   author: string;
+  coverImage?: string;
+  coverImageAlt?: string;
+  metaDescription?: string;
   lastModified?: Date;
   _id?: string;
 }
@@ -31,7 +34,11 @@ const BlogPostSchema = new mongoose.Schema({
   locale: { type: String, required: true, default: 'en' },
   date: { type: Date, default: Date.now },
   isPublished: { type: Boolean, default: true },
-  author: { type: String, default: 'Admin' }
+  author: { type: String, default: 'Admin' },
+  coverImage: { type: String },
+  coverImageAlt: { type: String },
+  metaDescription: { type: String },
+  lastModified: { type: Date, default: Date.now }
 }, {
   timestamps: true
 });
@@ -62,6 +69,10 @@ const connectDB = async () => {
 export async function GET(request: NextRequest) {
   console.log('[API] GET isteği alındı');
   try {
+    const url = new URL(request.url);
+    const slug = url.searchParams.get('slug');
+    const locale = url.searchParams.get('locale');
+    
     await connectDB();
     let BlogPost: any;
     try {
@@ -70,6 +81,24 @@ export async function GET(request: NextRequest) {
       BlogPost = mongoose.model('BlogPost', BlogPostSchema);
     }
     
+    // If slug and locale are provided, fetch a single post
+    if (slug && locale) {
+      console.log(`[API] Slug ${slug} ve locale ${locale} için blog yazısı aranıyor`);
+      const post = await (BlogPost as any).findOne({ 
+        slug: slug,
+        locale: locale 
+      }).lean();
+      
+      if (!post) {
+        console.log(`[API] Blog yazısı bulunamadı: ${slug}`);
+        return NextResponse.json({ error: 'Blog yazısı bulunamadı' }, { status: 404 });
+      }
+      
+      console.log(`[API] Blog yazısı bulundu: ${post.title}`);
+      return NextResponse.json(post);
+    }
+    
+    // Otherwise, return all published posts
     const posts = await (BlogPost as any).find({ isPublished: true }).lean();
     console.log(`[API] ${posts.length} blog yazısı bulundu`);
     
@@ -88,8 +117,16 @@ export async function POST(request: NextRequest) {
     console.log('[API] Blog yazısı verileri:', {
       title: data.title,
       slug: data.slug,
-      locale: data.locale
+      locale: data.locale,
+      hasCoverImage: !!data.coverImage,
+      hasMetaDescription: !!data.metaDescription,
+      contentSections: Array.isArray(data.content) ? data.content.length : 'content is not an array'
     });
+    
+    // Bir örnek içerik bölümünü logla (varsa)
+    if (Array.isArray(data.content) && data.content.length > 0) {
+      console.log('[API] İlk içerik bölümü örneği:', data.content[0]);
+    }
     
     // Bağlantı kur
     await connectDB();
@@ -126,7 +163,10 @@ export async function POST(request: NextRequest) {
       keywords: data.keywords || [],
       locale: data.locale,
       date: new Date(),
-      isPublished: data.isPublished !== false
+      isPublished: data.isPublished !== false,
+      coverImage: data.coverImage || '',
+      coverImageAlt: data.coverImageAlt || '',
+      metaDescription: data.metaDescription || ''
     });
     
     const savedBlog = await blogDoc.save();
@@ -163,6 +203,14 @@ export async function PUT(request: NextRequest) {
   console.log('[API] PUT isteği alındı');
   try {
     const data = await request.json();
+    console.log('[API] Blog güncelleme verileri:', {
+      _id: data._id,
+      title: data.title,
+      slug: data.slug,
+      hasCoverImage: !!data.coverImage,
+      hasMetaDescription: !!data.metaDescription,
+      contentSections: Array.isArray(data.content) ? data.content.length : 'content is not an array'
+    });
     
     await connectDB();
     
