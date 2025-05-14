@@ -52,17 +52,28 @@ export default function EditBlogPostPage({ params }: PageProps) {
         }
         
         // Otherwise, fetch the existing post
-        // URL Encode slug for safer API requests
-        const encodedSlug = encodeURIComponent(params.slug);
+        // URL normalization and encoding for slug
+        // Türkçe karakterler için ek güvenlik kontrolü
+        const normalizedSlug = decodeURIComponent(params.slug)
+          .normalize('NFD')
+          .replace(/[\u0300-\u036f]/g, ''); // Accent işaretlerini kaldır
+        
+        const encodedSlug = encodeURIComponent(normalizedSlug);
         
         console.log('Fetching blog post with parameters:', { 
           originalSlug: params.slug,
+          normalizedSlug,
           encodedSlug,
           locale: params.locale,
-          url: `/api/blog?slug=${encodedSlug}&locale=${params.locale}`
+          url: `/api/blog/single?slug=${encodedSlug}&locale=${params.locale}`
         });
         
-        const res = await fetch(`/api/blog?slug=${encodedSlug}&locale=${params.locale}`)
+        // Özel API endpoint'i kullan - raw slug iletilecek
+        const res = await fetch(`/api/blog/single?slug=${encodedSlug}&locale=${params.locale}`, {
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        })
         
         if (!res.ok) {
           console.error('API response error:', {
