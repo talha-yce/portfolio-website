@@ -59,17 +59,30 @@ export default function EditBlogPostPage({ params }: PageProps) {
           .replace(/[\u0300-\u036f]/g, ''); // Accent işaretlerini kaldır
         
         const encodedSlug = encodeURIComponent(normalizedSlug);
+
+        // Üç farklı API endpoint'ini de deneyelim
+        // 1. Normal API endpoint (servis tabanlı)
+        // 2. Özel single endpoint
+        // 3. Tam içerik getiren yeni endpoint
+        const useGetFullContentApi = true; // Bu yeni API'yi kullan
+        let apiUrl = `/api/blog?slug=${encodedSlug}&locale=${params.locale}`;
+        
+        if (useGetFullContentApi) {
+          apiUrl = `/api/blog/get-full-content?slug=${encodedSlug}&locale=${params.locale}`;
+          console.log('Using full content API endpoint');
+        }
         
         console.log('Fetching blog post with parameters:', { 
           originalSlug: params.slug,
           normalizedSlug,
           encodedSlug,
           locale: params.locale,
-          url: `/api/blog/single?slug=${encodedSlug}&locale=${params.locale}`
+          url: apiUrl,
+          usingFullContentApi: useGetFullContentApi
         });
         
-        // Özel API endpoint'i kullan - raw slug iletilecek
-        const res = await fetch(`/api/blog/single?slug=${encodedSlug}&locale=${params.locale}`, {
+        // API çağrısı
+        const res = await fetch(apiUrl, {
           headers: {
             'Content-Type': 'application/json'
           }
@@ -96,13 +109,29 @@ export default function EditBlogPostPage({ params }: PageProps) {
           });
         }
         
+        // Manuel olarak content öğelerini çıkartalım ve doğrulayalım
+        const extractedContent = Array.isArray(data.content) 
+          ? [...data.content] 
+          : [];
+        
+        // Durumu logla
+        console.log('Manual content extraction:', {
+          originalContentCount: Array.isArray(data.content) ? data.content.length : 0,
+          extractedContentCount: extractedContent.length,
+          extractedContent: extractedContent.map((item, i) => ({ 
+            index: i, 
+            type: item.type, 
+            orderValue: item.order
+          }))
+        });
+        
         // Veriyi güvenli şekilde kopyala - özellikle content dizisini
         const processedData = {
           ...data,
           // JSON.parse(JSON.stringify()) ile derin kopya oluştur
-          content: Array.isArray(data.content) 
-            ? JSON.parse(JSON.stringify(data.content)) 
-            : []
+          content: extractedContent.length > 0 
+            ? JSON.parse(JSON.stringify(extractedContent)) 
+            : [{type: 'text', content: '', order: 0}]
         };
         
         console.log('Processed data ready:', {

@@ -69,6 +69,22 @@ export default function BlogEditor({ initialData, locale, isEditing }: BlogEdito
     stateCount: contentSections.length
   })
   
+  // Tam içerik dizisini logla
+  if (initialData?.content && Array.isArray(initialData.content)) {
+    console.log(`[BlogEditor] initialData.content tam içerik (${initialData.content.length} öğe):`, 
+      JSON.stringify(initialData.content));
+  }
+  
+  // contentSections değişkenini kontrol et
+  console.log('Initial contentSections state:', 
+    JSON.stringify(contentSections.map((item, idx) => ({
+      idx,
+      type: item.type,
+      order: item.order,
+      contentSnippet: item.content?.substring(0, 20) || 'empty'
+    })))
+  );
+  
   // initialData değiştiğinde içerik bölümlerini güncelle
   useEffect(() => {
     if (!initialData) return;
