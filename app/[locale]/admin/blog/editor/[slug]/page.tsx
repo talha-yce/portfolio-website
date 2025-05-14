@@ -87,7 +87,24 @@ export default function EditBlogPostPage({ params }: PageProps) {
         
         const data = await res.json();
         console.log('Fetched blog post data:', data);
-        setPost(data)
+        
+        // İçerik bölümlerini ayrıntılı logla
+        console.log('Content sections from API:', Array.isArray(data.content) ? {
+          count: data.content.length,
+          sections: data.content.map((item: any, index: number) => ({
+            index,
+            type: item.type,
+            contentLength: item.content ? item.content.length : 0
+          }))
+        } : 'content is not an array');
+        
+        // Veriyi güvenli şekilde kopyala - özellikle content dizisini
+        const processedData = {
+          ...data,
+          content: Array.isArray(data.content) ? [...data.content] : []
+        };
+        
+        setPost(processedData)
       } catch (err) {
         console.error('Error fetching blog post:', err)
         setError(err instanceof Error ? err.message : 'Failed to fetch blog post')

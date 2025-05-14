@@ -158,8 +158,29 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: 'Blog yazısı bulunamadı' }, { status: 404 });
     }
     
+    // İçerik bölümlerini logla
+    if (Array.isArray(post.content)) {
+      console.log(`[API/SINGLE] İçerik bölümleri: ${post.content.length} adet`);
+      // İlk 3 bölümü örnek olarak logla
+      post.content.slice(0, 3).forEach((section: any, index: number) => {
+        console.log(`[API/SINGLE] Bölüm ${index}:`, {
+          type: section.type,
+          contentPreview: section.content ? section.content.substring(0, 30) + '...' : 'boş içerik'
+        });
+      });
+    } else {
+      console.log(`[API/SINGLE] İçerik bölümleri dizi değil:`, post.content);
+    }
+    
     console.log(`[API/SINGLE] Blog yazısı bulundu: "${post.title}"`);
-    return NextResponse.json(post);
+    
+    // Yanıt nesnesini oluştur
+    const response = {
+      ...post,
+      contentSectionCount: Array.isArray(post.content) ? post.content.length : 0
+    };
+    
+    return NextResponse.json(response);
   } catch (error) {
     console.error('[API/SINGLE] Hata:', error);
     return NextResponse.json({ 

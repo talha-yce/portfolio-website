@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useForm } from 'react-hook-form'
@@ -54,9 +54,43 @@ export default function BlogEditor({ initialData, locale, isEditing }: BlogEdito
   const router = useRouter()
   const [tags, setTags] = useState<string[]>(initialData?.tags || [])
   const [keywords, setKeywords] = useState<string[]>(initialData?.keywords || [])
+  
+  // useEffect kullanarak içerik değişimine tepki verelim
   const [contentSections, setContentSections] = useState<ContentSection[]>(
-    initialData?.content || [{ type: 'text', content: '', order: 0 }]
+    Array.isArray(initialData?.content) && initialData?.content.length > 0
+      ? initialData.content 
+      : [{ type: 'text', content: '', order: 0 }]
   )
+  
+  // Debug içerik bölümlerini
+  console.log('Content sections loaded:', {
+    count: Array.isArray(initialData?.content) ? initialData.content.length : 0,
+    initialData: initialData?.content,
+    stateValue: contentSections
+  })
+  
+  // initialData değiştiğinde içerik bölümlerini güncelle
+  useEffect(() => {
+    if (initialData && Array.isArray(initialData.content)) {
+      const contentArray = [...initialData.content];
+      
+      console.log('Updating content sections from useEffect:', {
+        initialDataId: initialData._id,
+        contentCount: contentArray.length,
+        contentPreview: contentArray.slice(0, 3).map((item, idx) => ({
+          index: idx,
+          type: item.type,
+          contentLength: item.content ? item.content.length : 0
+        }))
+      });
+      
+      // Eğer gelen içerik şu anki içerikten farklıysa güncelle
+      if (contentArray.length !== contentSections.length) {
+        setContentSections(contentArray);
+      }
+    }
+  }, [initialData, initialData?._id]);
+  
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [activeTab, setActiveTab] = useState('basics')
 
