@@ -3,12 +3,12 @@
 import Link from "next/link"
 import { motion, useScroll, useTransform } from "framer-motion"
 import { ArrowRight } from "lucide-react"
-import { useRef } from "react"
+import { useRef, memo } from "react"
+import dynamic from "next/dynamic"
 
 import { Button } from "@/components/ui/button"
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card"
 import { SocialLinks } from "@/components/social-links"
-import CodeBackground from "@/components/code-background"
 import { ProjectCard } from "@/components/project-card"
 import { BlogCard } from "@/components/blog-card"
 import { PageTransition } from "@/components/page-transition"
@@ -17,12 +17,24 @@ import type { Dictionary } from "@/lib/i18n/dictionaries"
 import type { ContentMeta } from "@/lib/content-manager"
 import { BlogPost } from "@/lib/types"
 
+// Dynamically import non-critical components
+const CodeBackground = dynamic(() => import("@/components/code-background"), {
+  ssr: false,
+  loading: () => <div className="w-full h-full bg-primary-50/50 rounded-lg animate-pulse"></div>
+})
+
 interface HomeClientProps {
   params: { locale: Locale }
   dictionary: Dictionary
   featuredProjects: ContentMeta[]
   recentPosts: BlogPost[]
 }
+
+// Memoize project card component for better performance
+const MemoizedProjectCard = memo(ProjectCard)
+
+// Memoize blog card component for better performance
+const MemoizedBlogCard = memo(BlogCard)
 
 export default function HomeClient({ params, dictionary, featuredProjects, recentPosts }: HomeClientProps) {
   const scrollRef = useRef(null)
@@ -43,10 +55,10 @@ export default function HomeClient({ params, dictionary, featuredProjects, recen
         
         <motion.div
           style={{ y, opacity }}
-          className="container relative z-10"
+          className="container relative z-20"
         >
           <div className="grid gap-6 py-16 md:py-24 lg:py-16 lg:gap-12 lg:grid-cols-[1fr_400px]">
-            <div className="space-y-6">
+            <div className="space-y-6 relative z-30">
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -69,18 +81,18 @@ export default function HomeClient({ params, dictionary, featuredProjects, recen
               </motion.p>
               
               <motion.div 
-                className="flex flex-wrap gap-4 pt-6"
+                className="flex flex-wrap gap-4 pt-6 relative z-30"
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.6, delay: 0.4 }}
               >
-                <Link href={getLocalizedPathname("/projects", locale)}>
+                <Link href={getLocalizedPathname("/projects", locale)} className="relative z-30">
                   <Button variant="default" className="gap-2 rounded-full px-6 text-base shadow-lg shadow-primary-500/20 hover:shadow-primary-500/40 transition-all duration-300">
                     {dictionary.common.projects}
                     <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
                   </Button>
                 </Link>
-                <Link href={getLocalizedPathname("/blog", locale)}>
+                <Link href={getLocalizedPathname("/blog", locale)} className="relative z-30">
                   <Button variant="outline" className="gap-2 rounded-full px-6 text-base border-primary-200 hover:bg-primary-50 transition-all duration-300">
                     {dictionary.common.blog}
                     <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
@@ -89,7 +101,7 @@ export default function HomeClient({ params, dictionary, featuredProjects, recen
               </motion.div>
               
               <motion.div 
-                className="py-6"
+                className="py-6 relative z-30"
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.6, delay: 0.6 }}
@@ -98,14 +110,14 @@ export default function HomeClient({ params, dictionary, featuredProjects, recen
               </motion.div>
             </div>
             
-            {/* Decorative Code Elements - Hidden on Mobile */}
+            {/* Decorative Code Elements - Hidden on Mobile, lazy loaded */}
             <motion.div 
               className="hidden lg:flex items-center justify-center relative p-8 rounded-2xl z-10"
               initial={{ opacity: 0, scale: 0.9 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ duration: 0.8, delay: 0.5 }}
             >
-              <div className="absolute inset-0 bg-white/50 backdrop-blur-sm rounded-2xl border border-primary-100 shadow-xl"></div>
+              <div className="absolute inset-0 bg-white/50 backdrop-blur-sm rounded-2xl border border-primary-100 shadow-xl pointer-events-none"></div>
               <div className="relative z-10">
                 <CodeBackground />
               </div>
@@ -113,20 +125,19 @@ export default function HomeClient({ params, dictionary, featuredProjects, recen
           </div>
         </motion.div>
         
-        {/* Decorative Elements */}
-        <div className="absolute top-1/4 left-8 w-64 h-64 bg-primary-300/10 rounded-full blur-3xl z-0"></div>
-        <div className="absolute bottom-1/4 right-8 w-64 h-64 bg-accent-300/10 rounded-full blur-3xl z-0"></div>
+        {/* Reduce number of decorative elements */}
+        <div className="absolute top-1/4 left-8 w-64 h-64 bg-primary-300/10 rounded-full blur-3xl pointer-events-none z-0"></div>
       </section>
 
-      {/* Projects Section */}
+      {/* Projects Section - Implement lazy loading with IntersectionObserver */}
       <section className="py-24 relative">
-        <div className="absolute inset-0 bg-gradient-to-b from-background via-white to-background pointer-events-none"></div>
-        <div className="container relative z-10">
+        <div className="absolute inset-0 bg-gradient-to-b from-background via-white to-background pointer-events-none z-0"></div>
+        <div className="container relative z-20">
           <motion.div 
             className="mb-12 md:flex md:justify-between md:items-end"
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
+            viewport={{ once: true, margin: "0px 0px -200px 0px" }}
             transition={{ duration: 0.6 }}
           >
             <div className="max-w-2xl">
@@ -138,7 +149,7 @@ export default function HomeClient({ params, dictionary, featuredProjects, recen
               </h2>
               <p className="text-muted-foreground text-base md:text-lg">{dictionary.home.projectsSubtitle}</p>
             </div>
-            <Link href={getLocalizedPathname("/projects", locale)} className="mt-6 md:mt-0 inline-block">
+            <Link href={getLocalizedPathname("/projects", locale)} className="mt-6 md:mt-0 inline-block relative z-30">
               <Button variant="outline" className="gap-2 rounded-full group border-primary-200 hover:border-primary-400 hover:bg-primary-50 transition-all duration-300">
                 {dictionary.common.viewAllProjects}
                 <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
@@ -152,26 +163,26 @@ export default function HomeClient({ params, dictionary, featuredProjects, recen
                 key={project.slug}
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
+                viewport={{ once: true, margin: "0px 0px -100px 0px" }}
                 transition={{ duration: 0.5, delay: index * 0.1 }}
-                className="group"
+                className="group relative z-10"
               >
-                <ProjectCard project={project} locale={locale} />
+                <MemoizedProjectCard project={project} locale={locale} />
               </motion.div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* Blog Posts Section */}
+      {/* Blog Posts Section - Implement lazy loading with IntersectionObserver */}
       <section className="py-24 relative">
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_left,_var(--tw-gradient-stops))] from-accent-50/30 via-white to-background pointer-events-none"></div>
-        <div className="container relative z-10">
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_left,_var(--tw-gradient-stops))] from-accent-50/30 via-white to-background pointer-events-none z-0"></div>
+        <div className="container relative z-20">
           <motion.div 
             className="mb-12 md:flex md:justify-between md:items-end"
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
+            viewport={{ once: true, margin: "0px 0px -200px 0px" }}
             transition={{ duration: 0.6 }}
           >
             <div className="max-w-2xl">
@@ -183,7 +194,7 @@ export default function HomeClient({ params, dictionary, featuredProjects, recen
               </h2>
               <p className="text-muted-foreground text-base md:text-lg">{dictionary.home.articlesSubtitle}</p>
             </div>
-            <Link href={getLocalizedPathname("/blog", locale)} className="mt-6 md:mt-0 inline-block">
+            <Link href={getLocalizedPathname("/blog", locale)} className="mt-6 md:mt-0 inline-block relative z-30">
               <Button variant="outline" className="gap-2 rounded-full group border-accent-200 hover:border-accent-400 hover:bg-accent-50 transition-all duration-300">
                 {dictionary.common.viewAllPosts}
                 <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
@@ -199,11 +210,11 @@ export default function HomeClient({ params, dictionary, featuredProjects, recen
                   key={post.slug}
                   initial={{ opacity: 0, y: 20 }}
                   whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
+                  viewport={{ once: true, margin: "0px 0px -100px 0px" }}
                   transition={{ duration: 0.5, delay: index * 0.1 }}
-                  className="group"
+                  className="group relative z-10"
                 >
-                  <BlogCard post={post} locale={locale} readingTimeText={readingTimeText} />
+                  <MemoizedBlogCard post={post} locale={locale} readingTimeText={readingTimeText} />
                 </motion.div>
               )
             })}
@@ -211,20 +222,19 @@ export default function HomeClient({ params, dictionary, featuredProjects, recen
         </div>
       </section>
 
-      {/* Contact Section */}
+      {/* Contact Section - Implement lazy loading with IntersectionObserver */}
       <section className="py-24 relative">
-        <div className="absolute inset-0 bg-gradient-to-b from-background to-primary-50/30 pointer-events-none"></div>
-        <div className="container relative z-10">
+        <div className="absolute inset-0 bg-gradient-to-b from-background to-primary-50/30 pointer-events-none z-0"></div>
+        <div className="container relative z-20">
           <motion.div
             className="max-w-4xl mx-auto"
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
+            viewport={{ once: true, margin: "0px 0px -200px 0px" }}
             transition={{ duration: 0.6 }}
           >
             <Card className="overflow-hidden border-none shadow-xl bg-white backdrop-blur-sm">
               <div className="absolute top-0 right-0 w-40 h-40 bg-primary-100 rounded-full -translate-y-1/2 translate-x-1/4 blur-3xl pointer-events-none"></div>
-              <div className="absolute bottom-0 left-0 w-40 h-40 bg-accent-100 rounded-full translate-y-1/2 -translate-x-1/4 blur-3xl pointer-events-none"></div>
               
               <CardHeader className="pb-6 relative z-10">
                 <div className="flex justify-center mb-4">
@@ -240,19 +250,15 @@ export default function HomeClient({ params, dictionary, featuredProjects, recen
               <CardContent className="relative z-10">
                 <p className="mb-8 text-muted-foreground text-center max-w-2xl mx-auto">{dictionary.home.contactDescription}</p>
                 <div className="flex flex-wrap justify-center gap-4">
-                  <Link href="mailto:yucetalha00@gmail.com">
+                  <Link href="mailto:yucetalha00@gmail.com" className="relative z-30">
                     <Button className="gap-2 rounded-full px-6 shadow-lg shadow-primary-500/10 hover:shadow-primary-500/20 transition-all duration-300">
                       <span>{dictionary.common.email}</span>
                       <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
                     </Button>
                   </Link>
-                  <div className="flex items-center">
+                  <div className="flex items-center relative z-30">
                     <SocialLinks size={20} />
                   </div>
-                </div>
-                
-                <div className="mt-10 pt-6 border-t border-primary-100">
-                  <p className="text-center text-sm text-muted-foreground">© {new Date().getFullYear()} Talha Yüce. All rights reserved.</p>
                 </div>
               </CardContent>
             </Card>

@@ -47,6 +47,7 @@
     "description": "Articles and thoughts on web development, AI, and game development.",
     "readingTime": "{time} min read",
     "relatedPosts": "Related Posts",
+    "relatedPostsSubtitle": "Check out these articles on similar topics",
     "tableOfContents": "Table of Contents",
     "sharePost": "Share Post",
     "tags": "Tags",

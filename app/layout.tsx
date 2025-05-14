@@ -1,6 +1,7 @@
 import React from "react"
 import type { Metadata } from "next"
 import { siteConfig } from "@/config/site"
+import Script from "next/script"
 
 import "./globals.css"
 
@@ -61,9 +62,22 @@ export default function RootLayout({
     <html lang="en" suppressHydrationWarning>
       <head>
         <link
+          rel="preload" 
+          href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200"
+          as="style"
+        />
+        <link
           rel="stylesheet"
           href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200"
+          media="print" 
         />
+        <Script id="font-load">
+          {`
+            document.querySelector('link[rel="stylesheet"][media="print"]').media = 'all';
+          `}
+        </Script>
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
       </head>
       <body>
         <React.StrictMode>

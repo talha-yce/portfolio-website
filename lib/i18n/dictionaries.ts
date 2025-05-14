@@ -51,6 +51,7 @@ export type Dictionary = {
     description: string
     readingTime: string
     relatedPosts?: string
+    relatedPostsSubtitle?: string
     tableOfContents: string
     sharePost: string
     tags: string

@@ -47,6 +47,7 @@
     "description": "Web geliştirme, yapay zeka ve oyun geliştirme hakkında makaleler ve düşünceler.",
     "readingTime": "{time} dk okuma",
     "relatedPosts": "İlgili Yazılar",
+    "relatedPostsSubtitle": "Benzer konulardaki bu yazılara göz atın",
     "tableOfContents": "İçindekiler",
     "sharePost": "Paylaş",
     "tags": "Etiketler",

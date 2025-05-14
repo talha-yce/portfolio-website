@@ -1,8 +1,11 @@
 'use client'
 
-import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
-import { vscDarkPlus } from 'react-syntax-highlighter/dist/esm/styles/prism';
-import { Link as LinkIcon } from 'lucide-react';
+import { memo, lazy, Suspense } from 'react'
+import { Link as LinkIcon } from 'lucide-react'
+
+// Dynamically import SyntaxHighlighter for code splitting
+const SyntaxHighlighter = lazy(() => import('react-syntax-highlighter/dist/esm/prism-light').then(mod => ({ default: mod.default })));
+const importStyle = () => import('react-syntax-highlighter/dist/esm/styles/prism/vsc-dark-plus').then(mod => mod.default);
 
 interface ContentSectionProps {
   type: string;
@@ -27,7 +30,7 @@ const generateHeadingId = (text: string): string => {
 };
 
 // Render different types of content based on the content type
-const ContentSection = ({ section }: { section: ContentSectionProps }) => {
+const ContentSection = memo(({ section }: { section: ContentSectionProps }) => {
   switch (section.type) {
     case 'heading': {
       const headingText = section.content.replace(/^#+\s+/, '');
@@ -99,6 +102,8 @@ const ContentSection = ({ section }: { section: ContentSectionProps }) => {
             alt={section.alt || ''} 
             className="rounded-lg w-full h-auto" 
             loading="lazy"
+            decoding="async"
+            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 800px"
           />
           {section.caption && (
             <figcaption className="text-sm text-gray-600 mt-2 text-center">{section.caption}</figcaption>
@@ -126,14 +131,22 @@ const ContentSection = ({ section }: { section: ContentSectionProps }) => {
               Copy
             </button>
           </div>
-          <SyntaxHighlighter 
-            language={section.language || 'javascript'} 
-            style={vscDarkPlus}
-            className="rounded-lg text-sm"
-            showLineNumbers={true}
-          >
-            {section.content}
-          </SyntaxHighlighter>
+          <Suspense fallback={
+            <pre className="rounded-lg text-sm bg-gray-800 p-4 text-white overflow-x-auto">
+              {section.content}
+            </pre>
+          }>
+            <SyntaxHighlighter 
+              language={section.language || 'javascript'} 
+              style={importStyle()}
+              className="rounded-lg text-sm"
+              showLineNumbers={true}
+              wrapLines={true}
+              wrapLongLines={true}
+            >
+              {section.content}
+            </SyntaxHighlighter>
+          </Suspense>
         </div>
       );
     
@@ -185,7 +198,7 @@ const ContentSection = ({ section }: { section: ContentSectionProps }) => {
     
     case 'video':
       if (section.url?.includes('youtube')) {
-        // YouTube video
+        // YouTube video - lazy load with intersection observer
         const videoId = section.url.includes('v=') 
           ? section.url.split('v=')[1].split('&')[0]
           : section.url.split('/').pop();
@@ -221,13 +234,15 @@ const ContentSection = ({ section }: { section: ContentSectionProps }) => {
     default:
       return <p className="text-gray-700">{section.content}</p>;
   }
-};
+});
+
+ContentSection.displayName = 'ContentSection';
 
 interface BlogContentProps {
   content: ContentSectionProps[];
 }
 
-export default function BlogContent({ content }: BlogContentProps) {
+const BlogContent = memo(function BlogContent({ content }: BlogContentProps) {
   // Sort content by order if needed
   const sortedContent = [...content].sort((a, b) => (a.order || 0) - (b.order || 0));
   
@@ -238,4 +253,6 @@ export default function BlogContent({ content }: BlogContentProps) {
       ))}
     </div>
   );
-} 
+});
+
+export default BlogContent; 

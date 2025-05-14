@@ -12,12 +12,17 @@ import { getDictionary } from "@/lib/i18n/dictionaries"
 import { type Locale, getLocalizedPathname } from "@/lib/i18n/config"
 import { getBlogPostBySlug, getRelatedBlogPosts } from "@/lib/services/blogService"
 import { sanitizeForClient } from "@/lib/utils"
-import BlogContent from "@/components/blog-content"
-import RelatedPosts from "@/components/related-posts"
+import dynamic from "next/dynamic"
+import { PageTransition } from "@/components/page-transition"
 import TableOfContents from "@/components/table-of-contents"
 import ShareButtons from "@/components/share-buttons"
-import AuthorCard from "@/components/author-card"
-import { PageTransition } from "@/components/page-transition"
+
+// Dynamically import non-critical components
+const BlogContent = dynamic(() => import("@/components/blog-content"), {
+  loading: () => <div className="animate-pulse bg-gray-200 h-96 rounded-lg w-full" />
+})
+const AuthorCard = dynamic(() => import("@/components/author-card"))
+const RelatedPosts = dynamic(() => import("@/components/related-posts"))
 
 interface BlogPostPageProps {
   params: {
@@ -101,8 +106,6 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
       <div className="relative min-h-screen pb-20">
         {/* Background Elements */}
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-accent-50/30 via-background to-background pointer-events-none"></div>
-        <div className="absolute top-1/4 right-1/4 w-64 h-64 bg-primary-300/10 rounded-full blur-3xl pointer-events-none"></div>
-        <div className="absolute bottom-1/3 left-1/4 w-64 h-64 bg-accent-300/10 rounded-full blur-3xl pointer-events-none"></div>
         
         <div className="container py-12 relative z-10">
           <Link href={getLocalizedPathname("/blog", locale)}>
@@ -169,6 +172,7 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
                       width={1200}
                       height={630}
                       priority
+                      sizes="(max-width: 768px) 100vw, (max-width: 1200px) 800px, 1200px"
                       className="w-full h-auto object-cover max-h-[500px]"
                     />
                   </div>
@@ -248,9 +252,9 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
                     <h2 className="text-2xl font-bold mb-2 bg-clip-text text-transparent bg-gradient-to-r from-accent-600 to-accent-800">
                       {dictionary.blog.relatedPosts}
                     </h2>
-                    <div className="h-1 w-16 bg-gradient-to-r from-accent-400 to-accent-600 rounded-full"></div>
+                    <p className="text-muted-foreground">{dictionary.blog.relatedPostsSubtitle}</p>
                   </div>
-                  <RelatedPosts posts={sanitizeForClient(relatedPosts)} locale={locale} dictionary={dictionary} />
+                  <RelatedPosts posts={relatedPosts} locale={locale} dictionary={dictionary} />
                 </div>
               )}
             </article>
