@@ -65,31 +65,44 @@ export default function BlogEditor({ initialData, locale, isEditing }: BlogEdito
   // Debug içerik bölümlerini
   console.log('Content sections loaded:', {
     count: Array.isArray(initialData?.content) ? initialData.content.length : 0,
-    initialData: initialData?.content,
-    stateValue: contentSections
+    initialDataId: initialData?._id || 'no-id',
+    stateCount: contentSections.length
   })
   
   // initialData değiştiğinde içerik bölümlerini güncelle
   useEffect(() => {
-    if (initialData && Array.isArray(initialData.content)) {
-      const contentArray = [...initialData.content];
-      
-      console.log('Updating content sections from useEffect:', {
-        initialDataId: initialData._id,
-        contentCount: contentArray.length,
-        contentPreview: contentArray.slice(0, 3).map((item, idx) => ({
-          index: idx,
-          type: item.type,
-          contentLength: item.content ? item.content.length : 0
-        }))
-      });
-      
-      // Eğer gelen içerik şu anki içerikten farklıysa güncelle
-      if (contentArray.length !== contentSections.length) {
-        setContentSections(contentArray);
+    if (!initialData) return;
+    
+    // Content array'i derin kopyala
+    if (Array.isArray(initialData.content)) {
+      try {
+        // Derin kopya oluştur
+        const deepCopy = JSON.parse(JSON.stringify(initialData.content));
+        
+        console.log('Setting content sections from useEffect:', {
+          postId: initialData._id,
+          contentCount: deepCopy.length,
+          oldStateCount: contentSections.length,
+        });
+        
+        // Her zaman initialData'dan gelen içeriği kullan - forceful update
+        setContentSections(deepCopy);
+        
+        // Detaylı log - ilk 5 öğe
+        deepCopy.slice(0, 5).forEach((section: any, idx: number) => {
+          console.log(`Content section ${idx}:`, {
+            type: section.type, 
+            order: section.order,
+            contentPreview: section.content?.substring(0, 20)
+          });
+        });
+      } catch (err) {
+        console.error('Error setting content sections:', err);
       }
+    } else {
+      console.warn('initialData.content is not an array:', initialData.content);
     }
-  }, [initialData, initialData?._id]);
+  }, [initialData?._id]); // Sadece post ID değiştiğinde çalıştır
   
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [activeTab, setActiveTab] = useState('basics')

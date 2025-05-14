@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Textarea } from '@/components/ui/textarea'
 import { Input } from '@/components/ui/input'
@@ -67,6 +67,21 @@ export function BlogContent({ contentSections, setContentSections }: BlogContent
   const handleImageUploadSuccess = (index: number, imageUrl: string) => {
     updateContentSection(index, 'url', imageUrl)
   }
+
+  // Prop değişikliklerini izle
+  useEffect(() => {
+    console.log(`BlogContent received ${contentSections.length} sections:`, 
+      contentSections.slice(0, 3).map((s, i) => ({ 
+        index: i, 
+        type: s.type, 
+        contentSnippet: s.content?.substring(0, 15) 
+      }))
+    );
+    
+    if (contentSections.length > 5) {
+      console.log(`...and ${contentSections.length - 3} more sections`);
+    }
+  }, [contentSections.length]);
 
   return (
     <Card>
