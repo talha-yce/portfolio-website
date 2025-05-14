@@ -60,6 +60,22 @@ export default function BlogEditor({ initialData, locale, isEditing }: BlogEdito
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [activeTab, setActiveTab] = useState('basics')
 
+  // Calculate reading time based on content
+  const calculateReadingTime = (sections: ContentSection[]): number => {
+    // Assuming an average reading speed of 200 words per minute
+    let totalWords = 0;
+    
+    if (Array.isArray(sections)) {
+      sections.forEach(section => {
+        if ((section.type === 'text' || section.type === 'heading') && section.content) {
+          totalWords += section.content.split(/\s+/).length;
+        }
+      });
+    }
+    
+    return Math.ceil(totalWords / 200) || 1; // Minimum 1 minute
+  }
+
   // Initialize form
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -94,8 +110,19 @@ export default function BlogEditor({ initialData, locale, isEditing }: BlogEdito
         keywords,
         content: contentSections,
         date: initialData?.date || new Date().toISOString(),
+        readingTime: initialData?.readingTime || calculateReadingTime(contentSections),
+        relatedPosts: initialData?.relatedPosts || [],
         ...(isEditing && { _id: initialData._id }),
       }
+      
+      console.log('Blog post data being submitted:', {
+        title: blogPostData.title,
+        slug: blogPostData.slug,
+        _id: blogPostData._id,
+        contentSections: blogPostData.content.length,
+        readingTime: blogPostData.readingTime,
+        isEditing
+      });
       
       // Submit to API - use PUT for editing, POST for creating
       const response = await fetch('/api/blog', {
@@ -107,7 +134,12 @@ export default function BlogEditor({ initialData, locale, isEditing }: BlogEdito
       })
       
       if (!response.ok) {
-        const errorData = await response.json()
+        console.error('API response error:', {
+          status: response.status,
+          statusText: response.statusText
+        });
+        const errorData = await response.json();
+        console.error('Error response data:', errorData);
         throw new Error(errorData.error || 'Failed to save blog post')
       }
       

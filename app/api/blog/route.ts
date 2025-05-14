@@ -73,6 +73,9 @@ export async function GET(request: NextRequest) {
     const slug = url.searchParams.get('slug');
     const locale = url.searchParams.get('locale');
     
+    // URL decode işlemi yap
+    const decodedSlug = slug ? decodeURIComponent(slug) : null;
+    
     await connectDB();
     let BlogPost: any;
     try {
@@ -83,9 +86,21 @@ export async function GET(request: NextRequest) {
     
     // If slug and locale are provided, fetch a single post
     if (slug && locale) {
-      console.log(`[API] Slug ${slug} ve locale ${locale} için blog yazısı aranıyor`);
+      console.log(`[API] Slug "${slug}" ve locale "${locale}" için blog yazısı aranıyor`);
+      console.log(`[API] Decoded slug: "${decodedSlug}"`);
+      
+      // Raw slug değerini logla
+      console.log(`[API] Ham slug değeri: "${slug}"`);
+      
+      // Veritabanındaki tüm slugları getir ve logla
+      const allPosts = await (BlogPost as any).find({}, 'slug locale').lean();
+      console.log('[API] Veritabanındaki tüm sluglar:', allPosts.map((p: any) => ({ 
+        slug: p.slug, 
+        locale: p.locale 
+      })));
+      
       const post = await (BlogPost as any).findOne({ 
-        slug: slug,
+        slug: decodedSlug,
         locale: locale 
       }).lean();
       

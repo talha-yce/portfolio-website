@@ -52,13 +52,30 @@ export default function EditBlogPostPage({ params }: PageProps) {
         }
         
         // Otherwise, fetch the existing post
-        const res = await fetch(`/api/blog?slug=${params.slug}&locale=${params.locale}`)
+        // URL Encode slug for safer API requests
+        const encodedSlug = encodeURIComponent(params.slug);
+        
+        console.log('Fetching blog post with parameters:', { 
+          originalSlug: params.slug,
+          encodedSlug,
+          locale: params.locale,
+          url: `/api/blog?slug=${encodedSlug}&locale=${params.locale}`
+        });
+        
+        const res = await fetch(`/api/blog?slug=${encodedSlug}&locale=${params.locale}`)
         
         if (!res.ok) {
-          throw new Error('Failed to fetch blog post')
+          console.error('API response error:', {
+            status: res.status,
+            statusText: res.statusText
+          });
+          const errorText = await res.text();
+          console.error('Error response body:', errorText);
+          throw new Error(`Failed to fetch blog post: ${res.status} ${res.statusText}`);
         }
         
-        const data = await res.json()
+        const data = await res.json();
+        console.log('Fetched blog post data:', data);
         setPost(data)
       } catch (err) {
         console.error('Error fetching blog post:', err)
