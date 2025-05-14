@@ -119,11 +119,11 @@ export default function CodeBackground() {
 
   useEffect(() => {
     setMounted(true);
-    setSnippets(getRandomSnippets(5));
+    setSnippets(getRandomSnippets(12));
 
     const interval = setInterval(() => {
-      setSnippets(getRandomSnippets(7));
-    }, 10000); // 10 saniyede bir yeni snippet'lar
+      setSnippets(getRandomSnippets(12));
+    }, 15000); // 15 saniyede bir yeni snippet'lar
 
     return () => clearInterval(interval); // Cleanup
   }, []);
@@ -131,7 +131,7 @@ export default function CodeBackground() {
   if (!mounted) return null;
 
   return (
-    <div className="relative w-full h-96 rounded-xl bg-gradient-to-br from-primary-50 to-accent-50/30 shadow-inner overflow-hidden">
+    <div className="fixed inset-0 w-full h-full overflow-hidden -z-10 opacity-10 bg-transparent pointer-events-none">
       {snippets.map((snippet, index) => (
         <pre
           key={index}
@@ -140,21 +140,31 @@ export default function CodeBackground() {
             position: "absolute",
             top: `${Math.random() * 100}%`,
             left: `${Math.random() * 100}%`,
-            transform: `rotate(${Math.random() * 360}deg)`,
-            opacity: 0.4,
-            maxWidth: "80%", 
+            transform: `rotate(${Math.random() * 360}deg) scale(${0.8 + Math.random() * 0.5})`,
+            opacity: 0.3 + Math.random() * 0.3,
+            maxWidth: "50%", 
             whiteSpace: "pre-wrap",
             pointerEvents: "none",
+            transition: "opacity 1s ease-in-out, transform 15s ease-in-out",
+            animation: `float ${5 + Math.random() * 15}s infinite ease-in-out`
           }}
         >
           {snippet}
         </pre>
       ))}
-      <div className="absolute inset-0 flex items-center justify-center">
-        <div className="text-2xl font-bold text-primary-700 bg-white/80 px-6 py-3 rounded-lg backdrop-blur-sm">
-          &lt;/&gt; Code
-        </div>
-      </div>
+      <style jsx>{`
+        @keyframes float {
+          0% {
+            transform: translate(0, 0) rotate(${Math.random() * 360}deg);
+          }
+          50% {
+            transform: translate(${Math.random() * 20 - 10}px, ${Math.random() * 20 - 10}px) rotate(${Math.random() * 360 + 5}deg);
+          }
+          100% {
+            transform: translate(0, 0) rotate(${Math.random() * 360}deg);
+          }
+        }
+      `}</style>
     </div>
   );
 }

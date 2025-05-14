@@ -4,7 +4,6 @@ import Link from "next/link"
 import { motion, useScroll, useTransform } from "framer-motion"
 import { ArrowRight } from "lucide-react"
 import { useRef, memo } from "react"
-import dynamic from "next/dynamic"
 
 import { Button } from "@/components/ui/button"
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card"
@@ -16,12 +15,7 @@ import { getLocalizedPathname, type Locale } from "@/lib/i18n/config"
 import type { Dictionary } from "@/lib/i18n/dictionaries"
 import type { ContentMeta } from "@/lib/content-manager"
 import { BlogPost } from "@/lib/types"
-
-// Dynamically import non-critical components
-const CodeBackground = dynamic(() => import("@/components/code-background"), {
-  ssr: false,
-  loading: () => <div className="w-full h-full bg-primary-50/50 rounded-lg animate-pulse"></div>
-})
+import ProfileCard from "@/components/profile-card"
 
 interface HomeClientProps {
   params: { locale: Locale }
@@ -110,17 +104,20 @@ export default function HomeClient({ params, dictionary, featuredProjects, recen
               </motion.div>
             </div>
             
-            {/* Code Elements - Responsive on all screens */}
+            {/* Profile Card instead of Code Elements */}
             <motion.div 
               className="flex items-center justify-center relative p-2 md:p-4 lg:p-8 rounded-2xl z-10 mt-6 lg:mt-0"
               initial={{ opacity: 0, scale: 0.9 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ duration: 0.8, delay: 0.5 }}
             >
-              <div className="absolute inset-0 bg-white/50 backdrop-blur-sm rounded-2xl border border-primary-100 shadow-xl pointer-events-none"></div>
-              <div className="relative z-10 w-full h-full flex items-center justify-center">
-                <CodeBackground />
-              </div>
+              <ProfileCard 
+                name="Talha Yüce" 
+                title="Software Engineer" 
+                description={locale === 'tr' ? 
+                  "Web, Oyun ve AI geliştirme alanlarında uzmanlaşmış yazılım mühendisi" : 
+                  "Software engineer specialized in Web, Game, and AI development"}
+              />
             </motion.div>
           </div>
         </motion.div>
