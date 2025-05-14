@@ -4,6 +4,22 @@ import mongoose from 'mongoose';
 // MongoDB bağlantı bilgileri
 const MONGODB_URI = process.env.MONGODB_URI || 'mongodb+srv://210541018:7sor4YST3m7N5GyV@ads-test.mnm2j0z.mongodb.net/web';
 
+// Interface tanımı
+interface IBlogPost {
+  title: string;
+  slug: string;
+  excerpt: string;
+  content: any[];
+  tags: string[];
+  keywords: string[];
+  locale: string;
+  date: Date;
+  isPublished: boolean;
+  author: string;
+  lastModified?: Date;
+  _id?: string;
+}
+
 // BlogPost şeması (basitleştirilmiş)
 const BlogPostSchema = new mongoose.Schema({
   title: { type: String, required: true },
@@ -47,14 +63,14 @@ export async function GET(request: NextRequest) {
   console.log('[API] GET isteği alındı');
   try {
     await connectDB();
-    let BlogPost;
+    let BlogPost: any;
     try {
       BlogPost = mongoose.model('BlogPost');
     } catch (e) {
       BlogPost = mongoose.model('BlogPost', BlogPostSchema);
     }
     
-    const posts = await BlogPost.find({ isPublished: true }).lean();
+    const posts = await (BlogPost as any).find({ isPublished: true }).lean();
     console.log(`[API] ${posts.length} blog yazısı bulundu`);
     
     return NextResponse.json(posts);
@@ -80,7 +96,7 @@ export async function POST(request: NextRequest) {
     console.log('[API] MongoDB bağlantısı kuruldu');
     
     // Model oluştur veya al
-    let BlogPost;
+    let BlogPost: any;
     try {
       BlogPost = mongoose.model('BlogPost');
       console.log('[API] Mevcut BlogPost modeli kullanılıyor');
@@ -90,7 +106,7 @@ export async function POST(request: NextRequest) {
     }
     
     // Mevcut slug kontrolü
-    const existing = await BlogPost.findOne({ slug: data.slug, locale: data.locale }).lean();
+    const existing = await (BlogPost as any).findOne({ slug: data.slug, locale: data.locale }).lean();
     if (existing) {
       console.log(`[API] Bu slug zaten kullanılıyor: ${data.slug}`);
       return NextResponse.json(
@@ -150,14 +166,14 @@ export async function PUT(request: NextRequest) {
     
     await connectDB();
     
-    let BlogPost;
+    let BlogPost: any;
     try {
       BlogPost = mongoose.model('BlogPost');
     } catch (e) {
       BlogPost = mongoose.model('BlogPost', BlogPostSchema);
     }
     
-    const updatedPost = await BlogPost.findByIdAndUpdate(
+    const updatedPost = await (BlogPost as any).findByIdAndUpdate(
       data._id,
       { ...data, lastModified: new Date() },
       { new: true }
@@ -187,14 +203,14 @@ export async function DELETE(request: NextRequest) {
   try {
     await connectDB();
     
-    let BlogPost;
+    let BlogPost: any;
     try {
       BlogPost = mongoose.model('BlogPost');
     } catch (e) {
       BlogPost = mongoose.model('BlogPost', BlogPostSchema);
     }
     
-    await BlogPost.findByIdAndDelete(id);
+    await (BlogPost as any).findByIdAndDelete(id);
     return NextResponse.json({ success: true });
   } catch (error) {
     console.error('[API] DELETE hatası:', error);
