@@ -124,14 +124,43 @@ export async function getBlogPostsByTag(tag: string, locale: Locale) {
 
 // Create a new blog post
 export async function createBlogPost(postData: Partial<IBlogPost>) {
-  await connectToDatabase()
-  
   try {
+    console.log('Connecting to database...')
+    await connectToDatabase()
+    
+    console.log('Creating new blog post with data:', JSON.stringify({
+      title: postData.title,
+      slug: postData.slug,
+      locale: postData.locale
+    }))
+    
     const newPost = new BlogPost(postData)
+    
+    console.log('Validating blog post...')
+    const validationError = newPost.validateSync()
+    if (validationError) {
+      console.error('Validation error:', validationError)
+      throw validationError
+    }
+    
+    console.log('Saving blog post...')
     await newPost.save()
+    console.log('Blog post saved successfully with ID:', newPost._id)
+    
     return newPost
   } catch (error) {
     console.error('Error creating blog post:', error)
+    // Log more details about the error
+    if (error instanceof Error) {
+      console.error('Error name:', error.name)
+      console.error('Error message:', error.message)
+      console.error('Error stack:', error.stack)
+      
+      // Check for MongoDB duplicate key error
+      if (error.name === 'MongoServerError' && (error as any).code === 11000) {
+        console.error('Duplicate key error - a blog post with this slug likely already exists')
+      }
+    }
     throw error
   }
 }

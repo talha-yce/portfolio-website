@@ -39,20 +39,72 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
   try {
     const data = await request.json();
+    console.log('Received blog post creation request with data:', {
+      title: data.title,
+      slug: data.slug,
+      locale: data.locale
+    });
     
     // Validate required fields
     if (!data.title || !data.slug || !data.excerpt || !data.content) {
+      console.error('Missing required fields in blog post data');
       return NextResponse.json(
         { error: 'Missing required fields: title, slug, excerpt, content' }, 
         { status: 400 }
       );
     }
     
+    // Check content structure
+    if (!Array.isArray(data.content) || data.content.length === 0) {
+      console.error('Invalid content structure: content must be a non-empty array');
+      return NextResponse.json(
+        { error: 'Invalid content structure: content must be a non-empty array' },
+        { status: 400 }
+      );
+    }
+    
+    // Validate content sections
+    for (const section of data.content) {
+      if (!section.type || !section.content) {
+        console.error('Invalid content section:', section);
+        return NextResponse.json(
+          { error: 'Each content section must have a type and content' },
+          { status: 400 }
+        );
+      }
+    }
+    
+    console.log('Calling blogService.createBlogPost...');
     // Create the blog post
     const newPost = await createBlogPost(data);
+    console.log('Blog post created successfully with ID:', newPost._id);
     return NextResponse.json(sanitizeForClient(newPost), { status: 201 });
   } catch (error) {
-    console.error('Error creating blog post:', error);
+    console.error('Error details in blog post creation:', error);
+    
+    // Check for specific error types
+    if (error instanceof Error) {
+      // Log error details
+      console.error('Error name:', error.name);
+      console.error('Error message:', error.message);
+      
+      // Handle duplicate key error
+      if (error.name === 'MongoServerError' && (error as any).code === 11000) {
+        return NextResponse.json(
+          { error: 'A blog post with this slug already exists. Please choose a different slug.' }, 
+          { status: 409 }
+        );
+      }
+      
+      // Handle validation errors
+      if (error.name === 'ValidationError') {
+        return NextResponse.json(
+          { error: `Validation error: ${error.message}` }, 
+          { status: 400 }
+        );
+      }
+    }
+    
     return NextResponse.json({ error: 'Failed to create blog post' }, { status: 500 });
   }
 }
