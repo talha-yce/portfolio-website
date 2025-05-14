@@ -28,14 +28,14 @@ export interface IBlogPost extends Document {
   excerpt: string;
   content: ContentSection[];
   tags: string[];
-  coverImage: string;
-  coverImageAlt: string;
-  metaDescription: string;
-  keywords: string[];
+  coverImage?: string;
+  coverImageAlt?: string;
+  metaDescription?: string;
+  keywords?: string[];
   locale: string;
   author: string;
   lastModified: Date;
-  readingTime: number;
+  readingTime?: number;
   isPublished: boolean;
   relatedPosts?: mongoose.Types.ObjectId[];
 }
@@ -58,15 +58,15 @@ const ContentSectionSchema = new Schema<ContentSection>({
 
 const BlogPostSchema = new Schema<IBlogPost>({
   title: { type: String, required: true },
-  slug: { type: String, required: true, unique: true },
+  slug: { type: String, required: true },
   date: { type: Date, required: true, default: Date.now },
   excerpt: { type: String, required: true },
-  content: [ContentSectionSchema],
-  tags: [{ type: String }],
+  content: { type: [ContentSectionSchema], default: [] },
+  tags: { type: [String], default: [] },
   coverImage: { type: String },
   coverImageAlt: { type: String },
   metaDescription: { type: String },
-  keywords: [{ type: String }],
+  keywords: { type: [String], default: [] },
   locale: { type: String, required: true, default: 'en', enum: ['en', 'tr'] },
   author: { type: String, default: 'Admin' },
   lastModified: { type: Date, default: Date.now },
@@ -74,28 +74,39 @@ const BlogPostSchema = new Schema<IBlogPost>({
   isPublished: { type: Boolean, default: true },
   relatedPosts: [{ type: Schema.Types.ObjectId, ref: 'BlogPost' }]
 }, {
-  timestamps: true 
+  timestamps: true,
+  // Mongoose options to give better error messages
+  validateBeforeSave: true,
+  strict: true
 });
 
-// Add indexes for faster queries
+// Add indexes for faster queries - ensuring slug is unique per locale
 BlogPostSchema.index({ slug: 1, locale: 1 }, { unique: true });
 BlogPostSchema.index({ tags: 1 });
 BlogPostSchema.index({ date: -1 });
 
 // Calculate reading time before saving
 BlogPostSchema.pre('save', function(next) {
-  // Calculate reading time based on content 
-  // Assuming an average reading speed of 200 words per minute
-  let totalWords = 0;
-  
-  this.content.forEach(section => {
-    if (section.type === 'text' || section.type === 'heading') {
-      totalWords += section.content.split(/\s+/).length;
+  try {
+    // Calculate reading time based on content 
+    // Assuming an average reading speed of 200 words per minute
+    let totalWords = 0;
+    
+    if (Array.isArray(this.content)) {
+      this.content.forEach(section => {
+        if ((section.type === 'text' || section.type === 'heading') && section.content) {
+          totalWords += section.content.split(/\s+/).length;
+        }
+      });
     }
-  });
-  
-  this.readingTime = Math.ceil(totalWords / 200);
-  next();
+    
+    this.readingTime = Math.ceil(totalWords / 200) || 1; // Minimum 1 minute
+    next();
+  } catch (error) {
+    console.error('Error calculating reading time:', error);
+    this.readingTime = 1; // Default to 1 minute if calculation fails
+    next();
+  }
 });
 
 // Only create model if it doesn't exist already

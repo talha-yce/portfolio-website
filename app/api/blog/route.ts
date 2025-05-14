@@ -39,85 +39,46 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
   try {
     const data = await request.json();
-    console.log('Received blog post creation request with data:', {
-      title: data.title,
-      slug: data.slug,
-      locale: data.locale
-    });
     
-    // Validate required fields
-    if (!data.title || !data.slug || !data.excerpt || !data.content) {
-      console.error('Missing required fields in blog post data');
+    // Basic validation for required fields
+    if (!data.title || !data.slug || !data.excerpt) {
       return NextResponse.json(
-        { error: 'Missing required fields: title, slug, excerpt, content' }, 
+        { error: 'Missing required fields: title, slug, excerpt' }, 
         { status: 400 }
       );
     }
     
-    // Check content structure
-    if (!Array.isArray(data.content) || data.content.length === 0) {
-      console.error('Invalid content structure: content must be a non-empty array');
-      return NextResponse.json(
-        { error: 'Invalid content structure: content must be a non-empty array' },
-        { status: 400 }
-      );
-    }
-    
-    // Validate content sections
-    for (const section of data.content) {
-      if (!section.type || !section.content) {
-        console.error('Invalid content section:', section);
-        return NextResponse.json(
-          { error: 'Each content section must have a type and content' },
-          { status: 400 }
-        );
-      }
-    }
-    
-    console.log('Calling blogService.createBlogPost...');
-    // Create the blog post
-    const newPost = await createBlogPost(data);
-    console.log('Blog post created successfully with ID:', newPost._id);
-    
-    // Prepare post for client response - convert MongoDB document to a plain object
-    const safePost = {
-      _id: String(newPost._id),
-      title: String(newPost.title),
-      slug: String(newPost.slug),
-      locale: String(newPost.locale),
-      excerpt: String(newPost.excerpt),
-      success: true,
-      message: 'Blog post created successfully'
-    };
-    
-    return NextResponse.json(safePost, { status: 201 });
-  } catch (error) {
-    console.error('Error details in blog post creation:', error);
-    
-    // Check for specific error types
-    if (error instanceof Error) {
-      // Log error details
-      console.error('Error name:', error.name);
-      console.error('Error message:', error.message);
+    // Create the blog post - basic error handling
+    try {
+      const newPost = await createBlogPost(data);
       
-      // Handle duplicate key error
-      if (error.name === 'MongoServerError' && (error as any).code === 11000) {
+      // Return a simplified response to avoid serialization issues
+      return NextResponse.json({ 
+        success: true, 
+        _id: String(newPost._id),
+        title: data.title,
+        slug: data.slug,
+        message: 'Blog post created successfully'
+      }, { status: 201 });
+    } catch (error: any) {
+      console.error('Database error creating blog post:', error);
+      
+      // Check for duplicate key error (common issue)
+      if (error?.name === 'MongoServerError' && error?.code === 11000) {
         return NextResponse.json(
-          { error: 'A blog post with this slug already exists. Please choose a different slug.' }, 
+          { error: 'A blog post with this slug already exists' },
           { status: 409 }
         );
       }
       
-      // Handle validation errors
-      if (error.name === 'ValidationError') {
-        return NextResponse.json(
-          { error: `Validation error: ${error.message}` }, 
-          { status: 400 }
-        );
-      }
+      throw error; // Re-throw to be caught by outer handler
     }
-    
-    return NextResponse.json({ error: 'Failed to create blog post' }, { status: 500 });
+  } catch (error) {
+    console.error('Error creating blog post:', error);
+    return NextResponse.json({ 
+      error: 'Failed to create blog post',
+      details: error instanceof Error ? error.message : 'Unknown error'
+    }, { status: 500 });
   }
 }
 

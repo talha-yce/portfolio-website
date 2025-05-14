@@ -103,6 +103,8 @@ export default function BlogEditor() {
         date: new Date().toISOString(),
       }
       
+      console.log('Sending blog post data:', { title: blogPostData.title, slug: blogPostData.slug })
+      
       // Submit to API
       const response = await fetch('/api/blog', {
         method: 'POST',
@@ -112,17 +114,26 @@ export default function BlogEditor() {
         body: JSON.stringify(blogPostData),
       })
       
-      const responseData = await response.json()
+      let responseData
+      try {
+        responseData = await response.json()
+      } catch (parseError) {
+        console.error('Error parsing response:', parseError)
+        throw new Error('Failed to parse server response. The server might be unavailable.')
+      }
       
       if (!response.ok) {
         throw new Error(responseData.error || 'Failed to create blog post')
       }
       
       // Success
+      console.log('Blog post created successfully:', responseData)
       toast.success('Blog post created successfully!')
       
       // Navigate to the blog management page first to show success
-      router.push(`/${data.locale}/admin/blog`)
+      setTimeout(() => {
+        router.push(`/${data.locale}/admin/blog`)
+      }, 1000)
     } catch (error) {
       console.error('Error creating blog post:', error)
       

@@ -1,6 +1,7 @@
 import connectToDatabase from '../mongodb';
 import BlogPost, { IBlogPost } from '../models/BlogPost';
 import { type Locale } from '../i18n/config';
+import mongoose from 'mongoose';
 
 // Ensure dates are properly formatted for display
 const formatDate = (date: Date | string, locale: Locale): string => {
@@ -22,9 +23,9 @@ const formatDate = (date: Date | string, locale: Locale): string => {
 
 // Get all blog posts for a locale
 export async function getAllBlogPosts(locale: Locale) {
-  await connectToDatabase()
-  
   try {
+    await connectToDatabase()
+    
     const posts = await BlogPost.find({ 
       locale, 
       isPublished: true 
@@ -46,9 +47,9 @@ export async function getAllBlogPosts(locale: Locale) {
 
 // Get a single blog post by slug
 export async function getBlogPostBySlug(slug: string, locale: Locale) {
-  await connectToDatabase()
-  
   try {
+    await connectToDatabase()
+    
     const post = await BlogPost.findOne({ 
       slug,
       locale,
@@ -71,9 +72,9 @@ export async function getBlogPostBySlug(slug: string, locale: Locale) {
 
 // Get related blog posts
 export async function getRelatedBlogPosts(postId: string, tags: string[], locale: Locale, limit = 3) {
-  await connectToDatabase()
-  
   try {
+    await connectToDatabase()
+    
     // Find posts with matching tags, excluding the current post
     const relatedPosts = await BlogPost.find({
       _id: { $ne: postId },
@@ -99,9 +100,9 @@ export async function getRelatedBlogPosts(postId: string, tags: string[], locale
 
 // Get blog posts by tag
 export async function getBlogPostsByTag(tag: string, locale: Locale) {
-  await connectToDatabase()
-  
   try {
+    await connectToDatabase()
+    
     const posts = await BlogPost.find({
       tags: tag,
       locale,
@@ -125,55 +126,57 @@ export async function getBlogPostsByTag(tag: string, locale: Locale) {
 // Create a new blog post
 export async function createBlogPost(postData: Partial<IBlogPost>) {
   try {
-    console.log('Connecting to database...')
     await connectToDatabase()
     
-    console.log('Creating new blog post with data:', JSON.stringify({
-      title: postData.title,
+    // Ensure slug isn't already taken for this locale
+    const existingPost = await BlogPost.findOne({
       slug: postData.slug,
       locale: postData.locale
-    }))
+    }).lean();
     
-    const newPost = new BlogPost(postData)
-    
-    console.log('Validating blog post...')
-    const validationError = newPost.validateSync()
-    if (validationError) {
-      console.error('Validation error:', validationError)
-      throw validationError
+    if (existingPost) {
+      const error = new Error(`A blog post with slug "${postData.slug}" already exists in ${postData.locale} locale`);
+      (error as any).code = 11000; // Set code to make detection easier
+      (error as any).name = 'MongoServerError';
+      throw error;
     }
     
-    console.log('Saving blog post...')
-    await newPost.save()
-    console.log('Blog post saved successfully with ID:', newPost._id)
+    // Create the blog post
+    const newPost = new BlogPost(postData);
+    await newPost.save();
     
-    return newPost
+    return newPost;
   } catch (error) {
-    console.error('Error creating blog post:', error)
-    // Log more details about the error
-    if (error instanceof Error) {
-      console.error('Error name:', error.name)
-      console.error('Error message:', error.message)
-      console.error('Error stack:', error.stack)
-      
-      // Check for MongoDB duplicate key error
-      if (error.name === 'MongoServerError' && (error as any).code === 11000) {
-        console.error('Duplicate key error - a blog post with this slug likely already exists')
-      }
-    }
-    throw error
+    console.error('Error creating blog post:', error);
+    throw error;
   }
 }
 
 // Update a blog post
 export async function updateBlogPost(id: string, postData: Partial<IBlogPost>) {
-  await connectToDatabase()
-  
   try {
+    await connectToDatabase()
+    
+    // Check if updating slug and ensure it's not taken
+    if (postData.slug) {
+      const existingPost = await BlogPost.findOne({
+        slug: postData.slug,
+        locale: postData.locale,
+        _id: { $ne: id }
+      }).lean();
+      
+      if (existingPost) {
+        throw new Error(`A blog post with slug "${postData.slug}" already exists in ${postData.locale} locale`);
+      }
+    }
+    
     const updatedPost = await BlogPost.findByIdAndUpdate(
       id,
-      { ...postData, lastModified: new Date() },
-      { new: true }
+      { 
+        ...postData, 
+        lastModified: new Date() 
+      },
+      { new: true, runValidators: true }
     )
     return updatedPost
   } catch (error) {
@@ -184,9 +187,9 @@ export async function updateBlogPost(id: string, postData: Partial<IBlogPost>) {
 
 // Delete a blog post
 export async function deleteBlogPost(id: string) {
-  await connectToDatabase()
-  
   try {
+    await connectToDatabase()
+    
     await BlogPost.findByIdAndDelete(id)
     return { success: true }
   } catch (error) {
