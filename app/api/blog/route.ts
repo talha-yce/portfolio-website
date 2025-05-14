@@ -21,6 +21,8 @@ interface IBlogPost {
   metaDescription?: string;
   lastModified?: Date;
   _id?: string;
+  readingTime?: number;
+  relatedPosts?: string[];
 }
 
 // BlogPost şeması (basitleştirilmiş)
@@ -38,7 +40,9 @@ const BlogPostSchema = new mongoose.Schema({
   coverImage: { type: String },
   coverImageAlt: { type: String },
   metaDescription: { type: String },
-  lastModified: { type: Date, default: Date.now }
+  lastModified: { type: Date, default: Date.now },
+  readingTime: { type: Number, default: 0 },
+  relatedPosts: { type: [String], default: [] }
 }, {
   timestamps: true
 });
@@ -79,9 +83,17 @@ export async function GET(request: NextRequest) {
     await connectDB();
     let BlogPost: any;
     try {
-      BlogPost = mongoose.model('BlogPost');
-    } catch (e) {
+      // Önce mevcut modeli silmeye çalışalım
+      if (mongoose.models.BlogPost) {
+        delete mongoose.models.BlogPost;
+      }
+      // Yeni model oluştur
       BlogPost = mongoose.model('BlogPost', BlogPostSchema);
+      console.log('[API] BlogPost modeli yeniden oluşturuldu');
+    } catch (e) {
+      console.error('[API] Model oluşturma hatası:', e);
+      BlogPost = mongoose.model('BlogPost');
+      console.log('[API] Mevcut BlogPost modeli kullanılıyor');
     }
     
     // If slug and locale are provided, fetch a single post
@@ -135,7 +147,9 @@ export async function POST(request: NextRequest) {
       locale: data.locale,
       hasCoverImage: !!data.coverImage,
       hasMetaDescription: !!data.metaDescription,
-      contentSections: Array.isArray(data.content) ? data.content.length : 'content is not an array'
+      contentSections: Array.isArray(data.content) ? data.content.length : 'content is not an array',
+      readingTime: data.readingTime,
+      hasRelatedPosts: Array.isArray(data.relatedPosts) && data.relatedPosts.length > 0
     });
     
     // Bir örnek içerik bölümünü logla (varsa)
@@ -150,11 +164,17 @@ export async function POST(request: NextRequest) {
     // Model oluştur veya al
     let BlogPost: any;
     try {
+      // Önce mevcut modeli silmeye çalışalım
+      if (mongoose.models.BlogPost) {
+        delete mongoose.models.BlogPost;
+      }
+      // Yeni model oluştur
+      BlogPost = mongoose.model('BlogPost', BlogPostSchema);
+      console.log('[API] BlogPost modeli yeniden oluşturuldu');
+    } catch (e) {
+      console.error('[API] Model oluşturma hatası:', e);
       BlogPost = mongoose.model('BlogPost');
       console.log('[API] Mevcut BlogPost modeli kullanılıyor');
-    } catch (e) {
-      BlogPost = mongoose.model('BlogPost', BlogPostSchema);
-      console.log('[API] Yeni BlogPost modeli oluşturuldu');
     }
     
     // Mevcut slug kontrolü
@@ -181,14 +201,22 @@ export async function POST(request: NextRequest) {
       isPublished: data.isPublished !== false,
       coverImage: data.coverImage || '',
       coverImageAlt: data.coverImageAlt || '',
-      metaDescription: data.metaDescription || ''
+      metaDescription: data.metaDescription || '',
+      readingTime: data.readingTime || 0,
+      relatedPosts: data.relatedPosts || []
     });
     
     const savedBlog = await blogDoc.save();
     console.log('[API] Blog yazısı başarıyla oluşturuldu:', {
       id: savedBlog._id.toString(),
-      title: savedBlog.title
+      title: savedBlog.title,
+      slug: savedBlog.slug,
+      readingTime: savedBlog.readingTime,
+      hasRelatedPosts: Array.isArray(savedBlog.relatedPosts) && savedBlog.relatedPosts.length > 0
     });
+    
+    // Tam veri yapısını logla
+    console.log('[API] Kaydedilen blog verisi:', JSON.stringify(savedBlog.toObject(), null, 2));
     
     return NextResponse.json({
       success: true,
@@ -231,9 +259,17 @@ export async function PUT(request: NextRequest) {
     
     let BlogPost: any;
     try {
-      BlogPost = mongoose.model('BlogPost');
-    } catch (e) {
+      // Önce mevcut modeli silmeye çalışalım
+      if (mongoose.models.BlogPost) {
+        delete mongoose.models.BlogPost;
+      }
+      // Yeni model oluştur
       BlogPost = mongoose.model('BlogPost', BlogPostSchema);
+      console.log('[API] BlogPost modeli yeniden oluşturuldu');
+    } catch (e) {
+      console.error('[API] Model oluşturma hatası:', e);
+      BlogPost = mongoose.model('BlogPost');
+      console.log('[API] Mevcut BlogPost modeli kullanılıyor');
     }
     
     const updatedPost = await (BlogPost as any).findByIdAndUpdate(
@@ -268,9 +304,17 @@ export async function DELETE(request: NextRequest) {
     
     let BlogPost: any;
     try {
-      BlogPost = mongoose.model('BlogPost');
-    } catch (e) {
+      // Önce mevcut modeli silmeye çalışalım
+      if (mongoose.models.BlogPost) {
+        delete mongoose.models.BlogPost;
+      }
+      // Yeni model oluştur
       BlogPost = mongoose.model('BlogPost', BlogPostSchema);
+      console.log('[API] BlogPost modeli yeniden oluşturuldu');
+    } catch (e) {
+      console.error('[API] Model oluşturma hatası:', e);
+      BlogPost = mongoose.model('BlogPost');
+      console.log('[API] Mevcut BlogPost modeli kullanılıyor');
     }
     
     await (BlogPost as any).findByIdAndDelete(id);
