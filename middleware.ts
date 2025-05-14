@@ -68,6 +68,12 @@ export function middleware(request: NextRequest) {
     (locale) => !pathname.startsWith(`/${locale}/`) && pathname !== `/${locale}`
   )
 
+  // API rotalarını veya admin yollarını kontrol et
+  if (pathname.includes('/api/')) {
+    // API rotalarına dil yönlendirmesi yapma
+    return NextResponse.next()
+  }
+  
   // Locale yönlendirmesi yap
   if (pathnameIsMissingLocale) {
     // Locale'i belirle
@@ -84,10 +90,13 @@ export function middleware(request: NextRequest) {
 export const config = {
   matcher: [
     // Locale'leri ve statik dosya isteklerini es geç
-    '/((?!api|_next/static|_next/image|favicon.ico|.*\\..*|sitemap.xml|robots.txt).*)',
+    '/((?!_next/static|_next/image|favicon.ico|.*\\..*|sitemap.xml|robots.txt).*)',
     // Admin rotalarını ekle
     '/admin/:path*',
-    '/:locale/admin/:path*'
+    '/:locale/admin/:path*',
+    // API rotalarını da işle
+    '/api/:path*',
+    '/:locale/api/:path*'
   ],
 }
 

@@ -24,7 +24,9 @@ export default function AdminLogin() {
     setError('')
 
     try {
-      const response = await fetch('/api/admin/authenticate', {
+      // Mutlak URL kullan - locale'den etkilenmemesi için
+      const baseUrl = window.location.origin;
+      const response = await fetch(`${baseUrl}/api/admin/authenticate`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
