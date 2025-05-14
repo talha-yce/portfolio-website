@@ -131,7 +131,7 @@ export default function CodeBackground() {
   if (!mounted) return null;
 
   return (
-    <div className="fixed inset-0 overflow-hidden -z-10">
+    <div className="relative w-full h-96 rounded-xl bg-gradient-to-br from-primary-50 to-accent-50/30 shadow-inner overflow-hidden">
       {snippets.map((snippet, index) => (
         <pre
           key={index}
@@ -141,7 +141,8 @@ export default function CodeBackground() {
             top: `${Math.random() * 100}%`,
             left: `${Math.random() * 100}%`,
             transform: `rotate(${Math.random() * 360}deg)`,
-            opacity: 0.08,
+            opacity: 0.4,
+            maxWidth: "80%", 
             whiteSpace: "pre-wrap",
             pointerEvents: "none",
           }}
@@ -149,6 +150,11 @@ export default function CodeBackground() {
           {snippet}
         </pre>
       ))}
+      <div className="absolute inset-0 flex items-center justify-center">
+        <div className="text-2xl font-bold text-primary-700 bg-white/80 px-6 py-3 rounded-lg backdrop-blur-sm">
+          &lt;/&gt; Code
+        </div>
+      </div>
     </div>
   );
 }

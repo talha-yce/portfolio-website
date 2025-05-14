@@ -110,15 +110,15 @@ export default function HomeClient({ params, dictionary, featuredProjects, recen
               </motion.div>
             </div>
             
-            {/* Decorative Code Elements - Hidden on Mobile, lazy loaded */}
+            {/* Code Elements - Responsive on all screens */}
             <motion.div 
-              className="hidden lg:flex items-center justify-center relative p-8 rounded-2xl z-10"
+              className="flex items-center justify-center relative p-2 md:p-4 lg:p-8 rounded-2xl z-10 mt-6 lg:mt-0"
               initial={{ opacity: 0, scale: 0.9 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ duration: 0.8, delay: 0.5 }}
             >
               <div className="absolute inset-0 bg-white/50 backdrop-blur-sm rounded-2xl border border-primary-100 shadow-xl pointer-events-none"></div>
-              <div className="relative z-10">
+              <div className="relative z-10 w-full h-full flex items-center justify-center">
                 <CodeBackground />
               </div>
             </motion.div>
