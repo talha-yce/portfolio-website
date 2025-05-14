@@ -107,19 +107,22 @@ if (42 === answer) {
 }`,
 ]
 
+// Her snippet için benzersiz bir anahtar oluştur
+let snippetId = 0;
+
 // Generate a random position for each snippet
 const getRandomPosition = () => {
   return {
-    x: Math.random() * 90 + 5, // Keep snippets within 5% of edges
+    id: snippetId++,
+    x: Math.random() * 90 + 5,
     y: Math.random() * 90 + 5,
-    rotation: Math.random() * 6 - 3, // Daha hafif rotasyon
+    rotation: Math.random() * 6 - 3,
     scale: 0.9 + Math.random() * 0.3,
-    opacity: 0.4 + Math.random() * 0.3, // Daha görünür
-    animationDuration: 40 + Math.random() * 60, // Daha yavaş ve nefesli hareket
-    animationDelay: Math.random() * 10,
-    waveSize: 10 + Math.random() * 20, // Dalga büyüklüğü
-    waveSpeed: 0.5 + Math.random() * 0.5, // Dalga hızı
-    colorVariation: Math.random() > 0.5 // Renk varyasyonu için
+    opacity: 0.4 + Math.random() * 0.3,
+    animationDuration: 25 + Math.random() * 20, // Biraz daha hızlı
+    animationDelay: Math.random() * 2, // Daha kısa gecikme
+    waveSize: 30 + Math.random() * 40, // Daha büyük hareket
+    colorVariation: Math.random() > 0.5
   }
 }
 
@@ -132,6 +135,7 @@ const getRandomSnippets = (count: number) => {
 };
 
 interface CodeSnippet {
+  id: number
   code: string
   x: number
   y: number
@@ -141,7 +145,6 @@ interface CodeSnippet {
   animationDuration: number
   animationDelay: number
   waveSize: number
-  waveSpeed: number
   colorVariation: boolean
 }
 
@@ -151,7 +154,7 @@ export default function CodeBackground() {
 
   useEffect(() => {
     setMounted(true);
-    setSnippets(getRandomSnippets(20)); // Daha fazla kod bloğu
+    setSnippets(getRandomSnippets(15));
 
     // Periyodik olarak yeni snippetler ekle/çıkar
     const interval = setInterval(() => {
@@ -168,7 +171,7 @@ export default function CodeBackground() {
         // 3 yeni snippet ekle
         return [...remainingSnippets, ...getRandomSnippets(3)];
       });
-    }, 6000); // Her 6 saniyede bir
+    }, 6000);
 
     return () => clearInterval(interval);
   }, []);
@@ -177,40 +180,39 @@ export default function CodeBackground() {
 
   return (
     <div className="fixed inset-0 w-full h-full overflow-hidden -z-10 pointer-events-none">
-      {snippets.map((snippet, index) => (
-        <pre
-          key={index}
-          className={`code-snippet font-mono text-sm absolute pointer-events-none shadow-sm ${snippet.colorVariation ? 'text-primary-700' : 'text-accent-700'}`}
+      {snippets.map((snippet) => (
+        <div
+          key={snippet.id}
+          className={`absolute font-mono text-sm pointer-events-none ${snippet.colorVariation ? 'text-primary-700' : 'text-accent-700'}`}
           style={{
             top: `${snippet.y}%`,
             left: `${snippet.x}%`,
-            transform: `rotate(${snippet.rotation}deg) scale(${snippet.scale})`,
             opacity: snippet.opacity,
-            maxWidth: "350px", 
-            whiteSpace: "pre-wrap",
-            zIndex: -5, // Diğer içeriklerden daha arkada
-            animation: `float-${index} ${snippet.animationDuration}s infinite ease-in-out ${snippet.animationDelay}s`,
+            zIndex: -5,
+            maxWidth: "300px",
+            animation: `float-${snippet.id} ${snippet.animationDuration}s infinite ease-in-out`,
+            animationDelay: `${snippet.animationDelay}s`,
+            willChange: "transform"
           }}
         >
-          {snippet.code}
-        </pre>
+          <pre className="whitespace-pre-wrap">{snippet.code}</pre>
+        </div>
       ))}
 
-      {/* Stilizasyonu ayrı bir öğede tutarak tekrarı önleme */}
       <style jsx global>{`
-        ${snippets.map((snippet, index) => `
-          @keyframes float-${index} {
+        ${snippets.map((snippet) => `
+          @keyframes float-${snippet.id} {
             0% {
               transform: translate(0, 0) rotate(${snippet.rotation}deg) scale(${snippet.scale});
             }
             25% {
-              transform: translate(${snippet.waveSize * 0.5}px, ${snippet.waveSize * 0.8}px) rotate(${snippet.rotation + 0.5}deg) scale(${snippet.scale + 0.02});
+              transform: translate(${snippet.waveSize * 0.5}px, ${snippet.waveSize * 0.8}px) rotate(${snippet.rotation + 1}deg) scale(${snippet.scale + 0.02});
             }
             50% {
-              transform: translate(${snippet.waveSize}px, ${-snippet.waveSize * 0.5}px) rotate(${snippet.rotation + 1}deg) scale(${snippet.scale + 0.05});
+              transform: translate(${snippet.waveSize}px, ${-snippet.waveSize * 0.5}px) rotate(${snippet.rotation + 2}deg) scale(${snippet.scale + 0.05});
             }
             75% {
-              transform: translate(${-snippet.waveSize * 0.8}px, ${-snippet.waveSize * 0.8}px) rotate(${snippet.rotation + 0.5}deg) scale(${snippet.scale + 0.03});
+              transform: translate(${-snippet.waveSize * 0.8}px, ${-snippet.waveSize * 0.8}px) rotate(${snippet.rotation + 1}deg) scale(${snippet.scale + 0.03});
             }
             100% {
               transform: translate(0, 0) rotate(${snippet.rotation}deg) scale(${snippet.scale});
