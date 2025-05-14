@@ -78,7 +78,19 @@ export async function POST(request: NextRequest) {
     // Create the blog post
     const newPost = await createBlogPost(data);
     console.log('Blog post created successfully with ID:', newPost._id);
-    return NextResponse.json(sanitizeForClient(newPost), { status: 201 });
+    
+    // Prepare post for client response - convert MongoDB document to a plain object
+    const safePost = {
+      _id: String(newPost._id),
+      title: String(newPost.title),
+      slug: String(newPost.slug),
+      locale: String(newPost.locale),
+      excerpt: String(newPost.excerpt),
+      success: true,
+      message: 'Blog post created successfully'
+    };
+    
+    return NextResponse.json(safePost, { status: 201 });
   } catch (error) {
     console.error('Error details in blog post creation:', error);
     

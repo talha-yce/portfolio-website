@@ -112,22 +112,28 @@ export default function BlogEditor() {
         body: JSON.stringify(blogPostData),
       })
       
+      const responseData = await response.json()
+      
       if (!response.ok) {
-        const errorData = await response.json()
-        throw new Error(errorData.error || 'Failed to create blog post')
+        throw new Error(responseData.error || 'Failed to create blog post')
       }
       
       // Success
       toast.success('Blog post created successfully!')
       
-      // Navigate to the blog post
-      setTimeout(() => {
-        router.push(`/${data.locale}/blog/${data.slug}`)
-      }, 1500)
+      // Navigate to the blog management page first to show success
+      router.push(`/${data.locale}/admin/blog`)
     } catch (error) {
       console.error('Error creating blog post:', error)
-      toast.error(error instanceof Error ? error.message : 'An unexpected error occurred')
-    } finally {
+      
+      // Show a more helpful error message
+      if (error instanceof Error) {
+        toast.error(`Error: ${error.message}`)
+      } else {
+        toast.error('An unexpected error occurred while creating the blog post')
+      }
+      
+      // Keep the form enabled so the user can try again
       setIsSubmitting(false)
     }
   }
