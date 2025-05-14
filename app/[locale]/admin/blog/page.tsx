@@ -1,28 +1,34 @@
 'use client'
 
+import React from 'react'
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
-import { useRouter } from 'next/navigation'
+import { useRouter, useSearchParams } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Badge } from '@/components/ui/badge'
 import { Skeleton } from '@/components/ui/skeleton'
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
-import { Pencil, Trash, Plus, AlertCircle, Eye } from 'lucide-react'
+import { Pencil, Trash, Plus, AlertCircle, Eye, Filter } from 'lucide-react'
 import { toast } from 'sonner'
 
 interface PageProps {
-  params: {
+  params: Promise<{
     locale: string
-  }
+  }>
 }
 
 export default function BlogAdminPage({ params }: PageProps) {
+  const { locale } = React.use(params)
   const [posts, setPosts] = useState<any[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+  const [activeFilter, setActiveFilter] = useState<string | null>(null)
+  
   const router = useRouter()
+  const searchParams = useSearchParams()
+  const filterParam = searchParams.get('filter')
 
   // Fetch blog posts
   useEffect(() => {
@@ -31,7 +37,25 @@ export default function BlogAdminPage({ params }: PageProps) {
         setLoading(true)
         setError(null)
         
-        const res = await fetch(`/api/blog?locale=${params.locale}`)
+        // Check if we need to filter by locale from URL parameter
+        const localeFilter = filterParam || activeFilter
+        let apiUrl = '/api/blog/all'
+        
+        // If filter is specified, add it to the API URL
+        if (localeFilter) {
+          apiUrl += `?locale=${localeFilter}`
+          setActiveFilter(localeFilter)
+        }
+        
+        // Fetch posts with filter if specified
+        const res = await fetch(apiUrl, {
+          cache: 'no-store',
+          headers: {
+            'Cache-Control': 'no-cache, no-store, must-revalidate',
+            'Pragma': 'no-cache',
+            'Expires': '0'
+          }
+        })
         
         if (!res.ok) {
           throw new Error('Failed to fetch blog posts')
@@ -48,7 +72,17 @@ export default function BlogAdminPage({ params }: PageProps) {
     }
     
     fetchPosts()
-  }, [params.locale])
+  }, [filterParam, activeFilter])
+
+  // Set filter function
+  const setFilter = (filter: string | null) => {
+    if (filter) {
+      router.push(`/${locale}/admin/blog?filter=${filter}`)
+    } else {
+      router.push(`/${locale}/admin/blog`)
+    }
+    setActiveFilter(filter)
+  }
 
   // Delete a blog post
   const deletePost = async (id: string, title: string) => {
@@ -72,6 +106,12 @@ export default function BlogAdminPage({ params }: PageProps) {
       console.error('Error deleting blog post:', err)
       toast.error(err instanceof Error ? err.message : 'Failed to delete blog post')
     }
+  }
+
+  // Get current filter display text
+  const getFilterText = () => {
+    if (!activeFilter) return 'All Languages'
+    return activeFilter.toUpperCase() === 'TR' ? 'Turkish Only' : 'English Only'
   }
 
   if (loading) {
@@ -105,8 +145,22 @@ export default function BlogAdminPage({ params }: PageProps) {
   return (
     <div className="container py-12">
       <div className="flex justify-between items-center mb-8">
-        <h1 className="text-3xl font-bold">Blog Management</h1>
-        <Button onClick={() => router.push(`/${params.locale}/admin/blog/editor/new`)}>
+        <div className="flex items-center">
+          <h1 className="text-3xl font-bold">Blog Management</h1>
+          <div className="ml-4 flex items-center">
+            <Filter className="w-4 h-4 mr-2 text-gray-500" />
+            <select 
+              value={activeFilter || ''}
+              onChange={(e) => setFilter(e.target.value || null)}
+              className="border-none bg-transparent text-sm font-medium text-gray-500 focus:outline-none"
+            >
+              <option value="">All Languages</option>
+              <option value="tr">Turkish Only</option>
+              <option value="en">English Only</option>
+            </select>
+          </div>
+        </div>
+        <Button onClick={() => router.push(`/${locale}/admin/blog/editor/new`)}>
           <Plus className="mr-2 h-4 w-4" /> Create New Post
         </Button>
       </div>
@@ -120,7 +174,9 @@ export default function BlogAdminPage({ params }: PageProps) {
         <TabsContent value="published">
           <div className="space-y-4">
             {posts.filter(post => post.isPublished).length === 0 ? (
-              <p className="text-center text-gray-500 py-10">No published posts yet.</p>
+              <p className="text-center text-gray-500 py-10">
+                No published posts {activeFilter ? `in ${activeFilter.toUpperCase()}` : ''}.
+              </p>
             ) : (
               posts
                 .filter(post => post.isPublished)
@@ -128,7 +184,7 @@ export default function BlogAdminPage({ params }: PageProps) {
                   <BlogPostCard 
                     key={post._id} 
                     post={post} 
-                    locale={params.locale} 
+                    locale={locale} 
                     onDelete={deletePost} 
                   />
                 ))
@@ -139,7 +195,9 @@ export default function BlogAdminPage({ params }: PageProps) {
         <TabsContent value="drafts">
           <div className="space-y-4">
             {posts.filter(post => !post.isPublished).length === 0 ? (
-              <p className="text-center text-gray-500 py-10">No draft posts.</p>
+              <p className="text-center text-gray-500 py-10">
+                No draft posts {activeFilter ? `in ${activeFilter.toUpperCase()}` : ''}.
+              </p>
             ) : (
               posts
                 .filter(post => !post.isPublished)
@@ -147,7 +205,7 @@ export default function BlogAdminPage({ params }: PageProps) {
                   <BlogPostCard 
                     key={post._id} 
                     post={post} 
-                    locale={params.locale} 
+                    locale={locale} 
                     onDelete={deletePost} 
                   />
                 ))
@@ -169,10 +227,17 @@ function BlogPostCard({ post, locale, onDelete }: BlogPostCardProps) {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>{post.title}</CardTitle>
-        <CardDescription>
-          {post.formattedDate || new Date(post.date).toLocaleDateString()}
-        </CardDescription>
+        <div className="flex justify-between">
+          <div>
+            <CardTitle>{post.title}</CardTitle>
+            <CardDescription>
+              {post.formattedDate || new Date(post.date).toLocaleDateString()}
+            </CardDescription>
+          </div>
+          <Badge className="h-6 ml-2" variant={post.locale === 'tr' ? 'destructive' : 'default'}>
+            {post.locale?.toUpperCase() || locale.toUpperCase()}
+          </Badge>
+        </div>
       </CardHeader>
       <CardContent>
         <p className="line-clamp-2 text-gray-500 mb-4">{post.excerpt}</p>
@@ -185,7 +250,7 @@ function BlogPostCard({ post, locale, onDelete }: BlogPostCardProps) {
       <CardFooter className="flex justify-between">
         <div className="flex space-x-2">
           <Button asChild variant="outline" size="sm">
-            <Link href={`/${locale}/blog/${post.slug}`}>
+            <Link href={`/${post.locale || locale}/blog/${post.slug}`}>
               <Eye className="mr-2 h-4 w-4" /> View
             </Link>
           </Button>

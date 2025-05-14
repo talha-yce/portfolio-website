@@ -1,14 +1,8 @@
-import type React from "react"
+import React from "react"
 import type { Metadata } from "next"
-import { Space_Grotesk } from "next/font/google"
 import { siteConfig } from "@/config/site"
 
 import "./globals.css"
-
-const spaceGrotesk = Space_Grotesk({
-  subsets: ["latin"],
-  weight: ["300", "400", "500", "600", "700"],
-})
 
 export const metadata: Metadata = {
   title: {
@@ -64,13 +58,18 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="en">
-      <head />
-      <body className={spaceGrotesk.className}>
-        {children}
+    <html lang="en" suppressHydrationWarning>
+      <head>
+        <link
+          rel="stylesheet"
+          href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200"
+        />
+      </head>
+      <body>
+        <React.StrictMode>
+          {children}
+        </React.StrictMode>
       </body>
     </html>
   )
 }
-
-import './globals.css'

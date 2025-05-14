@@ -1,6 +1,6 @@
 import mongoose from 'mongoose';
 
-const MONGODB_URI = 'mongodb+srv://210541018:7sor4YST3m7N5GyV@ads-test.mnm2j0z.mongodb.net/web';
+const MONGODB_URI = process.env.MONGODB_URI || 'mongodb+srv://210541018:7sor4YST3m7N5GyV@ads-test.mnm2j0z.mongodb.net/web';
 
 if (!MONGODB_URI) {
   throw new Error('Please define the MONGODB_URI environment variable');
@@ -37,14 +37,25 @@ async function connectToDatabase() {
       bufferCommands: false,
     };
 
-    cached.promise = mongoose.connect(MONGODB_URI, opts).then((m) => m);
+    console.log('Connecting to MongoDB...');
+    
+    cached.promise = mongoose.connect(MONGODB_URI, opts)
+      .then((mongoose) => {
+        console.log('MongoDB connected successfully');
+        return mongoose;
+      })
+      .catch((error) => {
+        console.error('MongoDB connection error:', error);
+        throw error;
+      });
   }
   
   try {
     cached.conn = await cached.promise;
-  } catch (e) {
+  } catch (error) {
     cached.promise = null;
-    throw e;
+    console.error('Failed to resolve MongoDB connection:', error);
+    throw error;
   }
 
   return cached.conn;

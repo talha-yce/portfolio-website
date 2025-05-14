@@ -1,22 +1,56 @@
 'use client'
 
-import { useState } from 'react'
+import React from 'react'
+import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
-import { useParams } from 'next/navigation'
-import type { Dictionary } from '@/lib/i18n/dictionaries'
 
-interface AdminLoginProps {
-  dictionary: Dictionary
+interface PageProps {
+  params: Promise<{
+    locale: string
+  }>
 }
 
-export default function AdminLogin() {
+export default function AdminLogin({ params }: PageProps) {
+  const { locale } = React.use(params)
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [loading, setLoading] = useState(false)
+  const [seedLoading, setSeedLoading] = useState(false)
   const [error, setError] = useState('')
+  const [seedMessage, setSeedMessage] = useState('')
+  const [isClient, setIsClient] = useState(false)
   const router = useRouter()
-  const params = useParams()
-  const locale = params.locale as string
+  
+  // Prevent hydration mismatch by ensuring we're on the client
+  useEffect(() => {
+    setIsClient(true)
+  }, [])
+
+  // Check for existing admin user in development mode
+  useEffect(() => {
+    if (process.env.NODE_ENV === 'development' && isClient) {
+      const checkAdminUser = async () => {
+        try {
+          const baseUrl = window.location.origin;
+          const response = await fetch(`${baseUrl}/api/admin/seed`, {
+            method: 'GET',
+          })
+          
+          const data = await response.json()
+          
+          if (data.success && data.exists) {
+            setSeedMessage(`Test admin exists: ${data.user.email}`)
+          } else {
+            setSeedMessage('No test admin found. Click "Create Test Admin" to create one.')
+          }
+        } catch (error) {
+          console.error('Error checking admin user:', error)
+        }
+      }
+      
+      checkAdminUser()
+    }
+  }, [isClient])
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -24,7 +58,9 @@ export default function AdminLogin() {
     setError('')
 
     try {
-      // Mutlak URL kullan - locale'den etkilenmemesi için
+      console.log('Login: Attempting login with:', { email })
+      
+      // Use absolute URL to avoid locale-related issues
       const baseUrl = window.location.origin;
       const response = await fetch(`${baseUrl}/api/admin/authenticate`, {
         method: 'POST',
@@ -35,35 +71,97 @@ export default function AdminLogin() {
         credentials: 'include'
       })
 
-      // Check for empty responses
-      const text = await response.text()
-      if (!text) {
-        throw new Error('Server returned an empty response')
-      }
+      // Handle the response
+      let data
+      let text
       
-      // Parse the JSON response safely
-      const data = text ? JSON.parse(text) : {}
+      try {
+        text = await response.text()
+        console.log('Login: Server response text:', text)
+        
+        try {
+          data = text ? JSON.parse(text) : {}
+        } catch (parseError) {
+          console.error('Login: JSON parse error:', parseError)
+          throw new Error('Failed to parse server response')
+        }
+      } catch (responseError) {
+        console.error('Login: Response handling error:', responseError)
+        throw new Error('Failed to process server response')
+      }
 
       if (!response.ok) {
-        throw new Error(data.message || 'Authentication failed')
+        console.error('Login: Failed with status:', response.status)
+        throw new Error(data.message || `Authentication failed (${response.status})`)
       }
 
-      router.push(`/${locale}/admin/dashboard`)
+      console.log('Login: Successful, redirecting to dashboard')
+      
+      // Create a delay before redirecting
+      setTimeout(() => {
+        console.log('Login: Executing delayed redirect...')
+        // Use a form to submit to the dashboard route
+        const form = document.createElement('form')
+        form.method = 'GET'
+        form.action = `/${locale}/admin/dashboard`
+        document.body.appendChild(form)
+        form.submit()
+      }, 500) // Delay for 500ms to ensure cookie is set
     } catch (error: any) {
-      console.error('Login error:', error)
+      console.error('Login: Error occurred:', error)
       setError(error.message || 'An error occurred during login')
     } finally {
       setLoading(false)
     }
   }
+  
+  const handleCreateTestAdmin = async () => {
+    if (process.env.NODE_ENV !== 'development') return
+    
+    setSeedLoading(true)
+    setSeedMessage('')
+    
+    try {
+      const baseUrl = window.location.origin;
+      const response = await fetch(`${baseUrl}/api/admin/seed`, {
+        method: 'POST',
+      })
+      
+      const data = await response.json()
+      
+      if (data.success) {
+        setSeedMessage(`Test admin created: ${data.user.email} (Password: admin123456)`)
+        // Prefill the form with the test credentials
+        setEmail(data.user.email)
+        setPassword('admin123456')
+      } else {
+        setSeedMessage(`Failed: ${data.message}`)
+      }
+    } catch (error: any) {
+      console.error('Error creating test admin:', error)
+      setSeedMessage('Failed to create test admin')
+    } finally {
+      setSeedLoading(false)
+    }
+  }
+
+  // Only render content after client-side hydration
+  if (!isClient) {
+    return <div className="min-h-screen bg-gray-50 dark:bg-gray-900"></div>
+  }
 
   return (
-    <div className="flex min-h-screen flex-col items-center justify-center p-4">
+    <div className="flex min-h-screen flex-col items-center justify-center p-4" suppressHydrationWarning>
       <div className="w-full max-w-md space-y-8 rounded-lg bg-white p-8 shadow-md dark:bg-gray-800">
         <div>
           <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900 dark:text-white">
             Admin Login
           </h2>
+          {process.env.NODE_ENV === 'development' && (
+            <p className="mt-2 text-center text-sm text-gray-600 dark:text-gray-400">
+              Development mode
+            </p>
+          )}
         </div>
         
         {error && (
@@ -130,6 +228,22 @@ export default function AdminLogin() {
               {loading ? 'Signing in...' : 'Sign in'}
             </button>
           </div>
+          
+          {process.env.NODE_ENV === 'development' && (
+            <div className="mt-4">
+              {seedMessage && (
+                <p className="mb-2 text-sm text-gray-600 dark:text-gray-400">{seedMessage}</p>
+              )}
+              <button
+                type="button"
+                onClick={handleCreateTestAdmin}
+                disabled={seedLoading}
+                className="w-full rounded-md bg-gray-600 px-3 py-2 text-sm font-medium text-white hover:bg-gray-500 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 disabled:opacity-70 disabled:cursor-not-allowed"
+              >
+                {seedLoading ? 'Creating Test Admin...' : 'Create Test Admin'}
+              </button>
+            </div>
+          )}
         </form>
       </div>
     </div>
