@@ -57,55 +57,58 @@ export default function HomeClient({ params, dictionary, featuredProjects, recen
         >
           <div className="grid gap-6 py-16 md:py-24 lg:py-16 lg:gap-12 lg:grid-cols-[1fr_400px]">
             <div className="space-y-6 relative z-40">
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6 }}
-              >
-                <h1 className="text-5xl font-bold tracking-tight md:text-6xl lg:text-7xl">
-                  <span className="inline-block bg-clip-text text-transparent bg-gradient-to-r from-primary-600 to-accent-600 pb-2">
-                    {dictionary.home.heroTitle}
-                  </span>
-                </h1>
-              </motion.div>
-              
-              <motion.p 
-                className="text-muted-foreground text-lg md:text-xl max-w-2xl leading-relaxed"
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6, delay: 0.2 }}
-              >
-                {dictionary.home.heroSubtitle}
-              </motion.p>
-              
-              <motion.div 
-                className="flex flex-wrap gap-4 pt-6 relative z-50"
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6, delay: 0.4 }}
-              >
-                <Link href={getLocalizedPathname("/projects", locale)} className="relative z-50">
-                  <Button variant="default" className="gap-2 rounded-full px-6 text-base shadow-lg shadow-primary-500/20 hover:shadow-primary-500/40 transition-all duration-300">
-                    {dictionary.common.projects}
-                    <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
-                  </Button>
-                </Link>
-                <Link href={getLocalizedPathname("/blog", locale)} className="relative z-50">
-                  <Button variant="outline" className="gap-2 rounded-full px-6 text-base border-primary-200 hover:bg-primary-50 transition-all duration-300">
-                    {dictionary.common.blog}
-                    <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
-                  </Button>
-                </Link>
-              </motion.div>
-              
-              <motion.div 
-                className="py-6 relative z-50"
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6, delay: 0.6 }}
-              >
-                <SocialLinks size={24} />
-              </motion.div>
+              {/* Hero content with backdrop blur */}
+              <div className="backdrop-blur-md bg-white/30 p-6 rounded-2xl shadow-sm border border-white/20 relative">
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.6 }}
+                >
+                  <h1 className="text-5xl font-bold tracking-tight md:text-6xl lg:text-7xl">
+                    <span className="inline-block bg-clip-text text-transparent bg-gradient-to-r from-primary-600 to-accent-600 pb-2">
+                      {dictionary.home.heroTitle}
+                    </span>
+                  </h1>
+                </motion.div>
+                
+                <motion.p 
+                  className="text-muted-foreground text-lg md:text-xl max-w-2xl leading-relaxed"
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.6, delay: 0.2 }}
+                >
+                  {dictionary.home.heroSubtitle}
+                </motion.p>
+                
+                <motion.div 
+                  className="flex flex-wrap gap-4 pt-6 relative z-50"
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.6, delay: 0.4 }}
+                >
+                  <Link href={getLocalizedPathname("/projects", locale)} className="relative z-50">
+                    <Button variant="default" className="gap-2 rounded-full px-6 text-base shadow-lg shadow-primary-500/20 hover:shadow-primary-500/40 transition-all duration-300">
+                      {dictionary.common.projects}
+                      <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
+                    </Button>
+                  </Link>
+                  <Link href={getLocalizedPathname("/blog", locale)} className="relative z-50">
+                    <Button variant="outline" className="gap-2 rounded-full px-6 text-base border-primary-200 hover:bg-primary-50 transition-all duration-300">
+                      {dictionary.common.blog}
+                      <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
+                    </Button>
+                  </Link>
+                </motion.div>
+                
+                <motion.div 
+                  className="py-6 relative z-50"
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.6, delay: 0.6 }}
+                >
+                  <SocialLinks size={24} />
+                </motion.div>
+              </div>
             </div>
             
             {/* Profile Card instead of Code Elements */}
