@@ -6,11 +6,8 @@ import Script from "next/script"
 import "./globals.css"
 
 export const metadata: Metadata = {
-  title: {
-    default: siteConfig.name,
-    template: `%s | ${siteConfig.name}`,
-  },
-  description: siteConfig.description,
+  title: "Talha Yüce | Software Engineer",
+  description: "Software Engineer specializing in Web Development, Game Development, and AI Applications",
   keywords: [
     "Talha Yüce", "Yazılım", "Web Geliştirici", "Full Stack", "React", "Next.js", "TypeScript", "Portfolio", "Software Engineer"
   ],
@@ -33,18 +30,27 @@ export const metadata: Metadata = {
   manifest: "/manifest.json",
   openGraph: {
     type: "website",
+    url: "https://www.talha-yuce.site/",
+    title: "Talha Yüce | Software Engineer",
+    description: "Software Engineer specializing in Web Development, Game Development, and AI Applications",
+    siteName: "Talha Yüce Portfolio",
     locale: "tr_TR",
-    url: siteConfig.url,
-    title: siteConfig.name,
-    description: siteConfig.description,
-    siteName: siteConfig.name,
-    images: ["https://www.talha-yuce.site/api/og-image"],
+    images: [
+      {
+        url: "https://www.talha-yuce.site/api/og-image",
+        width: 1200,
+        height: 630,
+        type: "image/png",
+        alt: "Talha Yüce Portfolio OG Görseli"
+      }
+    ]
   },
   twitter: {
     card: "summary_large_image",
-    title: siteConfig.name,
-    description: siteConfig.description,
+    title: "Talha Yüce | Software Engineer",
+    description: "Software Engineer specializing in Web Development, Game Development, and AI Applications",
     images: ["https://www.talha-yuce.site/api/og-image"],
+    site: "@talhayuce",
     creator: "@talhayuce"
   },
   robots: {
@@ -61,11 +67,11 @@ export const metadata: Metadata = {
     },
   },
   alternates: {
-    canonical: siteConfig.url,
+    canonical: "https://www.talha-yuce.site/",
     languages: {
-      "tr-TR": siteConfig.url,
-      "en-US": siteConfig.url + "/en",
-    },
+      "tr-TR": "https://www.talha-yuce.site/",
+      "en-US": "https://www.talha-yuce.site/en"
+    }
   },
   generator: 'Next.js',
 }

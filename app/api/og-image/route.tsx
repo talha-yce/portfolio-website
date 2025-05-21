@@ -77,6 +77,55 @@ function TalhaYuce() {
         }}>
           talha-yuce.site
         </div>
+        {/* Sosyal medya ikonları */}
+        <div style={{
+          position: 'absolute',
+          bottom: 24,
+          left: '50%',
+          transform: 'translateX(-50%)',
+          display: 'flex',
+          gap: 32,
+          zIndex: 3,
+        }}>
+          {/* X (Twitter) */}
+          <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect width="32" height="32" rx="8" fill="#18181b"/>
+            <path d="M10 10L22 22M22 10L10 22" stroke="#fff" strokeWidth="2" strokeLinecap="round"/>
+          </svg>
+          {/* Slack */}
+          <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect width="32" height="32" rx="8" fill="#18181b"/>
+            <circle cx="16" cy="16" r="6" fill="#fff"/>
+            <rect x="14" y="7" width="4" height="18" rx="2" fill="#611f69"/>
+            <rect x="7" y="14" width="18" height="4" rx="2" fill="#36c5f0"/>
+          </svg>
+          {/* Facebook */}
+          <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect width="32" height="32" rx="8" fill="#18181b"/>
+            <path d="M18 10h2V7h-2a5 5 0 0 0-5 5v2h-2v3h2v7h3v-7h2.1l.4-3H16v-2a1 1 0 0 1 1-1z" fill="#1877f3"/>
+          </svg>
+          {/* LinkedIn */}
+          <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect width="32" height="32" rx="8" fill="#18181b"/>
+            <rect x="8" y="13" width="3" height="11" fill="#0a66c2"/>
+            <rect x="14" y="13" width="3" height="11" fill="#0a66c2"/>
+            <circle cx="9.5" cy="10" r="1.5" fill="#0a66c2"/>
+            <rect x="20" y="17" width="3" height="7" fill="#0a66c2"/>
+          </svg>
+          {/* Discord */}
+          <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect width="32" height="32" rx="8" fill="#18181b"/>
+            <ellipse cx="16" cy="16" rx="8" ry="8" fill="#5865f2"/>
+            <circle cx="13" cy="16" r="1.5" fill="#fff"/>
+            <circle cx="19" cy="16" r="1.5" fill="#fff"/>
+          </svg>
+          {/* WhatsApp */}
+          <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect width="32" height="32" rx="8" fill="#18181b"/>
+            <circle cx="16" cy="16" r="8" fill="#25d366"/>
+            <path d="M12 16c1.5 2.5 4.5 2.5 6 0" stroke="#fff" strokeWidth="2" strokeLinecap="round"/>
+          </svg>
+        </div>
       </div>
     ),
     {
