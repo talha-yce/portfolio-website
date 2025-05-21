@@ -113,7 +113,7 @@ export function SiteHeader({ locale, dictionary }: SiteHeaderProps) {
       </div>
       {isMenuOpen && (
         <motion.div
-          className="fixed inset-0 z-50 bg-background/95 backdrop-blur-lg md:hidden"
+          className="fixed inset-0 z-50 max-w-2xl backdrop-blur-[2px] bg-white/30 p-3 rounded-xl md:hidden"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
