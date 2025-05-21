@@ -68,7 +68,7 @@ export const metadata: Metadata = {
     siteName: "Talha Yüce Portfolio",
     images: [
       {
-        url: "https://www.talha-yuce.site/api/og-image",
+        url: "https://www.talha-yuce.site/og.png",
         width: 1200,
         height: 630,
         type: "image/png",
@@ -80,7 +80,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "Talha Yüce | Yazılım Mühendisi & Web Geliştirici",
     description: "Web Geliştirme, Oyun Geliştirme ve Yapay Zeka Uygulamaları konusunda uzmanlaşmış Yazılım Mühendisi. React, Next.js, TypeScript ve Unity ile modern web ve oyun uygulamaları geliştiriyorum.",
-    images: ["https://www.talha-yuce.site/api/og-image"],
+    images: ["https://www.talha-yuce.site/og.png"],
     site: "@talhayuce",
     creator: "@talhayuce",
   },
@@ -147,7 +147,7 @@ export default async function RootLayout({ children, params }: RootLayoutProps) 
   const dictionary = await getDictionary(locale)
 
   return (
-    <html lang={locale} suppressHydrationWarning className={spaceGrotesk.variable}>
+    <html lang={locale} suppressHydrationWarning className={spaceGrotesk.variable} prefix="og: https://ogp.me/ns#">
       <head>
         <link rel="canonical" href="https://www.talha-yuce.site" />
         <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
@@ -157,6 +157,27 @@ export default async function RootLayout({ children, params }: RootLayoutProps) 
         <link rel="dns-prefetch" href="https://fonts.googleapis.com" />
         <link rel="dns-prefetch" href="https://fonts.gstatic.com" />
         <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+        
+        {/* Explicit OpenGraph and Twitter meta tags */}
+        <meta property="og:type" content="website" />
+        <meta property="og:url" content="https://www.talha-yuce.site" />
+        <meta property="og:title" content="Talha Yüce | Yazılım Mühendisi & Web Geliştirici" />
+        <meta property="og:description" content="Web Geliştirme, Oyun Geliştirme ve Yapay Zeka Uygulamaları konusunda uzmanlaşmış Yazılım Mühendisi." />
+        <meta property="og:image" content="https://www.talha-yuce.site/og.png" />
+        <meta property="og:image:width" content="1200" />
+        <meta property="og:image:height" content="630" />
+        <meta property="og:image:type" content="image/png" />
+        <meta property="og:image:alt" content="Talha Yüce Portfolio OG Görseli" />
+        <meta property="og:site_name" content="Talha Yüce Portfolio" />
+        <meta property="og:locale" content="tr_TR" />
+        
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:site" content="@talhayuce" />
+        <meta name="twitter:creator" content="@talhayuce" />
+        <meta name="twitter:title" content="Talha Yüce | Yazılım Mühendisi & Web Geliştirici" />
+        <meta name="twitter:description" content="Web Geliştirme, Oyun Geliştirme ve Yapay Zeka Uygulamaları konusunda uzmanlaşmış Yazılım Mühendisi." />
+        <meta name="twitter:image" content="https://www.talha-yuce.site/og.png" />
+        
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{
