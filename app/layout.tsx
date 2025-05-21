@@ -1,9 +1,19 @@
 import React from "react"
-import type { Metadata } from "next"
+import type { Metadata, Viewport } from "next"
 import { siteConfig } from "@/config/site"
 import Script from "next/script"
 
 import "./globals.css"
+
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 1,
+  themeColor: [
+    { media: '(prefers-color-scheme: light)', color: '#ffffff' },
+    { media: '(prefers-color-scheme: dark)', color: '#1a1a1a' }
+  ],
+}
 
 export const metadata: Metadata = {
   title: "Talha Yüce | Software Engineer",
@@ -30,14 +40,14 @@ export const metadata: Metadata = {
   manifest: "/manifest.json",
   openGraph: {
     type: "website",
-    url: "https://www.talha-yuce.site/",
+    url: siteConfig.url,
     title: "Talha Yüce | Software Engineer",
     description: "Software Engineer specializing in Web Development, Game Development, and AI Applications",
     siteName: "Talha Yüce Portfolio",
     locale: "tr_TR",
     images: [
       {
-        url: "https://www.talha-yuce.site/og.png",
+        url: `${siteConfig.url}/og.png`,
         width: 1200,
         height: 630,
         type: "image/png",
@@ -49,7 +59,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "Talha Yüce | Software Engineer",
     description: "Software Engineer specializing in Web Development, Game Development, and AI Applications",
-    images: ["https://www.talha-yuce.site/og.png"],
+    images: [`${siteConfig.url}/og.png`],
     site: "@talhayuce",
     creator: "@talhayuce"
   },
@@ -67,13 +77,19 @@ export const metadata: Metadata = {
     },
   },
   alternates: {
-    canonical: "https://www.talha-yuce.site/",
+    canonical: siteConfig.url,
     languages: {
-      "tr-TR": "https://www.talha-yuce.site/",
-      "en-US": "https://www.talha-yuce.site/en"
+      "tr-TR": siteConfig.url,
+      "en-US": `${siteConfig.url}/en`
     }
   },
   generator: 'Next.js',
+  formatDetection: {
+    email: false,
+    address: false,
+    telephone: false,
+  },
+  category: "portfolio",
 }
 
 export default function RootLayout({
@@ -82,7 +98,7 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html lang="en" suppressHydrationWarning prefix="og: https://ogp.me/ns#">
       <head>
         <link
           rel="preload" 
@@ -101,11 +117,12 @@ export default function RootLayout({
         </Script>
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-        <title>Talha Yüce | Software Engineer</title>
+        
+        {/* Extra specific OpenGraph tags for maximum compatibility */}
         <meta property="og:title" content="Talha Yüce | Software Engineer" />
         <meta property="og:type" content="website" />
-        <meta property="og:url" content="https://www.talha-yuce.site/" />
-        <meta property="og:image" content="https://www.talha-yuce.site/og.png" />
+        <meta property="og:url" content={siteConfig.url} />
+        <meta property="og:image" content={`${siteConfig.url}/og.png`} />
         <meta property="og:image:width" content="1200" />
         <meta property="og:image:height" content="630" />
         <meta property="og:image:type" content="image/png" />
@@ -114,13 +131,16 @@ export default function RootLayout({
         <meta property="og:site_name" content="Talha Yüce Portfolio" />
         <meta property="og:locale" content="tr_TR" />
         <meta property="og:locale:alternate" content="en_US" />
+        
+        {/* Extra Twitter Card tags for maximum compatibility */}
         <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:title" content="Talha Yüce | Software Engineer" />
         <meta name="twitter:description" content="Software Engineer specializing in Web Development, Game Development, and AI Applications" />
-        <meta name="twitter:image" content="https://www.talha-yuce.site/og.png" />
+        <meta name="twitter:image" content={`${siteConfig.url}/og.png`} />
         <meta name="twitter:site" content="@talhayuce" />
         <meta name="twitter:creator" content="@talhayuce" />
-        <link rel="canonical" href="https://www.talha-yuce.site/" />
+        
+        <link rel="canonical" href={siteConfig.url} />
       </head>
       <body>
         <React.StrictMode>
