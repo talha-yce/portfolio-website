@@ -12,22 +12,16 @@ export const metadata: Metadata = {
   },
   description: siteConfig.description,
   keywords: [
-    "Software Engineer",
-    "Web Developer",
-    "Full Stack Developer",
-    "JavaScript",
-    "TypeScript",
-    "React",
-    "Next.js",
+    "Talha Yüce", "Yazılım", "Web Geliştirici", "Full Stack", "React", "Next.js", "TypeScript", "Portfolio", "Software Engineer"
   ],
   authors: [
     {
       name: "Talha Yüce",
-      url: "https://talha-yuce.site",
+      url: siteConfig.url,
     },
   ],
   creator: "Talha Yüce",
-  metadataBase: new URL('https://talha-yuce.site'),
+  metadataBase: new URL(siteConfig.url),
   icons: {
     icon: [
       { url: '/icon-32x32.png', type: 'image/png', sizes: '32x32' },
@@ -39,18 +33,41 @@ export const metadata: Metadata = {
   manifest: "/manifest.json",
   openGraph: {
     type: "website",
-    locale: "en_US",
-    url: "https://talha-yuce.vercel.app",
-    title: "Talha Yüce | Software Engineer",
-    description: "Software Engineer specializing in Web Development, Game Development, and AI Applications",
-    siteName: "Talha Yüce Portfolio",
+    locale: "tr_TR",
+    url: siteConfig.url,
+    title: siteConfig.name,
+    description: siteConfig.description,
+    siteName: siteConfig.name,
+    images: [siteConfig.url + "/api/og-image"],
   },
   twitter: {
     card: "summary_large_image",
-    title: "Talha Yüce | Software Engineer",
-    description: "Software Engineer specializing in Web Development, Game Development, and AI Applications",
+    title: siteConfig.name,
+    description: siteConfig.description,
+    images: [siteConfig.url + "/api/og-image"],
+    creator: "@talhayuce"
   },
-  generator: 'v0.dev'
+  robots: {
+    index: true,
+    follow: true,
+    nocache: false,
+    googleBot: {
+      index: true,
+      follow: true,
+      noimageindex: false,
+      'max-snippet': -1,
+      'max-image-preview': "large",
+      'max-video-preview': -1,
+    },
+  },
+  alternates: {
+    canonical: siteConfig.url,
+    languages: {
+      "tr-TR": siteConfig.url,
+      "en-US": siteConfig.url + "/en",
+    },
+  },
+  generator: 'Next.js',
 }
 
 export default function RootLayout({
