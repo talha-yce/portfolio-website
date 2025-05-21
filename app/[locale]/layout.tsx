@@ -65,14 +65,23 @@ export const metadata: Metadata = {
     url: "https://www.talha-yuce.site",
     title: "Talha Yüce | Yazılım Mühendisi & Web Geliştirici",
     description: "Web Geliştirme, Oyun Geliştirme ve Yapay Zeka Uygulamaları konusunda uzmanlaşmış Yazılım Mühendisi. React, Next.js, TypeScript ve Unity ile modern web ve oyun uygulamaları geliştiriyorum.",
-    siteName: "Talha Yüce Portfolyo",
-    images: ["https://www.talha-yuce.site/api/og-image"],
+    siteName: "Talha Yüce Portfolio",
+    images: [
+      {
+        url: "https://www.talha-yuce.site/api/og-image",
+        width: 1200,
+        height: 630,
+        type: "image/png",
+        alt: "Talha Yüce Portfolio OG Görseli"
+      }
+    ]
   },
   twitter: {
     card: "summary_large_image",
     title: "Talha Yüce | Yazılım Mühendisi & Web Geliştirici",
     description: "Web Geliştirme, Oyun Geliştirme ve Yapay Zeka Uygulamaları konusunda uzmanlaşmış Yazılım Mühendisi. React, Next.js, TypeScript ve Unity ile modern web ve oyun uygulamaları geliştiriyorum.",
     images: ["https://www.talha-yuce.site/api/og-image"],
+    site: "@talhayuce",
     creator: "@talhayuce",
   },
   robots: {
@@ -92,8 +101,8 @@ export const metadata: Metadata = {
   alternates: {
     canonical: "https://www.talha-yuce.site",
     languages: {
-      'tr': 'https://www.talha-yuce.site/tr',
-      'en': 'https://www.talha-yuce.site/en',
+      'tr-TR': 'https://www.talha-yuce.site/tr',
+      'en-US': 'https://www.talha-yuce.site/en',
     },
   },
   manifest: undefined,
