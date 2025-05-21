@@ -239,7 +239,7 @@ export default function HomeClient({ params, dictionary, featuredProjects, recen
             viewport={{ once: true, margin: "0px 0px -200px 0px" }}
             transition={{ duration: 0.6 }}
           >
-            <Card className="max-w-2xl backdrop-blur-[2px] bg-white/30 p-3 rounded-xl">
+            <Card className="overflow-hidden border-none shadow-xl bg-white/80 backdrop-blur-[2px]">
               <div className="absolute top-0 right-0 w-40 h-40 bg-primary-100/60 rounded-full -translate-y-1/2 translate-x-1/4 blur-3xl pointer-events-none"></div>
               
               <CardHeader className="pb-6 relative z-40">
