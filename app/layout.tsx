@@ -101,6 +101,26 @@ export default function RootLayout({
         </Script>
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+        <title>Talha Yüce | Software Engineer</title>
+        <meta property="og:title" content="Talha Yüce | Software Engineer" />
+        <meta property="og:type" content="website" />
+        <meta property="og:url" content="https://www.talha-yuce.site/" />
+        <meta property="og:image" content="https://www.talha-yuce.site/api/og-image" />
+        <meta property="og:image:width" content="1200" />
+        <meta property="og:image:height" content="630" />
+        <meta property="og:image:type" content="image/png" />
+        <meta property="og:image:alt" content="Talha Yüce Portfolio OG Görseli" />
+        <meta property="og:description" content="Software Engineer specializing in Web Development, Game Development, and AI Applications" />
+        <meta property="og:site_name" content="Talha Yüce Portfolio" />
+        <meta property="og:locale" content="tr_TR" />
+        <meta property="og:locale:alternate" content="en_US" />
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content="Talha Yüce | Software Engineer" />
+        <meta name="twitter:description" content="Software Engineer specializing in Web Development, Game Development, and AI Applications" />
+        <meta name="twitter:image" content="https://www.talha-yuce.site/api/og-image" />
+        <meta name="twitter:site" content="@talhayuce" />
+        <meta name="twitter:creator" content="@talhayuce" />
+        <link rel="canonical" href="https://www.talha-yuce.site/" />
       </head>
       <body>
         <React.StrictMode>
