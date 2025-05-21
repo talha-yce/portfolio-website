@@ -38,13 +38,13 @@ export const metadata: Metadata = {
     title: siteConfig.name,
     description: siteConfig.description,
     siteName: siteConfig.name,
-    images: [siteConfig.url + "/api/og-image"],
+    images: ["https://www.talha-yuce.site/api/og-image"],
   },
   twitter: {
     card: "summary_large_image",
     title: siteConfig.name,
     description: siteConfig.description,
-    images: [siteConfig.url + "/api/og-image"],
+    images: ["https://www.talha-yuce.site/api/og-image"],
     creator: "@talhayuce"
   },
   robots: {

@@ -14,10 +14,7 @@ export default function robots(): MetadataRoute.Robots {
       ],
     },
     sitemap: [
-      "https://www.talha-yuce.site/sitemap.xml",
-      "https://www.talha-yuce.site/sitemap-pages.xml",
-      "https://www.talha-yuce.site/sitemap-projects.xml",
-      "https://www.talha-yuce.site/sitemap-blog.xml",
+      "https://www.talha-yuce.site/sitemap.xml"
     ],
   }
 }

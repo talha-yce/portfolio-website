@@ -2,9 +2,11 @@ User-agent: *
 Allow: /
 
 # Sitemap
-Sitemap: https://talha-yuce.vercel.app/sitemap.xml
+Sitemap: https://www.talha-yuce.site/sitemap.xml
 
 # Disallow
 Disallow: /api/
 Disallow: /_next/
-Disallow: /static/ 
+Disallow: /static/
+Disallow: /private/
+Disallow: /admin/ 
