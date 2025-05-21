@@ -66,20 +66,13 @@ export const metadata: Metadata = {
     title: "Talha Yüce | Yazılım Mühendisi & Web Geliştirici",
     description: "Web Geliştirme, Oyun Geliştirme ve Yapay Zeka Uygulamaları konusunda uzmanlaşmış Yazılım Mühendisi. React, Next.js, TypeScript ve Unity ile modern web ve oyun uygulamaları geliştiriyorum.",
     siteName: "Talha Yüce Portfolyo",
-    images: [
-      {
-        url: "/og-image.jpg",
-        width: 1200,
-        height: 630,
-        alt: "Talha Yüce - Yazılım Mühendisi & Web Geliştirici",
-      },
-    ],
+    images: ["https://www.talha-yuce.site/api/og-image"],
   },
   twitter: {
     card: "summary_large_image",
     title: "Talha Yüce | Yazılım Mühendisi & Web Geliştirici",
     description: "Web Geliştirme, Oyun Geliştirme ve Yapay Zeka Uygulamaları konusunda uzmanlaşmış Yazılım Mühendisi. React, Next.js, TypeScript ve Unity ile modern web ve oyun uygulamaları geliştiriyorum.",
-    images: ["/og-image.jpg"],
+    images: ["https://www.talha-yuce.site/api/og-image"],
     creator: "@talhayuce",
   },
   robots: {
