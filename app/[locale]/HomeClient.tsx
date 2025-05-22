@@ -122,8 +122,8 @@ export default function HomeClient({ params, dictionary, featuredProjects, recen
                 name="Talha Yüce" 
                 title="Software Engineer" 
                 description={locale === 'tr' ? 
-                  "Web, Oyun ve AI geliştirme alanlarında uzmanlaşmış yazılım mühendisi" : 
-                  "Software engineer specialized in Web, Game, and AI development"}
+                  "Web, Oyun ve AI geliştirme alanlarıyla ilgilenen yazılım mühendisi" : 
+                  "Software engineer interested in Web, Game, and AI development"}
               />
             </motion.div>
           </div>

@@ -35,7 +35,7 @@ export const metadata: Metadata = {
     template: '%s | Talha Yüce',
     default: 'Talha Yüce | Yazılım Mühendisi & Web Geliştirici',
   },
-  description: 'Talha Yüce - Web Geliştirme, Oyun Geliştirme ve Yapay Zeka Uygulamaları konusunda uzmanlaşmış Yazılım Mühendisi. React, Next.js, TypeScript ve Unity ile modern web ve oyun uygulamaları geliştiriyorum.',
+  description: 'Talha Yüce - Web Geliştirme, Oyun Geliştirme ve Yapay Zeka Uygulamaları ile ilgilenen Yazılım Mühendisi. React, Next.js, TypeScript ve Unity ile modern web ve oyun uygulamaları geliştiriyorum.',
   keywords: [
     'talha yüce',
     'yazılım mühendisi',
@@ -64,7 +64,7 @@ export const metadata: Metadata = {
     locale: "tr_TR",
     url: "https://www.talha-yuce.site",
     title: "Talha Yüce | Yazılım Mühendisi & Web Geliştirici",
-    description: "Web Geliştirme, Oyun Geliştirme ve Yapay Zeka Uygulamaları konusunda uzmanlaşmış Yazılım Mühendisi. React, Next.js, TypeScript ve Unity ile modern web ve oyun uygulamaları geliştiriyorum.",
+    description: "Web Geliştirme, Oyun Geliştirme ve Yapay Zeka Uygulamaları ile ilgilenen Yazılım Mühendisi. React, Next.js, TypeScript ve Unity ile modern web ve oyun uygulamaları geliştiriyorum.",
     siteName: "Talha Yüce Portfolio",
     images: [
       {
@@ -79,7 +79,7 @@ export const metadata: Metadata = {
   twitter: {
     card: "summary_large_image",
     title: "Talha Yüce | Yazılım Mühendisi & Web Geliştirici",
-    description: "Web Geliştirme, Oyun Geliştirme ve Yapay Zeka Uygulamaları konusunda uzmanlaşmış Yazılım Mühendisi. React, Next.js, TypeScript ve Unity ile modern web ve oyun uygulamaları geliştiriyorum.",
+    description: "Web Geliştirme, Oyun Geliştirme ve Yapay Zeka Uygulamaları ile ilgilenen Yazılım Mühendisi. React, Next.js, TypeScript ve Unity ile modern web ve oyun uygulamaları geliştiriyorum.",
     images: ["https://www.talha-yuce.site/og.png"],
     site: "@talhayuce",
     creator: "@talhayuce",
@@ -162,7 +162,7 @@ export default async function RootLayout({ children, params }: RootLayoutProps) 
         <meta property="og:type" content="website" />
         <meta property="og:url" content="https://www.talha-yuce.site" />
         <meta property="og:title" content="Talha Yüce | Yazılım Mühendisi & Web Geliştirici" />
-        <meta property="og:description" content="Web Geliştirme, Oyun Geliştirme ve Yapay Zeka Uygulamaları konusunda uzmanlaşmış Yazılım Mühendisi." />
+        <meta property="og:description" content="Web Geliştirme, Oyun Geliştirme ve Yapay Zeka Uygulamaları ile ilgilenen Yazılım Mühendisi." />
         <meta property="og:image" content="https://www.talha-yuce.site/og.png" />
         <meta property="og:image:width" content="1200" />
         <meta property="og:image:height" content="630" />
@@ -175,7 +175,7 @@ export default async function RootLayout({ children, params }: RootLayoutProps) 
         <meta name="twitter:site" content="@talhayuce" />
         <meta name="twitter:creator" content="@talhayuce" />
         <meta name="twitter:title" content="Talha Yüce | Yazılım Mühendisi & Web Geliştirici" />
-        <meta name="twitter:description" content="Web Geliştirme, Oyun Geliştirme ve Yapay Zeka Uygulamaları konusunda uzmanlaşmış Yazılım Mühendisi." />
+        <meta name="twitter:description" content="Web Geliştirme, Oyun Geliştirme ve Yapay Zeka Uygulamaları ile ilgilenen Yazılım Mühendisi." />
         <meta name="twitter:image" content="https://www.talha-yuce.site/og.png" />
         
         <script
@@ -195,7 +195,7 @@ export default async function RootLayout({ children, params }: RootLayoutProps) 
                 "@type": "Organization",
                 "name": "Freelance"
               },
-              "description": "Web Geliştirme, Oyun Geliştirme ve Yapay Zeka Uygulamaları konusunda uzmanlaşmış Yazılım Mühendisi",
+              "description": "Web Geliştirme, Oyun Geliştirme ve Yapay Zeka Uygulamaları ile ilgilenen Yazılım Mühendisi",
               "knowsAbout": [
                 "Web Development",
                 "Game Development",
