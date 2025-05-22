@@ -113,7 +113,7 @@ export function SiteHeader({ locale, dictionary }: SiteHeaderProps) {
       </div>
       {isMenuOpen && (
         <motion.div
-          className="fixed inset-0 z-50 backdrop-blur-lg bg-white/60 md:hidden"
+          className="fixed inset-0 z-50 backdrop-blur-xl bg-white/90 md:hidden"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
@@ -150,7 +150,7 @@ export function SiteHeader({ locale, dictionary }: SiteHeaderProps) {
               </Button>
             </div>
           </div>
-          <nav className="container flex flex-col gap-4 p-4">
+          <nav className="container flex flex-col gap-4 p-4 bg-white/95 rounded-xl shadow-lg mt-4">
             {routes.map((route, index) => (
               <motion.div
                 key={route.href}
