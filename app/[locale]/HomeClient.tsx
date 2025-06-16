@@ -111,6 +111,7 @@ export default function HomeClient({ params, dictionary, featuredProjects, recen
               </div>
             </div>
             
+            
             {/* Profile Card instead of Code Elements */}
             <motion.div 
               className="flex items-center justify-center relative p-2 md:p-4 lg:p-8 rounded-2xl z-40 mt-6 lg:mt-0"
