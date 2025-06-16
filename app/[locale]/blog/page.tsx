@@ -44,13 +44,6 @@ export default async function BlogPage({ params }: { params: { locale: Locale } 
 
   return (
     <div className="container py-12">
-      <div className="space-y-4">
-        <h1 className="text-4xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-primary-600 to-accent-600">
-          {dictionary.blog.title}
-        </h1>
-        <p className="text-muted-foreground">{dictionary.blog.description}</p>
-      </div>
-      
       <BlogPageClient 
         locale={awaitedParams.locale}
         dictionary={dictionary}
