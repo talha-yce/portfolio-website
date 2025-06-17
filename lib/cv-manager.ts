@@ -1,7 +1,6 @@
 "use server"
 
-import fs from "fs"
-import path from "path"
+import { getUserData as getProfileData } from './services/profileService'
 import { type Locale, defaultLocale } from "./i18n/config"
 
 export interface UserEducation {
@@ -54,11 +53,12 @@ export interface UserData {
 
 export const getUserData = async (locale: Locale = defaultLocale): Promise<UserData> => {
   try {
-    const filePath = path.join(process.cwd(), "public", "data", "cv", `cv.${locale}.json`)
-    const fileContents = fs.readFileSync(filePath, "utf8")
-    return JSON.parse(fileContents) as UserData
+    console.log(`[CV-Manager] getUserData("${locale}") çağrıldı`);
+    const profileData = await getProfileData(locale);
+    console.log(`[CV-Manager] Profil verisi alındı:`, profileData?.name || 'Veri yok');
+    return profileData as UserData;
   } catch (error) {
-    console.error(`Error loading CV data for ${locale}:`, error)
+    console.error(`[CV-Manager] Error loading CV data for ${locale}:`, error)
     // If the requested locale file doesn't exist, try to fall back to the default locale
     if (locale !== defaultLocale) {
       return getUserData(defaultLocale)

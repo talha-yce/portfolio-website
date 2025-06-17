@@ -39,6 +39,7 @@ export default function AdminLayout({
     { id: 'dashboard', label: 'Genel Bakış', icon: 'dashboard', url: `/${locale}/admin/dashboard` },
     { id: 'blog', label: 'Blog Yazıları', icon: 'description', url: `/${locale}/admin/blog` },
     { id: 'projects', label: 'Projeler', icon: 'work', url: `/${locale}/admin/projects` },
+    { id: 'profile', label: 'Profil', icon: 'person', url: `/${locale}/admin/profile` },
     { id: 'users', label: 'Kullanıcılar', icon: 'people', url: `/${locale}/admin/users` },
     { id: 'settings', label: 'Ayarlar', icon: 'settings', url: `/${locale}/admin/settings` }
   ]
