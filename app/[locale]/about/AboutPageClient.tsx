@@ -9,6 +9,7 @@ import type { Dictionary } from "@/lib/i18n/dictionaries"
 import type { Locale } from "@/lib/i18n/config"
 import { motion } from "framer-motion"
 import { PageTransition } from "@/components/page-transition"
+import { SiteLayout } from "@/components/site-layout"
 import { Github, Linkedin, Mail, MapPin, Phone } from "lucide-react"
 
 interface AboutPageClientProps {
@@ -20,7 +21,8 @@ interface AboutPageClientProps {
 
 export default function AboutPageClient({ userData, dictionary, locale, params }: AboutPageClientProps) {
   return (
-    <PageTransition>
+    <SiteLayout locale={locale} dictionary={dictionary}>
+      <PageTransition>
       <div className="relative min-h-screen pb-12">
         {/* Gradient Background */}
         <div className="absolute inset-0 bg-gradient-to-b from-primary-50/30 via-background to-accent-50/30 pointer-events-none -z-10"></div>
@@ -317,7 +319,8 @@ export default function AboutPageClient({ userData, dictionary, locale, params }
           </div>
         </div>
       </div>
-    </PageTransition>
+      </PageTransition>
+    </SiteLayout>
   )
 }
 

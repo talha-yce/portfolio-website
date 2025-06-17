@@ -6,6 +6,7 @@ import { useState, useEffect } from "react"
 
 import { BlogCard } from "@/components/blog-card"
 import { PageTransition } from "@/components/page-transition"
+import { SiteLayout } from "@/components/site-layout"
 import { type Locale } from "@/lib/i18n/config"
 import type { Dictionary } from "@/lib/i18n/dictionaries"
 import { BlogPost } from "@/lib/types"
@@ -77,8 +78,9 @@ export default function BlogPageClient({ locale, dictionary, posts, params }: Bl
   }
 
   return (
-    <PageTransition>
-      <section className="py-20 relative">
+    <SiteLayout locale={currentLocale} dictionary={dictionary}>
+      <PageTransition>
+        <section className="py-20 relative">
         {/* Background Elements */}
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-accent-50/40 via-background to-background pointer-events-none"></div>
         <div className="absolute top-1/4 right-8 w-64 h-64 bg-primary-300/10 rounded-full blur-3xl pointer-events-none"></div>
@@ -204,7 +206,8 @@ export default function BlogPageClient({ locale, dictionary, posts, params }: Bl
           )}
         </div>
       </section>
-    </PageTransition>
+      </PageTransition>
+    </SiteLayout>
   )
 }
 

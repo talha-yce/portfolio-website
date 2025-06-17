@@ -8,6 +8,7 @@ import { getDictionary } from "@/lib/i18n/dictionaries"
 import { getBlogPostsByTag } from "@/lib/services/blogService"
 import { sanitizeForClient } from "@/lib/utils"
 import { Locale, getLocalizedPathname } from "@/lib/i18n/config"
+import { SiteLayout } from "@/components/site-layout"
 import BlogPageClient from "../../BlogPageClient"
 import { BlogPost, transformToBlogPost } from "@/lib/types"
 
@@ -44,7 +45,8 @@ export default async function TagPage({ params }: TagPageProps) {
   const posts: BlogPost[] = dbPosts.map(post => transformToBlogPost(post))
   
   return (
-    <div className="container py-8">
+    <SiteLayout locale={locale} dictionary={dictionary}>
+      <div className="container py-8">
       <div className="mb-8">
         <Link href={getLocalizedPathname("/blog", locale)}>
           <Button variant="ghost" className="mb-6 gap-2 text-muted-foreground hover:text-primary-600">
@@ -69,5 +71,6 @@ export default async function TagPage({ params }: TagPageProps) {
         dictionary={dictionary}
       />
     </div>
+    </SiteLayout>
   )
 } 

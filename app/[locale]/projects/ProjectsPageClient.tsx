@@ -6,6 +6,7 @@ import { Filter, ChevronLeft, ChevronRight } from "lucide-react"
 
 import { ProjectCard } from "@/components/project-card"
 import { PageTransition } from "@/components/page-transition"
+import { SiteLayout } from "@/components/site-layout"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import type { Locale } from "@/lib/i18n/config"
@@ -76,8 +77,9 @@ export default function ProjectsPageClient({ params, dictionary, projects }: Pro
   }
 
   return (
-    <PageTransition>
-      <section className="py-20 relative">
+    <SiteLayout locale={locale} dictionary={dictionary}>
+      <PageTransition>
+        <section className="py-20 relative">
         {/* Background Elements */}
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_left,_var(--tw-gradient-stops))] from-primary-50/40 via-background to-background pointer-events-none"></div>
         <div className="absolute top-1/4 left-8 w-64 h-64 bg-primary-300/10 rounded-full blur-3xl pointer-events-none"></div>
@@ -226,7 +228,8 @@ export default function ProjectsPageClient({ params, dictionary, projects }: Pro
           )}
         </div>
       </section>
-    </PageTransition>
+      </PageTransition>
+    </SiteLayout>
   )
 }
 

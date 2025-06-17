@@ -11,6 +11,7 @@ import { getAllContent, getContentItem } from "@/lib/content-manager"
 import { getDictionary } from "@/lib/i18n/dictionaries"
 import { type Locale, getLocalizedPathname } from "@/lib/i18n/config"
 import { PageTransition } from "@/components/page-transition"
+import { SiteLayout } from "@/components/site-layout"
 
 interface ProjectPageProps {
   params: {
@@ -56,8 +57,9 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
   }
 
   return (
-    <PageTransition>
-      <div className="relative min-h-screen pb-20">
+    <SiteLayout locale={locale} dictionary={dictionary}>
+      <PageTransition>
+        <div className="relative min-h-screen pb-20">
         {/* Background Elements */}
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_left,_var(--tw-gradient-stops))] from-primary-50/40 via-background to-background pointer-events-none"></div>
         <div className="absolute top-1/4 right-1/4 w-64 h-64 bg-primary-300/10 rounded-full blur-3xl pointer-events-none"></div>
@@ -148,7 +150,8 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
           </div>
         </div>
       </div>
-    </PageTransition>
+      </PageTransition>
+    </SiteLayout>
   )
 }
 

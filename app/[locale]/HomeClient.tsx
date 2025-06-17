@@ -11,6 +11,7 @@ import { SocialLinks } from "@/components/social-links"
 import { ProjectCard } from "@/components/project-card"
 import { BlogCard } from "@/components/blog-card"
 import { PageTransition } from "@/components/page-transition"
+import { SiteLayout } from "@/components/site-layout"
 import { getLocalizedPathname, type Locale } from "@/lib/i18n/config"
 import type { Dictionary } from "@/lib/i18n/dictionaries"
 import type { ContentMeta } from "@/lib/content-manager"
@@ -43,11 +44,12 @@ export default function HomeClient({ params, dictionary, featuredProjects, recen
   const locale = params.locale
 
   return (
-    <PageTransition>
-      {/* Background code animation */}
-      <CodeBackground />
-      
-      <section ref={scrollRef} className="relative min-h-[90vh] flex items-center overflow-hidden">
+    <SiteLayout locale={locale} dictionary={dictionary}>
+      <PageTransition>
+        {/* Background code animation */}
+        <CodeBackground />
+        
+        <section ref={scrollRef} className="relative min-h-[90vh] flex items-center overflow-hidden">
         {/* Hero Section */}
         <div className="absolute inset-0 w-full h-full bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-primary-50/40 via-background/30 to-accent-50/30 pointer-events-none z-0" />
         
@@ -272,7 +274,8 @@ export default function HomeClient({ params, dictionary, featuredProjects, recen
           </motion.div>
         </div>
       </section>
-    </PageTransition>
+      </PageTransition>
+    </SiteLayout>
   )
 }
 

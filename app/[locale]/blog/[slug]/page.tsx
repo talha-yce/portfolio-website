@@ -14,6 +14,7 @@ import { getBlogPostBySlug, getRelatedBlogPosts } from "@/lib/services/blogServi
 import { sanitizeForClient } from "@/lib/utils"
 import dynamic from "next/dynamic"
 import { PageTransition } from "@/components/page-transition"
+import { SiteLayout } from "@/components/site-layout"
 import TableOfContents from "@/components/table-of-contents"
 import ShareButtons from "@/components/share-buttons"
 
@@ -102,8 +103,9 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
   const url = typeof window !== 'undefined' ? window.location.href : ''
 
   return (
-    <PageTransition>
-      <div className="relative min-h-screen pb-20">
+    <SiteLayout locale={locale} dictionary={dictionary}>
+      <PageTransition>
+        <div className="relative min-h-screen pb-20">
         {/* Background Elements */}
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-accent-50/30 via-background to-background pointer-events-none"></div>
         
@@ -261,7 +263,8 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
           </div>
         </div>
       </div>
-    </PageTransition>
+      </PageTransition>
+    </SiteLayout>
   )
 }
 

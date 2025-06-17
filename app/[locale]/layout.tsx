@@ -213,13 +213,7 @@ export default async function RootLayout({ children, params }: RootLayoutProps) 
       </head>
       <body className={cn(spaceGrotesk.className, "bg-background text-foreground")}>
         <ThemeProvider attribute="class" defaultTheme="light" enableSystem={false}>
-          <div className="relative flex min-h-screen flex-col">
-            <SiteHeader locale={locale} dictionary={dictionary} />
-            <main className="flex-1">
-              {children}
-            </main>
-            <SiteFooter locale={locale} dictionary={dictionary} />
-          </div>
+          {children}
         </ThemeProvider>
         {process.env.NODE_ENV === "production" && (
           <>
