@@ -19,6 +19,12 @@ export async function GET() {
     
     // Check collection directly to ensure we're getting fresh data
     const db = mongoose.connection.db;
+    if (!db) {
+      return NextResponse.json(
+        { error: 'Veritabanı bağlantısı kurulamadı.' },
+        { status: 500 }
+      );
+    }
     const directProfiles = await db.collection('userprofiles').find({}).toArray();
     console.log(`[Admin API] Direct query: ${directProfiles.length} profil bulundu`);
     
