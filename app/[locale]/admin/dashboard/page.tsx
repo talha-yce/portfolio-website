@@ -7,6 +7,8 @@ import { Button } from '@/components/ui/button'
 import { Plus, Briefcase, BookOpen, User, CheckCircle, Edit } from 'lucide-react'
 import { Card, CardHeader, CardTitle, CardContent, CardDescription } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts'
+import { motion } from 'framer-motion'
 
 interface PageProps {
   params: Promise<{
@@ -30,6 +32,8 @@ export default function AdminDashboard({ params }: PageProps) {
   const [isLoadingStats, setIsLoadingStats] = useState(true)
   const [activeSection, setActiveSection] = useState('overview')
   const [profiles, setProfiles] = useState<any[]>([])
+  const [recentProjects, setRecentProjects] = useState<any[]>([])
+  const [recentPosts, setRecentPosts] = useState<any[]>([])
   
   const router = useRouter()
 
@@ -83,10 +87,14 @@ export default function AdminDashboard({ params }: PageProps) {
         console.log('Dashboard: Authentication successful:', data)
         setAdminInfo(data.admin)
         
-        // İstatistikleri ve son aktiviteleri getir
-        fetchStats()
-        fetchRecentActivities()
-        fetchProfiles()
+        // Fetch all data concurrently
+        await Promise.all([
+          fetchStats(),
+          fetchRecentActivities(),
+          fetchProfiles(),
+          fetchRecentContent()
+        ]);
+
       } catch (error: any) {
         console.error('Dashboard: Authentication error:', error)
         setError(error.message || 'Authentication failed')
@@ -189,6 +197,27 @@ export default function AdminDashboard({ params }: PageProps) {
     ])
   }
 
+  const fetchRecentContent = async () => {
+    try {
+      const baseUrl = window.location.origin;
+      // Fetch recent projects
+      const projectsResponse = await fetch(`${baseUrl}/api/projects?limit=5`, { cache: 'no-store' });
+      if (projectsResponse.ok) {
+        const projects = await projectsResponse.json();
+        setRecentProjects(projects.data || []);
+      }
+
+      // Fetch recent blog posts
+      const postsResponse = await fetch(`${baseUrl}/api/blog/all?limit=5`, { cache: 'no-store' });
+      if (postsResponse.ok) {
+        const posts = await postsResponse.json();
+        setRecentPosts(posts.posts || []);
+      }
+    } catch (error) {
+      console.error('Error fetching recent content:', error);
+    }
+  }
+
   // Navigation items with correct URLs
   const navItems = [
     { id: 'overview', label: 'Genel Bakış', icon: 'dashboard', url: `/${locale}/admin/dashboard` },
@@ -220,7 +249,10 @@ export default function AdminDashboard({ params }: PageProps) {
   const enProfile = profiles.find(p => p.locale === 'en');
   const trProfile = profiles.find(p => p.locale === 'tr');
   
-  // Rest of the existing component...
+  const chartData = [
+    { name: 'İçerikler', projects: stats.projects, trBlogs: stats.trPosts, enBlogs: stats.enPosts },
+  ];
+
   // State Loaders
   if (!isClient || loading) {
     return (
@@ -251,14 +283,24 @@ export default function AdminDashboard({ params }: PageProps) {
   // Return content 
   return (
     <div className="flex min-h-screen bg-gray-100 dark:bg-gray-900" suppressHydrationWarning>
-      <div className="flex-1 p-8">
+      <motion.div 
+        className="flex-1 p-8"
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5 }}
+      >
         <header className="mb-8">
           <h1 className="text-3xl font-bold text-gray-800 dark:text-white">Genel Bakış</h1>
           <p className="text-gray-500 dark:text-gray-400">Hoş geldiniz, {adminInfo?.username || 'Admin'}!</p>
         </header>
 
         {/* Hızlı Erişim Butonları */}
-        <div className="mb-8 flex space-x-4">
+        <motion.div 
+          className="mb-8 flex space-x-4"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.1 }}
+        >
           <Button onClick={() => router.push(`/${locale}/admin/projects/editor`)}>
             <Plus className="mr-2 h-4 w-4" /> Yeni Proje Ekle
           </Button>
@@ -268,50 +310,34 @@ export default function AdminDashboard({ params }: PageProps) {
           <Button variant="outline" onClick={() => router.push(`/${locale}/admin/profile/editor`)}>
             <Edit className="mr-2 h-4 w-4" /> Profilleri Düzenle
           </Button>
-        </div>
+        </motion.div>
 
         {/* İstatistikler */}
         <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4 mb-8">
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Toplam Proje</CardTitle>
-              <Briefcase className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">{isLoadingStats ? '...' : stats.projects}</div>
-              <p className="text-xs text-muted-foreground">Yönetilen proje sayısı</p>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Toplam Blog Yazısı</CardTitle>
-              <BookOpen className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">{isLoadingStats ? '...' : stats.posts}</div>
-              <p className="text-xs text-muted-foreground">TR: {stats.trPosts}, EN: {stats.enPosts}</p>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">İngilizce Profil</CardTitle>
-              <User className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">{getProfileCompleteness(enProfile)}%</div>
-              <p className="text-xs text-muted-foreground">Profil doluluk oranı</p>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Türkçe Profil</CardTitle>
-              <User className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">{getProfileCompleteness(trProfile)}%</div>
-              <p className="text-xs text-muted-foreground">Profil doluluk oranı</p>
-            </CardContent>
-          </Card>
+          {[
+            { title: 'Toplam Proje', value: stats.projects, icon: Briefcase, description: 'Yönetilen proje sayısı', delay: 0.2 },
+            { title: 'Toplam Blog Yazısı', value: stats.posts, icon: BookOpen, description: `TR: ${stats.trPosts}, EN: ${stats.enPosts}`, delay: 0.3 },
+            { title: 'İngilizce Profil', value: `${getProfileCompleteness(enProfile)}%`, icon: User, description: 'Profil doluluk oranı', delay: 0.4 },
+            { title: 'Türkçe Profil', value: `${getProfileCompleteness(trProfile)}%`, icon: User, description: 'Profil doluluk oranı', delay: 0.5 }
+          ].map((item, index) => (
+            <motion.div
+              key={index}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: item.delay }}
+            >
+              <Card>
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                  <CardTitle className="text-sm font-medium">{item.title}</CardTitle>
+                  <item.icon className="h-4 w-4 text-muted-foreground" />
+                </CardHeader>
+                <CardContent>
+                  <div className="text-2xl font-bold">{isLoadingStats ? '...' : item.value}</div>
+                  <p className="text-xs text-muted-foreground">{item.description}</p>
+                </CardContent>
+              </Card>
+            </motion.div>
+          ))}
         </div>
 
         {/* Son Aktiviteler */}
@@ -337,7 +363,94 @@ export default function AdminDashboard({ params }: PageProps) {
             </div>
           </CardContent>
         </Card>
-      </div>
+
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mt-8">
+          {/* Content Chart */}
+          <motion.div 
+            className="lg:col-span-2"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.6 }}
+          >
+            <Card>
+              <CardHeader>
+                <CardTitle>İçerik Dağılımı</CardTitle>
+                <CardDescription>Toplam proje ve blog yazılarınızın dağılımı.</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <ResponsiveContainer width="100%" height={300}>
+                  <BarChart data={chartData} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
+                    <CartesianGrid strokeDasharray="3 3" />
+                    <XAxis dataKey="name" />
+                    <YAxis />
+                    <Tooltip contentStyle={{ backgroundColor: 'hsl(var(--background))', color: 'hsl(var(--foreground))' }} />
+                    <Legend />
+                    <Bar dataKey="projects" fill="#8884d8" name="Projeler" />
+                    <Bar dataKey="trBlogs" fill="#82ca9d" name="TR Bloglar" />
+                    <Bar dataKey="enBlogs" fill="#ffc658" name="EN Bloglar" />
+                  </BarChart>
+                </ResponsiveContainer>
+              </CardContent>
+            </Card>
+          </motion.div>
+
+          {/* Recent Projects */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.7 }}
+          >
+            <Card>
+              <CardHeader>
+                <CardTitle>Son Projeler</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                {recentProjects.length > 0 ? recentProjects.map((project) => (
+                  <div key={project.slug} className="flex items-center justify-between">
+                    <div>
+                      <p className="font-medium">{project.title}</p>
+                      <p className="text-sm text-muted-foreground">{new Date(project.date).toLocaleDateString()}</p>
+                    </div>
+                    <Button variant="outline" size="sm" onClick={() => router.push(`/${locale}/admin/projects/editor/${project.slug}`)}>
+                      Yönet
+                    </Button>
+                  </div>
+                )) : <p className="text-sm text-muted-foreground">Henüz proje eklenmemiş.</p>}
+              </CardContent>
+            </Card>
+          </motion.div>
+        </div>
+
+        {/* Recent Blog Posts */}
+        <motion.div
+          className="mt-6"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.8 }}
+        >
+          <Card>
+            <CardHeader>
+              <CardTitle>Son Blog Yazıları</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              {recentPosts.length > 0 ? recentPosts.map((post) => (
+                <div key={post.slug} className="flex items-center justify-between">
+                  <div>
+                    <p className="font-medium">{post.title}</p>
+                    <p className="text-sm text-muted-foreground">{new Date(post.date).toLocaleDateString()}</p>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <Badge variant={post.locale === 'tr' ? 'secondary' : 'outline'}>{post.locale.toUpperCase()}</Badge>
+                    <Button variant="outline" size="sm" onClick={() => router.push(`/${locale}/admin/blog/editor/${post.slug}`)}>
+                      Yönet
+                    </Button>
+                  </div>
+                </div>
+              )) : <p className="text-sm text-muted-foreground">Henüz blog yazısı eklenmemiş.</p>}
+            </CardContent>
+          </Card>
+        </motion.div>
+      </motion.div>
     </div>
   )
 } 
