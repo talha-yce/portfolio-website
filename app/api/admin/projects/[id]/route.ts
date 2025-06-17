@@ -64,7 +64,11 @@ export async function PUT(request: NextRequest, { params }: RouteParams) {
     
     // Remove _id from update data if present
     const { _id, ...dataToUpdate } = updateData
-    console.log(`[Admin API] Data to update:`, dataToUpdate)
+    console.log(`[Admin API] Data to update:`, JSON.stringify(dataToUpdate, null, 2))
+    
+    // Log specific fields we're updating
+    console.log(`[Admin API] Keywords being updated:`, dataToUpdate.keywords)
+    console.log(`[Admin API] Content being updated:`, dataToUpdate.content)
     
     const updatedProject = await Project.findByIdAndUpdate(
       params.id,
@@ -73,6 +77,11 @@ export async function PUT(request: NextRequest, { params }: RouteParams) {
     ).lean()
     
     console.log(`[Admin API] MongoDB update result:`, updatedProject ? 'Success' : 'Failed')
+    
+    if (updatedProject) {
+      console.log(`[Admin API] Updated keywords:`, (updatedProject as any).keywords)
+      console.log(`[Admin API] Updated content length:`, (updatedProject as any).content?.length)
+    }
     
     if (!updatedProject) {
       return NextResponse.json(

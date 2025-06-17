@@ -260,7 +260,13 @@ export default function AdminProjectEdit({ params }: AdminProjectEditProps) {
         lastModified: new Date()
       }
 
-      console.log('Sending project data:', projectData)
+      console.log('=== FORM DATA BEFORE TRANSFORM ===')
+      console.log('Form keywords:', formData.keywords)
+      console.log('Form content:', formData.content)
+      
+      console.log('=== TRANSFORMED DATA ===')
+      console.log('Transformed content:', transformedContent)
+      console.log('Sending project data:', JSON.stringify(projectData, null, 2))
       console.log('Update URL:', `/api/admin/projects/${formData._id}`)
 
       const response = await fetch(`/api/admin/projects/${formData._id}`, {
