@@ -55,17 +55,14 @@ export default function ProfileManagement({ params }: PageProps) {
   const [loading, setLoading] = useState(true);
   const [deleting, setDeleting] = useState<string | null>(null);
 
-  console.log('[DEBUG] Component render - profiles.length:', profiles.length, 'loading:', loading);
-
   useEffect(() => {
-    console.log('[DEBUG] useEffect çalıştı, fetchProfiles çağrılıyor');
     fetchProfiles();
   }, []);
 
   const fetchProfiles = async () => {
     try {
       console.log('[Admin Panel] Profiller getiriliyor...');
-      const response = await fetch('/api/admin/profile');
+      const response = await fetch('https://talha-yuce.site/api/admin/profile');
       console.log('[Admin Panel] API response status:', response.status);
       
       if (response.ok) {
@@ -152,11 +149,7 @@ export default function ProfileManagement({ params }: PageProps) {
           Profil Düzenle
         </Button>
       </div>
-      
-      {/* DEBUG BİLGİSİ */}
-      <div className="bg-yellow-100 border border-yellow-400 text-yellow-700 px-4 py-3 rounded">
-        <strong>Debug:</strong> Profil sayısı: {profiles.length} | Loading: {loading ? 'Evet' : 'Hayır'}
-      </div>
+
 
       {profiles.length === 0 ? (
         <Card>
