@@ -49,27 +49,47 @@ export async function getFeaturedProjects(locale: Locale, limit: number = 3) {
     
     let featuredProjects: any[] = []
     
-    // 1. Önce demo linki olan projeler (en son tarihli)
-    const demoProjects = await Project.find({ 
+    // 1. Önce featured=true olan projeler (en son tarihli)
+    const explicitlyFeatured = await Project.find({ 
       locale, 
       isPublished: true,
-      demo: { $exists: true, $ne: '' }
+      featured: true
     })
     .sort({ date: -1 })
     .limit(limit)
     .lean()
     
-    featuredProjects = [...demoProjects]
-    console.log(`[ProjectService] ${demoProjects.length} demo linki olan proje bulundu`);
+    featuredProjects = [...explicitlyFeatured]
+    console.log(`[ProjectService] ${explicitlyFeatured.length} açıkça öne çıkarılmış proje bulundu`);
     
-    // 2. Eğer yeterli değilse, GitHub linki olan projeler ekle
+    // 2. Eğer yeterli değilse, demo linki olan projeler ekle (featured=false olanlardan)
+    if (featuredProjects.length < limit) {
+      const remainingLimit = limit - featuredProjects.length
+      const demoProjects = await Project.find({ 
+        locale, 
+        isPublished: true,
+        featured: { $ne: true }, // featured olmayan
+        demo: { $exists: true, $ne: '' },
+        _id: { $nin: featuredProjects.map(p => p._id) }
+      })
+      .sort({ date: -1 })
+      .limit(remainingLimit)
+      .lean()
+      
+      featuredProjects = [...featuredProjects, ...demoProjects]
+      console.log(`[ProjectService] ${demoProjects.length} demo linki olan proje eklendi`);
+    }
+    
+    // 3. Eğer hala yeterli değilse, GitHub linki olan projeler ekle
     if (featuredProjects.length < limit) {
       const remainingLimit = limit - featuredProjects.length
       const githubProjects = await Project.find({ 
         locale, 
         isPublished: true,
+        featured: { $ne: true }, // featured olmayan
         github: { $exists: true, $ne: '' },
-        _id: { $nin: featuredProjects.map(p => p._id) } // Zaten seçilenleri hariç tut
+        demo: { $exists: false }, // demo linki olmayan
+        _id: { $nin: featuredProjects.map(p => p._id) }
       })
       .sort({ date: -1 })
       .limit(remainingLimit)
@@ -79,13 +99,14 @@ export async function getFeaturedProjects(locale: Locale, limit: number = 3) {
       console.log(`[ProjectService] ${githubProjects.length} GitHub linki olan proje eklendi`);
     }
     
-    // 3. Hala yeterli değilse, diğer projelerden ekle
+    // 4. Hala yeterli değilse, diğer projelerden ekle
     if (featuredProjects.length < limit) {
       const remainingLimit = limit - featuredProjects.length
       const otherProjects = await Project.find({ 
         locale, 
         isPublished: true,
-        _id: { $nin: featuredProjects.map(p => p._id) } // Zaten seçilenleri hariç tut
+        featured: { $ne: true }, // featured olmayan
+        _id: { $nin: featuredProjects.map(p => p._id) }
       })
       .sort({ date: -1 })
       .limit(remainingLimit)
@@ -96,6 +117,7 @@ export async function getFeaturedProjects(locale: Locale, limit: number = 3) {
     }
     
     console.log(`[ProjectService] Toplam ${featuredProjects.length} öne çıkan proje seçildi`);
+    console.log(`[ProjectService] Seçilen projeler:`, featuredProjects.map(p => ({ title: p.title, featured: p.featured, demo: !!p.demo, github: !!p.github })));
     
     return featuredProjects.map((project: any) => ({
       ...project,
