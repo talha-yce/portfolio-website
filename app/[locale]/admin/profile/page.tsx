@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -42,7 +42,14 @@ interface Profile {
   updatedAt: string;
 }
 
-export default function ProfileManagement() {
+interface PageProps {
+  params: Promise<{
+    locale: string
+  }>
+}
+
+export default function ProfileManagement({ params }: PageProps) {
+  const { locale } = React.use(params);
   const router = useRouter();
   const [profiles, setProfiles] = useState<Profile[]>([]);
   const [loading, setLoading] = useState(true);
@@ -137,7 +144,7 @@ export default function ProfileManagement() {
     <div className="container mx-auto py-6 space-y-6">
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-bold">Profil Yönetimi</h1>
-        <Button onClick={() => router.push('/admin/profile/editor')}>
+        <Button onClick={() => router.push(`/${locale}/admin/profile/editor`)}>
           <Plus className="h-4 w-4 mr-2" />
           Profil Düzenle
         </Button>
@@ -151,7 +158,7 @@ export default function ProfileManagement() {
             <p className="text-muted-foreground text-center mb-4">
               CV bilgilerinizi eklemek için profil editörünü kullanın.
             </p>
-            <Button onClick={() => router.push('/admin/profile/editor')}>
+            <Button onClick={() => router.push(`/${locale}/admin/profile/editor`)}>
               <Plus className="h-4 w-4 mr-2" />
               İlk Profili Oluştur
             </Button>
@@ -195,7 +202,7 @@ export default function ProfileManagement() {
                     <Button
                       variant="outline"
                       size="sm"
-                      onClick={() => router.push('/admin/profile/editor')}
+                      onClick={() => router.push(`/${locale}/admin/profile/editor`)}
                     >
                       <Edit className="h-4 w-4 mr-2" />
                       Düzenle
