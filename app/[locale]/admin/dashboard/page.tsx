@@ -340,10 +340,10 @@ export default function AdminDashboard({ params }: PageProps) {
           ))}
         </div>
 
-        {/* Son Aktiviteler */}
+        {/* Son Blog Yazıları */}
         <Card>
           <CardHeader>
-            <CardTitle>Son Aktiviteler</CardTitle>
+            <CardTitle>Son Blog Yazıları</CardTitle>
             <CardDescription>Sistemde gerçekleşen en son eylemler.</CardDescription>
           </CardHeader>
           <CardContent>
@@ -420,36 +420,6 @@ export default function AdminDashboard({ params }: PageProps) {
             </Card>
           </motion.div>
         </div>
-
-        {/* Recent Blog Posts */}
-        <motion.div
-          className="mt-6"
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: 0.8 }}
-        >
-          <Card>
-            <CardHeader>
-              <CardTitle>Son Blog Yazıları</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              {recentPosts.length > 0 ? recentPosts.map((post) => (
-                <div key={post.slug} className="flex items-center justify-between">
-                  <div>
-                    <p className="font-medium">{post.title}</p>
-                    <p className="text-sm text-muted-foreground">{new Date(post.date).toLocaleDateString()}</p>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <Badge variant={post.locale === 'tr' ? 'secondary' : 'outline'}>{post.locale.toUpperCase()}</Badge>
-                    <Button variant="outline" size="sm" onClick={() => router.push(`/${locale}/admin/blog/editor/${post.slug}`)}>
-                      Yönet
-                    </Button>
-                  </div>
-                </div>
-              )) : <p className="text-sm text-muted-foreground">Henüz blog yazısı eklenmemiş.</p>}
-            </CardContent>
-          </Card>
-        </motion.div>
       </motion.div>
     </div>
   )

@@ -122,7 +122,7 @@ export default function ActivitiesPage({ params }: PageProps) {
     return (
       <div className="p-4 md:p-6">
         <div className="flex justify-between items-center mb-6">
-          <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Son Aktiviteler</h1>
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Son Blog Yazıları</h1>
           <button 
             onClick={goBack}
             className="flex items-center rounded-md bg-gray-100 px-4 py-2 text-sm font-medium text-gray-600 hover:bg-gray-200 dark:bg-gray-700 dark:text-gray-200 dark:hover:bg-gray-600"
@@ -154,7 +154,7 @@ export default function ActivitiesPage({ params }: PageProps) {
     return (
       <div className="p-4 md:p-6">
         <div className="flex justify-between items-center mb-6">
-          <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Son Aktiviteler</h1>
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Son Blog Yazıları</h1>
           <button 
             onClick={goBack}
             className="flex items-center rounded-md bg-gray-100 px-4 py-2 text-sm font-medium text-gray-600 hover:bg-gray-200 dark:bg-gray-700 dark:text-gray-200 dark:hover:bg-gray-600"
@@ -178,7 +178,7 @@ export default function ActivitiesPage({ params }: PageProps) {
   return (
     <div className="p-4 md:p-6">
       <div className="flex justify-between items-center mb-6">
-        <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Son Aktiviteler</h1>
+        <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Son Blog Yazıları</h1>
         <button 
           onClick={goBack}
           className="flex items-center rounded-md bg-gray-100 px-4 py-2 text-sm font-medium text-gray-600 hover:bg-gray-200 dark:bg-gray-700 dark:text-gray-200 dark:hover:bg-gray-600"
