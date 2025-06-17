@@ -3,6 +3,10 @@
 import React from 'react'
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
+import { Button } from '@/components/ui/button'
+import { Plus, Briefcase, BookOpen, User, CheckCircle, Edit } from 'lucide-react'
+import { Card, CardHeader, CardTitle, CardContent, CardDescription } from '@/components/ui/card'
+import { Badge } from '@/components/ui/badge'
 
 interface PageProps {
   params: Promise<{
@@ -19,11 +23,13 @@ export default function AdminDashboard({ params }: PageProps) {
   const [stats, setStats] = useState({
     posts: 0,
     trPosts: 0,
-    enPosts: 0
+    enPosts: 0,
+    projects: 0,
   })
   const [recentActivities, setRecentActivities] = useState<any[]>([])
   const [isLoadingStats, setIsLoadingStats] = useState(true)
   const [activeSection, setActiveSection] = useState('overview')
+  const [profiles, setProfiles] = useState<any[]>([])
   
   const router = useRouter()
 
@@ -78,8 +84,9 @@ export default function AdminDashboard({ params }: PageProps) {
         setAdminInfo(data.admin)
         
         // İstatistikleri ve son aktiviteleri getir
-        await fetchStats()
-        await fetchRecentActivities()
+        fetchStats()
+        fetchRecentActivities()
+        fetchProfiles()
       } catch (error: any) {
         console.error('Dashboard: Authentication error:', error)
         setError(error.message || 'Authentication failed')
@@ -100,71 +107,41 @@ export default function AdminDashboard({ params }: PageProps) {
   const fetchStats = async () => {
     setIsLoadingStats(true)
     try {
-      // Fetch actual blog count from database
       const baseUrl = window.location.origin
       
-      try {
-        // Tüm blogların sayısını al
-        const countResponse = await fetch(`${baseUrl}/api/blog/count`, {
-          cache: 'no-store',
-          headers: {
-            'Cache-Control': 'no-cache, no-store, must-revalidate',
-            'Pragma': 'no-cache',
-            'Expires': '0'
-          }
-        })
-        
-        // TR ve EN için ayrı ayrı blog sayılarını al
-        const trCountResponse = await fetch(`${baseUrl}/api/blog/count?locale=tr`, {
-          cache: 'no-store',
-          headers: {
-            'Cache-Control': 'no-cache, no-store, must-revalidate',
-            'Pragma': 'no-cache',
-            'Expires': '0'
-          }
-        })
-        
-        const enCountResponse = await fetch(`${baseUrl}/api/blog/count?locale=en`, {
-          cache: 'no-store',
-          headers: {
-            'Cache-Control': 'no-cache, no-store, must-revalidate',
-            'Pragma': 'no-cache',
-            'Expires': '0'
-          }
-        })
-        
-        if (countResponse.ok && trCountResponse.ok && enCountResponse.ok) {
-          const totalData = await countResponse.json()
-          const trData = await trCountResponse.json()
-          const enData = await enCountResponse.json()
-          
-          setStats({
-            posts: totalData.count || 0,
-            trPosts: trData.count || 0,
-            enPosts: enData.count || 0
-          })
-        } else {
-          // Fallback to default values if API fails
-          setStats({
-            posts: 6, // Known total count
-            trPosts: 3, // Assumed TR count
-            enPosts: 3  // Assumed EN count
-          })
-        }
-      } catch (error) {
-        console.error('Error fetching blog counts:', error)
-        // Fallback values
-        setStats({
-          posts: 6,
-          trPosts: 3,
-          enPosts: 3
-        })
-      }
-      
-      setIsLoadingStats(false)
+      const countResponse = await fetch(`${baseUrl}/api/blog/count`, { cache: 'no-store' })
+      const trCountResponse = await fetch(`${baseUrl}/api/blog/count?locale=tr`, { cache: 'no-store' })
+      const enCountResponse = await fetch(`${baseUrl}/api/blog/count?locale=en`, { cache: 'no-store' })
+      const projectsCountResponse = await fetch(`${baseUrl}/api/projects/count`, { cache: 'no-store' })
+
+      const totalData = countResponse.ok ? await countResponse.json() : { count: 0 }
+      const trData = trCountResponse.ok ? await trCountResponse.json() : { count: 0 }
+      const enData = enCountResponse.ok ? await enCountResponse.json() : { count: 0 }
+      const projectsData = projectsCountResponse.ok ? await projectsCountResponse.json() : { count: 0 }
+
+      setStats({
+        posts: totalData.count,
+        trPosts: trData.count,
+        enPosts: enData.count,
+        projects: projectsData.count,
+      })
     } catch (error) {
       console.error('Error fetching stats:', error)
+    } finally {
       setIsLoadingStats(false)
+    }
+  }
+
+  const fetchProfiles = async () => {
+    try {
+      const baseUrl = window.location.origin
+      const response = await fetch(`${baseUrl}/api/admin/profile`, { cache: 'no-store' })
+      if (response.ok) {
+        const data = await response.json()
+        setProfiles(data)
+      }
+    } catch (error) {
+      console.error('Error fetching profiles:', error)
     }
   }
 
@@ -225,6 +202,24 @@ export default function AdminDashboard({ params }: PageProps) {
     router.push(url)
   }
 
+  const getProfileCompleteness = (profile: any) => {
+    if (!profile) return 0;
+    const fields = [
+      'name', 'title', 'email', 'phone', 'location', 'bio', 'github', 'linkedin', 'profileImage'
+    ];
+    const filledFields = fields.filter(field => profile[field]);
+    const arrayFields = ['languages', 'education', 'experience', 'skills', 'certifications'];
+    const filledArrayFields = arrayFields.filter(field => profile[field] && profile[field].length > 0);
+    
+    const totalFields = fields.length + arrayFields.length;
+    const totalFilledFields = filledFields.length + filledArrayFields.length;
+    
+    return Math.round((totalFilledFields / totalFields) * 100);
+  };
+
+  const enProfile = profiles.find(p => p.locale === 'en');
+  const trProfile = profiles.find(p => p.locale === 'tr');
+  
   // Rest of the existing component...
   // State Loaders
   if (!isClient || loading) {
@@ -255,273 +250,93 @@ export default function AdminDashboard({ params }: PageProps) {
   
   // Return content 
   return (
-    <div className="p-4 md:p-6">
-      {/* Page Header */}
-      <div className="mb-6">
-        <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Hoşgeldiniz, {adminInfo?.username}!</h1>
-        <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
-          İşte kontrol panelinizin güncel durumu
-        </p>
-      </div>
+    <div className="flex min-h-screen bg-gray-100 dark:bg-gray-900" suppressHydrationWarning>
+      <div className="flex-1 p-8">
+        <header className="mb-8">
+          <h1 className="text-3xl font-bold text-gray-800 dark:text-white">Genel Bakış</h1>
+          <p className="text-gray-500 dark:text-gray-400">Hoş geldiniz, {adminInfo?.username || 'Admin'}!</p>
+        </header>
 
-      {/* Stats Cards - veri yüklenmesini göster */}
-      <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
-        {/* İstatistik kartlarını data gelene kadar loading durumunda göster */}
-        {isLoadingStats ? (
-          // İstatistikler yükleniyorsa skeleton göster
-          Array(4).fill(0).map((_, index) => (
-            <div key={index} className="overflow-hidden rounded-lg bg-white shadow dark:bg-gray-800">
-              <div className="p-5">
-                <div className="flex items-center">
-                  <div className="flex-shrink-0 rounded-md bg-gray-200 dark:bg-gray-700 p-3 animate-pulse" style={{width: "40px", height: "40px"}}></div>
-                  <div className="ml-5 w-0 flex-1">
-                    <div className="h-4 w-20 bg-gray-200 dark:bg-gray-700 rounded animate-pulse mb-2"></div>
-                    <div className="h-6 w-12 bg-gray-200 dark:bg-gray-700 rounded animate-pulse"></div>
-                  </div>
-                </div>
-              </div>
-              <div className="bg-gray-50 px-5 py-3 dark:bg-gray-700">
-                <div className="h-4 w-28 bg-gray-200 dark:bg-gray-600 rounded animate-pulse"></div>
-              </div>
-            </div>
-          ))
-        ) : (
-          // İstatistikler normal şekilde göster
-          <>
-            {/* Blog yazıları */}
-            <div className="overflow-hidden rounded-lg bg-white shadow dark:bg-gray-800">
-              <div className="p-5">
-                <div className="flex items-center">
-                  <div className="flex-shrink-0 rounded-md bg-blue-500 p-3">
-                    <span className="material-symbols-outlined text-white">article</span>
-                  </div>
-                  <div className="ml-5 w-0 flex-1">
-                    <dl>
-                      <dt className="truncate text-sm font-medium text-gray-500 dark:text-gray-400">
-                        Toplam Blog Sayısı
-                      </dt>
-                      <dd>
-                        <div className="text-lg font-medium text-gray-900 dark:text-white">
-                          {stats.posts}
-                        </div>
-                      </dd>
-                    </dl>
-                  </div>
-                </div>
-              </div>
-              <div className="bg-gray-50 px-5 py-3 dark:bg-gray-700">
-                <div className="text-sm">
-                  <a 
-                    onClick={() => navigateTo(`/${locale}/admin/blog`)}
-                    className="font-medium text-blue-600 hover:text-blue-500 dark:text-blue-400 cursor-pointer"
-                  >
-                    Tümünü görüntüle
-                  </a>
-                </div>
-              </div>
-            </div>
-
-            {/* Türkçe Blog Sayısı */}
-            <div className="overflow-hidden rounded-lg bg-white shadow dark:bg-gray-800">
-              <div className="p-5">
-                <div className="flex items-center">
-                  <div className="flex-shrink-0 rounded-md bg-red-500 p-3">
-                    <span className="material-symbols-outlined text-white">flag</span>
-                  </div>
-                  <div className="ml-5 w-0 flex-1">
-                    <dl>
-                      <dt className="truncate text-sm font-medium text-gray-500 dark:text-gray-400">
-                        Türkçe Bloglar
-                      </dt>
-                      <dd>
-                        <div className="text-lg font-medium text-gray-900 dark:text-white">
-                          {stats.trPosts}
-                        </div>
-                      </dd>
-                    </dl>
-                  </div>
-                </div>
-              </div>
-              <div className="bg-gray-50 px-5 py-3 dark:bg-gray-700">
-                <div className="text-sm">
-                  <a 
-                    onClick={() => navigateTo(`/${locale}/admin/blog?filter=tr`)}
-                    className="font-medium text-blue-600 hover:text-blue-500 dark:text-blue-400 cursor-pointer"
-                  >
-                    TR blogları görüntüle
-                  </a>
-                </div>
-              </div>
-            </div>
-
-            {/* İngilizce Blog Sayısı */}
-            <div className="overflow-hidden rounded-lg bg-white shadow dark:bg-gray-800">
-              <div className="p-5">
-                <div className="flex items-center">
-                  <div className="flex-shrink-0 rounded-md bg-blue-600 p-3">
-                    <span className="material-symbols-outlined text-white">language</span>
-                  </div>
-                  <div className="ml-5 w-0 flex-1">
-                    <dl>
-                      <dt className="truncate text-sm font-medium text-gray-500 dark:text-gray-400">
-                        İngilizce Bloglar
-                      </dt>
-                      <dd>
-                        <div className="text-lg font-medium text-gray-900 dark:text-white">
-                          {stats.enPosts}
-                        </div>
-                      </dd>
-                    </dl>
-                  </div>
-                </div>
-              </div>
-              <div className="bg-gray-50 px-5 py-3 dark:bg-gray-700">
-                <div className="text-sm">
-                  <a 
-                    onClick={() => navigateTo(`/${locale}/admin/blog?filter=en`)}
-                    className="font-medium text-blue-600 hover:text-blue-500 dark:text-blue-400 cursor-pointer"
-                  >
-                    EN blogları görüntüle
-                  </a>
-                </div>
-              </div>
-            </div>
-          </>
-        )}
-      </div>
-
-      {/* Son Aktiviteler Bölümü - loading state ekleme */}
-      <div className="mt-8 grid grid-cols-1 gap-6 lg:grid-cols-3">
-        {/* Recent Activity */}
-        <div className="lg:col-span-2">
-          <div className="rounded-lg bg-white shadow dark:bg-gray-800">
-            <div className="p-6">
-              <h3 className="text-lg font-medium leading-6 text-gray-900 dark:text-white">
-                Son Aktiviteler
-              </h3>
-              <div className="mt-5 flow-root">
-                {recentActivities.length === 0 ? (
-                  // Aktiviteler yükleniyorsa skeleton göster
-                  <ul className="-mb-8">
-                    {[1, 2, 3].map((_, index) => (
-                      <li key={index}>
-                        <div className="relative pb-8">
-                          {index !== 2 && (
-                            <span className="absolute left-4 top-4 -ml-px h-full w-0.5 bg-gray-200 dark:bg-gray-700" aria-hidden="true" />
-                          )}
-                          <div className="relative flex space-x-3">
-                            <div className="h-8 w-8 rounded-full bg-gray-200 dark:bg-gray-700 animate-pulse"></div>
-                            <div className="flex min-w-0 flex-1 justify-between space-x-4 pt-1.5">
-                              <div className="w-1/2 h-4 bg-gray-200 dark:bg-gray-700 rounded animate-pulse"></div>
-                              <div className="w-1/4 h-4 bg-gray-200 dark:bg-gray-700 rounded animate-pulse"></div>
-                            </div>
-                          </div>
-                        </div>
-                      </li>
-                    ))}
-                  </ul>
-                ) : (
-                  // Normal aktiviteleri göster
-                  <ul className="-mb-8">
-                    {recentActivities.map((activity, activityIdx) => (
-                      <li key={activity.id}>
-                        <div className="relative pb-8">
-                          {activityIdx !== recentActivities.length - 1 ? (
-                            <span className="absolute left-4 top-4 -ml-px h-full w-0.5 bg-gray-200 dark:bg-gray-700" aria-hidden="true" />
-                          ) : null}
-                          <div className="relative flex space-x-3">
-                            <div>
-                              <span className="h-8 w-8 rounded-full bg-blue-500 flex items-center justify-center ring-8 ring-white dark:ring-gray-800">
-                                <span className="material-symbols-outlined text-sm text-white">event_note</span>
-                              </span>
-                            </div>
-                            <div className="flex min-w-0 flex-1 justify-between space-x-4 pt-1.5">
-                              <div>
-                                <p className="text-sm text-gray-800 dark:text-gray-200">
-                                  {activity.action}
-                                </p>
-                              </div>
-                              <div className="whitespace-nowrap text-right text-sm text-gray-500 dark:text-gray-400">
-                                <time>{activity.time}</time>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                      </li>
-                    ))}
-                  </ul>
-                )}
-              </div>
-              <div className="mt-6">
-                <a
-                  onClick={() => navigateTo(`/${locale}/admin/activities`)}
-                  className="flex w-full items-center justify-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600 cursor-pointer"
-                >
-                  Tüm aktiviteleri görüntüle
-                </a>
-              </div>
-            </div>
-          </div>
+        {/* Hızlı Erişim Butonları */}
+        <div className="mb-8 flex space-x-4">
+          <Button onClick={() => router.push(`/${locale}/admin/projects/editor`)}>
+            <Plus className="mr-2 h-4 w-4" /> Yeni Proje Ekle
+          </Button>
+          <Button onClick={() => router.push(`/${locale}/admin/blog/editor`)}>
+            <Plus className="mr-2 h-4 w-4" /> Yeni Blog Yazısı Ekle
+          </Button>
+          <Button variant="outline" onClick={() => router.push(`/${locale}/admin/profile/editor`)}>
+            <Edit className="mr-2 h-4 w-4" /> Profilleri Düzenle
+          </Button>
         </div>
 
-        {/* Hızlı İşlemler - düzgün URL'lere yönlendirme */}
-        <div>
-          <div className="rounded-lg bg-white shadow dark:bg-gray-800">
-            <div className="p-6">
-              <h3 className="text-lg font-medium leading-6 text-gray-900 dark:text-white">
-                Hızlı İşlemler
-              </h3>
-              <div className="mt-6 space-y-4">
-                <a
-                  onClick={() => navigateTo(`/${locale}/admin/blog/editor/new`)}
-                  className="flex w-full items-center justify-center rounded-md border border-transparent bg-blue-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800 cursor-pointer"
-                >
-                  <span className="material-symbols-outlined mr-2">add</span>
-                  Yeni Blog Yazısı
-                </a>
-                <a
-                  onClick={() => navigateTo(`/${locale}/admin/users`)}
-                  className="flex w-full items-center justify-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600 cursor-pointer"
-                >
-                  <span className="material-symbols-outlined mr-2">person_add</span>
-                  Kullanıcı Yönetimi
-                </a>
-                <a
-                  onClick={() => navigateTo(`/${locale}/admin/settings`)}
-                  className="flex w-full items-center justify-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600 cursor-pointer"
-                >
-                  <span className="material-symbols-outlined mr-2">settings</span>
-                  Site Ayarları
-                </a>
-              </div>
-            </div>
-          </div>
-
-          {/* Admin Bilgileri */}
-          <div className="mt-6 rounded-lg bg-white shadow dark:bg-gray-800">
-            <div className="p-6">
-              <h3 className="text-lg font-medium leading-6 text-gray-900 dark:text-white">
-                Admin Bilgileri
-              </h3>
-              <div className="mt-5 space-y-3">
-                <div className="flex justify-between">
-                  <span className="text-sm font-medium text-gray-500 dark:text-gray-400">Kullanıcı Adı:</span>
-                  <span className="text-sm text-gray-900 dark:text-white">{adminInfo?.username}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-sm font-medium text-gray-500 dark:text-gray-400">E-posta:</span>
-                  <span className="text-sm text-gray-900 dark:text-white">{adminInfo?.email}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-sm font-medium text-gray-500 dark:text-gray-400">Durum:</span>
-                  <span className="inline-flex items-center rounded-full bg-green-100 px-2.5 py-0.5 text-xs font-medium text-green-800 dark:bg-green-900/30 dark:text-green-300">
-                    Aktif
-                  </span>
-                </div>
-              </div>
-            </div>
-          </div>
+        {/* İstatistikler */}
+        <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4 mb-8">
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">Toplam Proje</CardTitle>
+              <Briefcase className="h-4 w-4 text-muted-foreground" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">{isLoadingStats ? '...' : stats.projects}</div>
+              <p className="text-xs text-muted-foreground">Yönetilen proje sayısı</p>
+            </CardContent>
+          </Card>
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">Toplam Blog Yazısı</CardTitle>
+              <BookOpen className="h-4 w-4 text-muted-foreground" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">{isLoadingStats ? '...' : stats.posts}</div>
+              <p className="text-xs text-muted-foreground">TR: {stats.trPosts}, EN: {stats.enPosts}</p>
+            </CardContent>
+          </Card>
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">İngilizce Profil</CardTitle>
+              <User className="h-4 w-4 text-muted-foreground" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">{getProfileCompleteness(enProfile)}%</div>
+              <p className="text-xs text-muted-foreground">Profil doluluk oranı</p>
+            </CardContent>
+          </Card>
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">Türkçe Profil</CardTitle>
+              <User className="h-4 w-4 text-muted-foreground" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">{getProfileCompleteness(trProfile)}%</div>
+              <p className="text-xs text-muted-foreground">Profil doluluk oranı</p>
+            </CardContent>
+          </Card>
         </div>
+
+        {/* Son Aktiviteler */}
+        <Card>
+          <CardHeader>
+            <CardTitle>Son Aktiviteler</CardTitle>
+            <CardDescription>Sistemde gerçekleşen en son eylemler.</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-4">
+              {recentActivities.slice(0, 5).map((activity) => (
+                <div key={activity.id} className="flex items-center">
+                  <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary/10">
+                    <CheckCircle className="h-4 w-4 text-primary" />
+                  </div>
+                  <div className="ml-4 flex-1">
+                    <p className="text-sm font-medium text-gray-800 dark:text-gray-200">{activity.action}</p>
+                    <p className="text-xs text-gray-500 dark:text-gray-400">{activity.time}</p>
+                  </div>
+                  <Badge variant="outline">{activity.user}</Badge>
+                </div>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
       </div>
     </div>
   )
