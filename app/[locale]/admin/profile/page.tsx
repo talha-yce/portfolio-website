@@ -55,7 +55,10 @@ export default function ProfileManagement({ params }: PageProps) {
   const [loading, setLoading] = useState(true);
   const [deleting, setDeleting] = useState<string | null>(null);
 
+  console.log('[DEBUG] Component render - profiles.length:', profiles.length, 'loading:', loading);
+
   useEffect(() => {
+    console.log('[DEBUG] useEffect çalıştı, fetchProfiles çağrılıyor');
     fetchProfiles();
   }, []);
 
@@ -148,6 +151,11 @@ export default function ProfileManagement({ params }: PageProps) {
           <Plus className="h-4 w-4 mr-2" />
           Profil Düzenle
         </Button>
+      </div>
+      
+      {/* DEBUG BİLGİSİ */}
+      <div className="bg-yellow-100 border border-yellow-400 text-yellow-700 px-4 py-3 rounded">
+        <strong>Debug:</strong> Profil sayısı: {profiles.length} | Loading: {loading ? 'Evet' : 'Hayır'}
       </div>
 
       {profiles.length === 0 ? (
