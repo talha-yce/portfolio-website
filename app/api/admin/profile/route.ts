@@ -8,11 +8,29 @@ export async function GET() {
     console.log('[Admin API] Profile GET request başladı');
     await connectToDatabase();
     
+    // Check collection directly first
+    const mongoose = require('mongoose');
+    const db = mongoose.connection.db;
+    const directProfiles = await db.collection('userprofiles').find({}).toArray();
+    console.log(`[Admin API] Direct query: ${directProfiles.length} profil bulundu`);
+    
     const profiles = await Profile.find({}).sort({ locale: 1, createdAt: -1 }).lean();
     
-    console.log(`[Admin API] ${profiles.length} profil bulundu`);
+    console.log(`[Admin API] Model query: ${profiles.length} profil bulundu`);
+    console.log(`[Admin API] Collection name: ${Profile.collection.name}`);
+    
     if (profiles.length > 0) {
       console.log(`[Admin API] İlk profil:`, profiles[0].name, profiles[0].locale);
+    }
+    
+    // If model query is empty but direct query has data, use direct query
+    if (profiles.length === 0 && directProfiles.length > 0) {
+      console.log('[Admin API] Using direct query results');
+      const transformedDirectProfiles = directProfiles.map((profile: any) => ({
+        ...profile,
+        _id: profile._id.toString()
+      }));
+      return NextResponse.json(transformedDirectProfiles);
     }
     
     // Transform ObjectId to string for JSON serialization
@@ -21,6 +39,7 @@ export async function GET() {
       _id: profile._id.toString()
     }));
     
+    console.log('[Admin API] Returning profiles:', transformedProfiles.length);
     return NextResponse.json(transformedProfiles);
   } catch (error) {
     console.error('[Admin API] Error fetching profiles:', error);
