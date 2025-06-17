@@ -18,6 +18,7 @@ export interface ContentMeta {
   coverImage?: string
   github?: string
   link?: string
+  demo?: string
   readingTime?: number
 }
 

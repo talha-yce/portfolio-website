@@ -79,15 +79,15 @@ export function ProjectCard({ project, locale, index = 0 }: ProjectCardProps) {
               </Button>
             </Link>
           )}
-          {project.link && (
-            <Link href={project.link} target="_blank" rel="noopener noreferrer">
+          {(project.demo || project.link) && (
+            <Link href={project.demo || project.link} target="_blank" rel="noopener noreferrer">
               <Button
                 variant="outline"
                 size="icon"
                 className="border-primary-400/30 hover:border-primary-500 hover:bg-primary-100 hover:text-primary-700"
               >
                 <ExternalLink className="h-4 w-4" />
-                <span className="sr-only">Visit</span>
+                <span className="sr-only">Demo</span>
               </Button>
             </Link>
           )}

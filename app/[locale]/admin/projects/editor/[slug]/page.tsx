@@ -204,13 +204,35 @@ export default function AdminProjectEdit({ params }: AdminProjectEditProps) {
     try {
       setSaving(true)
       
+      // Transform content to match database schema
+      const transformedContent = formData.content.map(section => {
+        switch (section.type) {
+          case 'paragraph':
+            return { type: 'paragraph', text: section.content }
+          case 'heading':
+            return { type: 'heading', text: section.content, level: 2 }
+          case 'list':
+            return { type: 'list', items: section.content.split('\n').filter(item => item.trim()) }
+          case 'code':
+            return { type: 'code', text: section.content, language: 'javascript' }
+          case 'image':
+            return { type: 'image', src: section.content, alt: 'Project image' }
+          case 'quote':
+            return { type: 'quote', text: section.content }
+          default:
+            return { type: 'paragraph', text: section.content }
+        }
+      })
+      
       const projectData = {
         ...formData,
+        content: transformedContent,
         isPublished: publish || formData.isPublished,
         date: new Date(formData.date),
-        lastModified: new Date(),
-        readingTime: Math.ceil(formData.content.reduce((acc, section) => acc + section.content.split(' ').length, 0) / 200)
+        lastModified: new Date()
       }
+
+      console.log('Sending project data:', projectData)
 
       const response = await fetch(`/api/admin/projects/${formData._id}`, {
         method: 'PUT',
@@ -222,8 +244,12 @@ export default function AdminProjectEdit({ params }: AdminProjectEditProps) {
 
       if (!response.ok) {
         const errorData = await response.json()
+        console.error('API Error:', errorData)
         throw new Error(errorData.error || 'Failed to update project')
       }
+
+      const result = await response.json()
+      console.log('Update result:', result)
 
       toast({
         title: 'Başarılı',

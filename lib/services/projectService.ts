@@ -47,17 +47,57 @@ export async function getFeaturedProjects(locale: Locale, limit: number = 3) {
     console.log(`[ProjectService] getFeaturedProjects("${locale}", ${limit}) başladı`);
     await connectToDatabase()
     
-    const projects = await Project.find({ 
+    let featuredProjects: any[] = []
+    
+    // 1. Önce demo linki olan projeler (en son tarihli)
+    const demoProjects = await Project.find({ 
       locale, 
       isPublished: true,
-      featured: true 
+      demo: { $exists: true, $ne: '' }
     })
     .sort({ date: -1 })
     .limit(limit)
     .lean()
     
-    console.log(`[ProjectService] ${projects.length} öne çıkan proje bulundu`);
-    return projects.map((project: any) => ({
+    featuredProjects = [...demoProjects]
+    console.log(`[ProjectService] ${demoProjects.length} demo linki olan proje bulundu`);
+    
+    // 2. Eğer yeterli değilse, GitHub linki olan projeler ekle
+    if (featuredProjects.length < limit) {
+      const remainingLimit = limit - featuredProjects.length
+      const githubProjects = await Project.find({ 
+        locale, 
+        isPublished: true,
+        github: { $exists: true, $ne: '' },
+        _id: { $nin: featuredProjects.map(p => p._id) } // Zaten seçilenleri hariç tut
+      })
+      .sort({ date: -1 })
+      .limit(remainingLimit)
+      .lean()
+      
+      featuredProjects = [...featuredProjects, ...githubProjects]
+      console.log(`[ProjectService] ${githubProjects.length} GitHub linki olan proje eklendi`);
+    }
+    
+    // 3. Hala yeterli değilse, diğer projelerden ekle
+    if (featuredProjects.length < limit) {
+      const remainingLimit = limit - featuredProjects.length
+      const otherProjects = await Project.find({ 
+        locale, 
+        isPublished: true,
+        _id: { $nin: featuredProjects.map(p => p._id) } // Zaten seçilenleri hariç tut
+      })
+      .sort({ date: -1 })
+      .limit(remainingLimit)
+      .lean()
+      
+      featuredProjects = [...featuredProjects, ...otherProjects]
+      console.log(`[ProjectService] ${otherProjects.length} diğer proje eklendi`);
+    }
+    
+    console.log(`[ProjectService] Toplam ${featuredProjects.length} öne çıkan proje seçildi`);
+    
+    return featuredProjects.map((project: any) => ({
       ...project,
       _id: project._id.toString(),
       formattedDate: formatDate(project.date, locale),
