@@ -54,15 +54,22 @@ export default function ProfileManagement() {
 
   const fetchProfiles = async () => {
     try {
+      console.log('[Admin Panel] Profiller getiriliyor...');
       const response = await fetch('/api/admin/profile');
+      console.log('[Admin Panel] API response status:', response.status);
+      
       if (response.ok) {
         const data = await response.json();
+        console.log('[Admin Panel] Gelen profil verisi:', data);
+        console.log('[Admin Panel] Profil sayısı:', data.length);
         setProfiles(data);
       } else {
+        const errorData = await response.json();
+        console.error('[Admin Panel] API error:', errorData);
         throw new Error('Profiller alınamadı');
       }
     } catch (error) {
-      console.error('Error fetching profiles:', error);
+      console.error('[Admin Panel] Error fetching profiles:', error);
       toast.error('Profiller yüklenirken hata oluştu');
     } finally {
       setLoading(false);

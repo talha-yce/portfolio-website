@@ -5,13 +5,25 @@ import { Profile } from '@/lib/models/Profile';
 // GET - Fetch all profiles
 export async function GET() {
   try {
+    console.log('[Admin API] Profile GET request başladı');
     await connectToDatabase();
     
-    const profiles = await Profile.find({}).sort({ locale: 1, createdAt: -1 });
+    const profiles = await Profile.find({}).sort({ locale: 1, createdAt: -1 }).lean();
     
-    return NextResponse.json(profiles);
+    console.log(`[Admin API] ${profiles.length} profil bulundu`);
+    if (profiles.length > 0) {
+      console.log(`[Admin API] İlk profil:`, profiles[0].name, profiles[0].locale);
+    }
+    
+    // Transform ObjectId to string for JSON serialization
+    const transformedProfiles = profiles.map((profile: any) => ({
+      ...profile,
+      _id: profile._id.toString()
+    }));
+    
+    return NextResponse.json(transformedProfiles);
   } catch (error) {
-    console.error('Error fetching profiles:', error);
+    console.error('[Admin API] Error fetching profiles:', error);
     return NextResponse.json(
       { error: 'Profiller alınırken hata oluştu' },
       { status: 500 }
