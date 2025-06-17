@@ -4,7 +4,8 @@ import { getDictionary } from "@/lib/i18n/dictionaries"
 import type { Locale } from "@/lib/i18n/config"
 import { getAllContent, type ContentMeta } from "@/lib/content-manager"
 import { getAllBlogPosts } from "@/lib/services/blogService"
-import { BlogPost, transformToBlogPost } from "@/lib/types"
+import { getFeaturedProjects } from "@/lib/services/projectService"
+import { BlogPost, transformToBlogPost, Project, transformToProject } from "@/lib/types"
 
 export async function generateMetadata({ params }: { params: { locale: Locale } }): Promise<Metadata> {
   const awaitedParams = await params
@@ -20,14 +21,28 @@ export default async function Home({ params }: { params: { locale: Locale } }) {
   const awaitedParams = await params
   const dictionary = await getDictionary(awaitedParams.locale)
 
-  // Fetch projects with error handling
-  let projects: ContentMeta[] = []
+  // Fetch projects from database with error handling
+  let featuredProjects: Project[] = []
   try {
-    projects = await getAllContent("projects", awaitedParams.locale)
+    const dbProjects = await getFeaturedProjects(awaitedParams.locale, 3)
+    featuredProjects = dbProjects.map(project => transformToProject(project))
   } catch (error) {
-    console.error("Error fetching projects:", error)
+    console.error("Error fetching projects from database:", error)
+    // Fallback to static content if database fetch fails
+    try {
+      const staticProjects = await getAllContent("projects", awaitedParams.locale)
+             featuredProjects = staticProjects.slice(0, 3).map(project => ({
+         ...project,
+         formattedDate: project.formattedDate || new Date(project.date).toLocaleDateString(),
+         github: (project as any).github,
+         demo: (project as any).demo,
+         status: (project as any).status,
+         featured: (project as any).featured
+       }))
+    } catch (fallbackError) {
+      console.error("Error fetching fallback projects:", fallbackError)
+    }
   }
-  const featuredProjects = projects.slice(0, 3)
 
   // Fetch posts from database with error handling
   let recentPosts: BlogPost[] = []

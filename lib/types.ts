@@ -7,6 +7,16 @@ export interface BlogPost extends ContentMeta {
   relatedPosts?: string[]
 }
 
+export interface Project extends ContentMeta {
+  _id?: string
+  content?: any[]
+  formattedDate: string
+  github?: string
+  demo?: string
+  status?: string
+  featured?: boolean
+}
+
 export type DbBlogPost = {
   _id: string
   title: string
@@ -20,6 +30,25 @@ export type DbBlogPost = {
   readingTime?: number
   relatedPosts?: string[]
   isPublished?: boolean
+  [key: string]: any
+}
+
+export type DbProject = {
+  _id: string
+  title: string
+  slug: string
+  date: Date
+  formattedDate: string
+  description: string
+  content: any[]
+  tags: string[]
+  github?: string
+  demo?: string
+  coverImage?: string
+  readingTime?: number
+  isPublished?: boolean
+  featured?: boolean
+  status?: string
   [key: string]: any
 }
 
@@ -53,5 +82,31 @@ export function transformToBlogPost(post: any): BlogPost {
     readingTime: post.readingTime,
     _id: post._id,
     relatedPosts: post.relatedPosts
+  }
+}
+
+// Type guard for projects
+export function isDbProject(project: any): project is DbProject {
+  return project && typeof project === 'object' && project.date instanceof Date
+}
+
+// Utility function to safely transform any kind of project to Project format
+export function transformToProject(project: any): Project {
+  return {
+    slug: project.slug,
+    title: project.title,
+    date: typeof project.date === 'object' && project.date instanceof Date 
+      ? project.date.toISOString() 
+      : String(project.date),
+    formattedDate: project.formattedDate || '',
+    description: project.description || '',
+    tags: Array.isArray(project.tags) ? project.tags : [],
+    coverImage: project.coverImage,
+    readingTime: project.readingTime,
+    github: project.github,
+    demo: project.demo,
+    status: project.status,
+    featured: project.featured,
+    _id: project._id
   }
 } 

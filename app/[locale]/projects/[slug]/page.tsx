@@ -10,8 +10,11 @@ import { Separator } from "@/components/ui/separator"
 import { getAllContent, getContentItem } from "@/lib/content-manager"
 import { getDictionary } from "@/lib/i18n/dictionaries"
 import { type Locale, getLocalizedPathname } from "@/lib/i18n/config"
+import { getProjectBySlug } from "@/lib/services/projectService"
 import { PageTransition } from "@/components/page-transition"
 import { SiteLayout } from "@/components/site-layout"
+import { BlogContentRenderer } from "@/components/BlogContentRenderer"
+import { sanitizeForClient } from "@/lib/utils"
 
 interface ProjectPageProps {
   params: {
@@ -23,7 +26,12 @@ interface ProjectPageProps {
 export async function generateMetadata({ params }: ProjectPageProps): Promise<Metadata> {
   const locale = (await params).locale
   const slug = (await params).slug
-  const project = await getContentItem("projects", slug, locale)
+  
+  // Try database first, fallback to static content
+  let project = await getProjectBySlug(slug, locale)
+  if (!project) {
+    project = await getContentItem("projects", slug, locale)
+  }
 
   if (!project) {
     return {
@@ -49,8 +57,13 @@ export async function generateStaticParams({ params }: { params: { locale: Local
 export default async function ProjectPage({ params }: ProjectPageProps) {
   const locale = (await params).locale
   const slug = (await params).slug
-  const project = await getContentItem("projects", slug, locale)
   const dictionary = await getDictionary(locale)
+  
+  // Try database first, fallback to static content
+  let project = await getProjectBySlug(slug, locale)
+  if (!project) {
+    project = await getContentItem("projects", slug, locale)
+  }
 
   if (!project) {
     notFound()
@@ -109,7 +122,7 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
                 <Tag className="h-4 w-4" />
                 <span className="text-sm font-medium">{locale === "tr" ? "Teknolojiler" : "Technologies"}:</span>
               </div>
-              {project.tags.map((tag) => (
+              {project.tags.map((tag: string) => (
                 <Badge 
                   key={tag} 
                   variant="outline" 
@@ -122,7 +135,11 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
 
             <div className="bg-white/80 backdrop-blur-sm rounded-xl p-8 shadow-md border border-primary-100">
               <div className="prose max-w-none prose-headings:text-foreground prose-headings:font-bold prose-h2:text-2xl prose-h3:text-xl prose-p:text-muted-foreground prose-a:text-primary-600 prose-a:no-underline hover:prose-a:underline prose-img:rounded-lg prose-strong:text-foreground">
-                <div dangerouslySetInnerHTML={{ __html: project.content }} />
+                {Array.isArray(project.content) ? (
+                  <BlogContentRenderer content={sanitizeForClient(project.content)} />
+                ) : (
+                  <div dangerouslySetInnerHTML={{ __html: project.content }} />
+                )}
               </div>
             </div>
 

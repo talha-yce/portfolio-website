@@ -38,6 +38,7 @@ export default function AdminLayout({
   const navItems = [
     { id: 'dashboard', label: 'Genel Bakış', icon: 'dashboard', url: `/${locale}/admin/dashboard` },
     { id: 'blog', label: 'Blog Yazıları', icon: 'description', url: `/${locale}/admin/blog` },
+    { id: 'projects', label: 'Projeler', icon: 'work', url: `/${locale}/admin/projects` },
     { id: 'users', label: 'Kullanıcılar', icon: 'people', url: `/${locale}/admin/users` },
     { id: 'settings', label: 'Ayarlar', icon: 'settings', url: `/${locale}/admin/settings` }
   ]
