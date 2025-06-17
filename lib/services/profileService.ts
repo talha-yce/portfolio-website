@@ -7,10 +7,13 @@ export async function getProfile(locale: Locale) {
     console.log(`[ProfileService] getProfile("${locale}") başladı`);
     await connectToDatabase()
     
-    const profile = await Profile.findOne({ locale }).lean()
+    const profile = await Profile.findOne({ 
+      locale: locale,
+      isActive: true 
+    }).lean()
     
     if (!profile) {
-      console.log(`[ProfileService] ${locale} için profil bulunamadı`);
+      console.log(`[ProfileService] ${locale} için aktif profil bulunamadı`);
       return null
     }
     
@@ -78,6 +81,9 @@ export async function getAllProfiles() {
     const profiles = await Profile.find({}).lean()
     
     console.log(`[ProfileService] ${profiles.length} profil bulundu`);
+    if (profiles.length > 0) {
+      console.log(`[ProfileService] İlk profil:`, profiles[0].name, profiles[0].locale);
+    }
     return profiles.map((profile: any) => ({
       ...profile,
       _id: profile._id.toString()

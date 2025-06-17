@@ -12,6 +12,7 @@ export interface IProfile {
   linkedin?: string
   profileImage?: string
   locale: 'tr' | 'en'
+  isActive?: boolean
   languages: Array<{
     name: string
     level: string
@@ -20,13 +21,13 @@ export interface IProfile {
     degree: string
     institution: string
     date: string
-    description: string
+    description?: string
   }>
   experience: Array<{
     title: string
     company: string
     date: string
-    description: string
+    description?: string
   }>
   skills: Array<{
     category: string
@@ -53,6 +54,7 @@ const profileSchema = new mongoose.Schema<IProfile>({
   linkedin: { type: String },
   profileImage: { type: String },
   locale: { type: String, enum: ['tr', 'en'], required: true },
+  isActive: { type: Boolean, default: true },
   languages: [{
     name: { type: String, required: true },
     level: { type: String, required: true }
@@ -61,17 +63,17 @@ const profileSchema = new mongoose.Schema<IProfile>({
     degree: { type: String, required: true },
     institution: { type: String, required: true },
     date: { type: String, required: true },
-    description: { type: String, required: true }
+    description: { type: String }
   }],
   experience: [{
     title: { type: String, required: true },
     company: { type: String, required: true },
     date: { type: String, required: true },
-    description: { type: String, required: true }
+    description: { type: String }
   }],
   skills: [{
     category: { type: String, required: true },
-    items: [{ type: String, required: true }]
+    items: [{ type: String }]
   }],
   certifications: [{
     title: { type: String, required: true },
@@ -80,7 +82,8 @@ const profileSchema = new mongoose.Schema<IProfile>({
   }],
   lastModified: { type: Date, default: Date.now }
 }, {
-  timestamps: true
+  timestamps: true,
+  collection: 'userprofiles'
 })
 
 // Create indexes for better query performance
