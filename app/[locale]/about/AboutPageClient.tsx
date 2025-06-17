@@ -240,7 +240,18 @@ export default function AboutPageClient({ userData, dictionary, locale, params }
                               <div>
                                 <CardTitle className="text-lg text-primary-600">{exp.title}</CardTitle>
                                 <CardDescription className="text-muted-foreground">
-                                  {exp.company}
+                                  {exp.companyUrl ? (
+                                    <a 
+                                      href={exp.companyUrl} 
+                                      target="_blank" 
+                                      rel="noopener noreferrer"
+                                      className="hover:text-primary-600 transition-colors underline"
+                                    >
+                                      {exp.company}
+                                    </a>
+                                  ) : (
+                                    exp.company
+                                  )}
                                 </CardDescription>
                               </div>
                               <Badge variant="outline" className="bg-primary-50 text-primary-600 border-primary-200">

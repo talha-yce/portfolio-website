@@ -28,6 +28,7 @@ export interface IProfile {
     company: string
     date: string
     description?: string
+    companyUrl?: string
   }>
   skills: Array<{
     category: string
@@ -69,7 +70,8 @@ const profileSchema = new mongoose.Schema<IProfile>({
     title: { type: String, required: true },
     company: { type: String, required: true },
     date: { type: String, required: true },
-    description: { type: String }
+    description: { type: String },
+    companyUrl: { type: String }
   }],
   skills: [{
     category: { type: String, required: true },

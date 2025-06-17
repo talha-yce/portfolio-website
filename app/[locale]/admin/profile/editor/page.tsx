@@ -31,6 +31,7 @@ interface Experience {
   company: string;
   date: string;
   description: string;
+  companyUrl?: string;
 }
 
 interface Skill {
@@ -442,7 +443,7 @@ export default function ProfileEditor() {
                 Deneyim
                 <Button
                   size="sm"
-                  onClick={() => addArrayItem(activeTab, 'experience', { title: '', company: '', date: '', description: '' })}
+                  onClick={() => addArrayItem(activeTab, 'experience', { title: '', company: '', date: '', description: '', companyUrl: '' })}
                 >
                   <Plus className="h-4 w-4 mr-2" />
                   Deneyim Ekle
@@ -482,6 +483,14 @@ export default function ProfileEditor() {
                         <Input
                           value={exp.date}
                           onChange={(e) => updateArrayItem(activeTab, 'experience', index, { ...exp, date: e.target.value })}
+                        />
+                      </div>
+                      <div>
+                        <Label>Şirket Web Sitesi</Label>
+                        <Input
+                          value={exp.companyUrl || ''}
+                          onChange={(e) => updateArrayItem(activeTab, 'experience', index, { ...exp, companyUrl: e.target.value })}
+                          placeholder="https://example.com"
                         />
                       </div>
                     </div>

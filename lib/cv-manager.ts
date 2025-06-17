@@ -15,6 +15,7 @@ export interface UserExperience {
   company: string
   date: string
   description?: string
+  companyUrl?: string
 }
 
 export interface UserSkill {
