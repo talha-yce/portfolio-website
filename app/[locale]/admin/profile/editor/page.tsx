@@ -99,11 +99,21 @@ export default function ProfileEditor() {
     fetchProfiles();
   }, []);
 
+  // Aktif tab değiştiğinde profilleri yeniden yükle
+  useEffect(() => {
+    if (!loading) {
+      fetchProfiles();
+    }
+  }, [activeTab]);
+
   const fetchProfiles = async () => {
     try {
-      const response = await fetch('/api/admin/profile');
+      // Önbellekleme sorununu önlemek için timestamp ekle
+      const timestamp = new Date().getTime();
+      const response = await fetch(`/api/admin/profile?t=${timestamp}`);
       if (response.ok) {
         const data = await response.json();
+        console.log('Fetched profiles:', data);
         const enProfile = data.find((p: Profile) => p.locale === 'en');
         const trProfile = data.find((p: Profile) => p.locale === 'tr');
         
@@ -181,7 +191,11 @@ export default function ProfileEditor() {
 
       if (response.ok) {
         toast.success('Profil başarıyla kaydedildi');
-        fetchProfiles(); // Refresh data
+        
+        // Kısa bir gecikme ekleyerek veritabanının güncellenme şansı tanıyoruz
+        setTimeout(() => {
+          fetchProfiles(); // Refresh data
+        }, 500);
       } else {
         throw new Error('Kayıt başarısız');
       }

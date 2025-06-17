@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import connectToDatabase from '@/lib/mongodb';
 import { Profile } from '@/lib/models/Profile';
+import mongoose from 'mongoose';
 
 // GET - Fetch all profiles
 export async function GET() {
@@ -8,38 +9,35 @@ export async function GET() {
     console.log('[Admin API] Profile GET request başladı');
     await connectToDatabase();
     
-    // Check collection directly first
-    const mongoose = require('mongoose');
+    // Mongoose modellerini temizle ve yeniden yükle
+    if (mongoose.models.Profile) {
+      delete mongoose.models.Profile;
+    }
+    
+    // Profile modelini yeniden import et
+    require('@/lib/models/Profile');
+    
+    // Check collection directly to ensure we're getting fresh data
     const db = mongoose.connection.db;
     const directProfiles = await db.collection('userprofiles').find({}).toArray();
     console.log(`[Admin API] Direct query: ${directProfiles.length} profil bulundu`);
     
-    const profiles = await Profile.find({}).sort({ locale: 1, createdAt: -1 }).lean();
-    
-    console.log(`[Admin API] Model query: ${profiles.length} profil bulundu`);
-    console.log(`[Admin API] Collection name: ${Profile.collection.name}`);
-    
-    if (profiles.length > 0) {
-      console.log(`[Admin API] İlk profil:`, profiles[0].name, profiles[0].locale);
-    }
-    
-    // If model query is empty but direct query has data, use direct query
-    if (profiles.length === 0 && directProfiles.length > 0) {
-      console.log('[Admin API] Using direct query results');
-      const transformedDirectProfiles = directProfiles.map((profile: any) => ({
-        ...profile,
-        _id: profile._id.toString()
-      }));
-      return NextResponse.json(transformedDirectProfiles);
-    }
-    
     // Transform ObjectId to string for JSON serialization
-    const transformedProfiles = profiles.map((profile: any) => ({
+    const transformedProfiles = directProfiles.map((profile: any) => ({
       ...profile,
       _id: profile._id.toString()
     }));
     
     console.log('[Admin API] Returning profiles:', transformedProfiles.length);
+    if (transformedProfiles.length > 0) {
+      const firstProfile = transformedProfiles[0];
+      console.log(`[Admin API] İlk profil: ${firstProfile.name}, locale: ${firstProfile.locale}`);
+      console.log(`[Admin API] İlk profil deneyimleri: ${firstProfile.experience?.length || 0}`);
+      if (firstProfile.experience?.length > 0) {
+        console.log(`[Admin API] İlk deneyim: ${firstProfile.experience[0].company}`);
+      }
+    }
+    
     return NextResponse.json(transformedProfiles);
   } catch (error) {
     console.error('[Admin API] Error fetching profiles:', error);
