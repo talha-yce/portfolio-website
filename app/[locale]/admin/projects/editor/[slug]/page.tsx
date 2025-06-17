@@ -83,13 +83,35 @@ export default function AdminProjectEdit({ params }: AdminProjectEditProps) {
       const data = await response.json()
       const project = data.project
       
+      console.log('Fetched project:', project)
+      
+      // Transform database content to form content
+      const transformedContent = project.content ? project.content.map((section: any) => {
+        switch (section.type) {
+          case 'paragraph':
+            return { type: 'paragraph', content: section.text || '' }
+          case 'heading':
+            return { type: 'heading', content: section.text || '' }
+          case 'list':
+            return { type: 'list', content: (section.items || []).join('\n') }
+          case 'code':
+            return { type: 'code', content: section.text || '' }
+          case 'image':
+            return { type: 'image', content: section.src || '' }
+          case 'quote':
+            return { type: 'quote', content: section.text || '' }
+          default:
+            return { type: 'paragraph', content: section.text || section.content || '' }
+        }
+      }) : [{ type: 'paragraph', content: '' }]
+      
       setFormData({
         _id: project._id,
         title: project.title,
         slug: project.slug,
         description: project.description,
         date: new Date(project.date).toISOString().split('T')[0],
-        content: project.content || [{ type: 'paragraph', content: '' }],
+        content: transformedContent,
         tags: project.tags || [],
         github: project.github || '',
         demo: project.demo || '',
@@ -101,6 +123,12 @@ export default function AdminProjectEdit({ params }: AdminProjectEditProps) {
         isPublished: project.isPublished,
         featured: project.featured,
         status: project.status
+      })
+      
+      console.log('Transformed form data:', {
+        _id: project._id,
+        title: project.title,
+        content: transformedContent
       })
     } catch (error) {
       console.error('Error fetching project:', error)
@@ -233,6 +261,7 @@ export default function AdminProjectEdit({ params }: AdminProjectEditProps) {
       }
 
       console.log('Sending project data:', projectData)
+      console.log('Update URL:', `/api/admin/projects/${formData._id}`)
 
       const response = await fetch(`/api/admin/projects/${formData._id}`, {
         method: 'PUT',
@@ -241,6 +270,9 @@ export default function AdminProjectEdit({ params }: AdminProjectEditProps) {
         },
         body: JSON.stringify(projectData),
       })
+      
+      console.log('Response status:', response.status)
+      console.log('Response headers:', response.headers)
 
       if (!response.ok) {
         const errorData = await response.json()

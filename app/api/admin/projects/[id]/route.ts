@@ -58,17 +58,21 @@ export async function PUT(request: NextRequest, { params }: RouteParams) {
   try {
     console.log(`[Admin API] Project PUT request for ID: ${params.id}`)
     const updateData = await request.json()
+    console.log(`[Admin API] Update data received:`, updateData)
     
     await connectToDatabase()
     
     // Remove _id from update data if present
     const { _id, ...dataToUpdate } = updateData
+    console.log(`[Admin API] Data to update:`, dataToUpdate)
     
     const updatedProject = await Project.findByIdAndUpdate(
       params.id,
       { ...dataToUpdate, lastModified: new Date() },
       { new: true, runValidators: true }
     ).lean()
+    
+    console.log(`[Admin API] MongoDB update result:`, updatedProject ? 'Success' : 'Failed')
     
     if (!updatedProject) {
       return NextResponse.json(
