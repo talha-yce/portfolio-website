@@ -8,7 +8,14 @@ export interface IProject {
   date: Date
   content: Array<{
     type: 'paragraph' | 'heading' | 'list' | 'code' | 'image' | 'quote'
-    content: string
+    text?: string
+    items?: string[]
+    level?: number
+    language?: string
+    src?: string
+    alt?: string
+    caption?: string
+    author?: string
   }>
   tags: string[]
   github?: string
@@ -35,7 +42,14 @@ const projectSchema = new mongoose.Schema<IProject>({
   date: { type: Date, required: true },
   content: [{
     type: { type: String, enum: ['paragraph', 'heading', 'list', 'code', 'image', 'quote'], required: true },
-    content: { type: String, required: true }
+    text: String,
+    items: [String],
+    level: Number,
+    language: String,
+    src: String,
+    alt: String,
+    caption: String,
+    author: String
   }],
   tags: [{ type: String }],
   github: { type: String },

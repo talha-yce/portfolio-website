@@ -95,11 +95,14 @@ export async function PUT(request: NextRequest, { params }: RouteParams) {
     
     // Handle validation errors
     if (error instanceof Error && error.name === 'ValidationError') {
+      console.error('[Admin API] Validation Error Details:', error.message)
+      console.error('[Admin API] Validation Error Stack:', error.stack)
       return NextResponse.json(
         { 
           success: false, 
           error: 'Validation error',
-          details: error.message
+          details: error.message,
+          validationErrors: (error as any).errors || {}
         },
         { status: 400 }
       )

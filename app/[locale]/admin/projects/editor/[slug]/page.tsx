@@ -276,8 +276,9 @@ export default function AdminProjectEdit({ params }: AdminProjectEditProps) {
 
       if (!response.ok) {
         const errorData = await response.json()
-        console.error('API Error:', errorData)
-        throw new Error(errorData.error || 'Failed to update project')
+        console.error('API Error Response:', errorData)
+        console.error('Full error details:', JSON.stringify(errorData, null, 2))
+        throw new Error(errorData.details || errorData.error || 'Failed to update project')
       }
 
       const result = await response.json()
