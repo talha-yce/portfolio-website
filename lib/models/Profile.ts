@@ -90,4 +90,9 @@ const profileSchema = new mongoose.Schema<IProfile>({
 profileSchema.index({ locale: 1 })
 profileSchema.index({ email: 1 })
 
-export const Profile = mongoose.models.Profile || mongoose.model<IProfile>('Profile', profileSchema) 
+// Clear the model from cache if it exists
+if (mongoose.models.Profile) {
+  delete mongoose.models.Profile;
+}
+
+export const Profile = mongoose.model<IProfile>('Profile', profileSchema) 
