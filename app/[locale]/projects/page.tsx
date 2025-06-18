@@ -23,13 +23,18 @@ export default async function ProjectsPage({ params }: { params: { locale: Local
   // Fetch projects from database with error handling
   let projects: Project[] = []
   try {
+    console.log(`[Projects Page] Fetching projects for locale: ${locale}`)
     const dbProjects = await getAllProjects(locale)
+    console.log(`[Projects Page] Database returned ${dbProjects.length} projects`)
     projects = dbProjects.map(project => transformToProject(project))
+    console.log(`[Projects Page] Transformed ${projects.length} projects`)
   } catch (error) {
-    console.error("Error fetching projects from database:", error)
+    console.error("[Projects Page] Error fetching projects from database:", error)
     // Fallback to static content if database fetch fails
+    console.log("[Projects Page] Falling back to static content")
     try {
       const staticProjects = await getAllContent("projects", locale)
+      console.log(`[Projects Page] Static content returned ${staticProjects.length} projects`)
       projects = staticProjects.map(project => ({
         ...project,
         formattedDate: project.formattedDate || new Date(project.date).toLocaleDateString(),
@@ -39,7 +44,7 @@ export default async function ProjectsPage({ params }: { params: { locale: Local
         featured: (project as any).featured
       }))
     } catch (fallbackError) {
-      console.error("Error fetching fallback projects:", fallbackError)
+      console.error("[Projects Page] Error fetching fallback projects:", fallbackError)
     }
   }
 

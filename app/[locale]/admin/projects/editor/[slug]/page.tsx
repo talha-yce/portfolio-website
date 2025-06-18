@@ -299,14 +299,12 @@ export default function AdminProjectEdit({ params }: AdminProjectEditProps) {
         lastModified: new Date()
       }
 
-      console.log('=== FORM DATA BEFORE TRANSFORM ===')
-      console.log('Form keywords:', formData.keywords)
-      console.log('Form content:', formData.content)
-      
-      console.log('=== TRANSFORMED DATA ===')
-      console.log('Transformed content:', transformedContent)
+      console.log('=== SAVE DEBUG ===')
+      console.log('Publish parameter:', publish)
+      console.log('Form isPublished:', formData.isPublished)
+      console.log('Final isPublished:', publish || formData.isPublished)
+      console.log('Project ID:', formData._id)
       console.log('Sending project data:', JSON.stringify(projectData, null, 2))
-      console.log('Update URL:', `/api/admin/projects/${formData._id}`)
 
       const response = await fetch(`/api/admin/projects/${formData._id}`, {
         method: 'PUT',
@@ -329,12 +327,25 @@ export default function AdminProjectEdit({ params }: AdminProjectEditProps) {
       const result = await response.json()
       console.log('Update result:', result)
 
+      // Update form data with the response to reflect changes immediately
+      if (result.success && result.project) {
+        setFormData(prev => ({
+          ...prev,
+          isPublished: result.project.isPublished,
+          lastModified: result.project.lastModified
+        }))
+        console.log('Form updated with new isPublished:', result.project.isPublished)
+      }
+
       toast({
         title: 'Başarılı',
         description: `Proje ${publish ? 'yayınlandı' : 'güncellendi'}.`,
       })
 
-      router.push(`/${params.locale}/admin/projects`)
+      // Delay navigation to show the updated state
+      setTimeout(() => {
+        router.push(`/${params.locale}/admin/projects`)
+      }, 1000)
     } catch (error) {
       console.error('Error updating project:', error)
       toast({

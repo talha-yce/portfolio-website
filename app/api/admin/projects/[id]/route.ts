@@ -90,8 +90,9 @@ export async function PUT(request: NextRequest, { params }: RouteParams) {
     console.log(`[Admin API] MongoDB update result:`, updatedProject ? 'Success' : 'Failed')
     
     if (updatedProject) {
-      console.log(`[Admin API] Updated keywords:`, (updatedProject as any).keywords)
-      console.log(`[Admin API] Updated content length:`, (updatedProject as any).content?.length)
+      console.log(`[Admin API] Updated isPublished:`, (updatedProject as any).isPublished)
+      console.log(`[Admin API] Updated title:`, (updatedProject as any).title)
+      console.log(`[Admin API] Updated _id:`, (updatedProject as any)._id)
     }
     
     if (!updatedProject) {
