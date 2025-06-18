@@ -86,6 +86,11 @@ export default function ProfileManagement({ params }: PageProps) {
 
       if (response.ok) {
         toast.success('Profil başarıyla silindi');
+        // Signal data change for admin refresh
+        if (typeof window !== 'undefined') {
+          localStorage.setItem('admin-data-changed', Date.now().toString())
+          localStorage.removeItem('admin-data-changed')
+        }
         fetchProfiles();
       } else {
         throw new Error('Silme işlemi başarısız');
@@ -113,6 +118,11 @@ export default function ProfileManagement({ params }: PageProps) {
 
       if (response.ok) {
         toast.success(`Profil ${!profile.isActive ? 'aktif' : 'pasif'} edildi`);
+        // Signal data change for admin refresh
+        if (typeof window !== 'undefined') {
+          localStorage.setItem('admin-data-changed', Date.now().toString())
+          localStorage.removeItem('admin-data-changed')
+        }
         fetchProfiles();
       } else {
         throw new Error('Güncelleme başarısız');

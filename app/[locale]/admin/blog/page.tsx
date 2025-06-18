@@ -10,8 +10,9 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Badge } from '@/components/ui/badge'
 import { Skeleton } from '@/components/ui/skeleton'
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
-import { Pencil, Trash, Plus, AlertCircle, Eye, Filter } from 'lucide-react'
+import { Pencil, Trash, Plus, AlertCircle, Eye, Filter, RefreshCw } from 'lucide-react'
 import { toast } from 'sonner'
+import { useAdminRefresh, signalAdminDataChange } from '@/hooks/use-admin-refresh'
 
 interface PageProps {
   params: Promise<{
@@ -25,54 +26,71 @@ export default function BlogAdminPage({ params }: PageProps) {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [activeFilter, setActiveFilter] = useState<string | null>(null)
+  const [refreshing, setRefreshing] = useState(false)
   
   const router = useRouter()
   const searchParams = useSearchParams()
   const filterParam = searchParams.get('filter')
 
-  // Fetch blog posts
-  useEffect(() => {
-    const fetchPosts = async () => {
-      try {
-        setLoading(true)
-        setError(null)
-        
-        // Check if we need to filter by locale from URL parameter
-        const localeFilter = filterParam || activeFilter
-        let apiUrl = '/api/blog/all'
-        
-        // If filter is specified, add it to the API URL
-        if (localeFilter) {
-          apiUrl += `?locale=${localeFilter}`
-          setActiveFilter(localeFilter)
-        }
-        
-        // Fetch posts with filter if specified
-        const res = await fetch(apiUrl, {
-          cache: 'no-store',
-          headers: {
-            'Cache-Control': 'no-cache, no-store, must-revalidate',
-            'Pragma': 'no-cache',
-            'Expires': '0'
-          }
-        })
-        
-        if (!res.ok) {
-          throw new Error('Failed to fetch blog posts')
-        }
-        
-        const data = await res.json()
-        setPosts(data)
-      } catch (err) {
-        console.error('Error fetching blog posts:', err)
-        setError(err instanceof Error ? err.message : 'Failed to fetch blog posts')
-      } finally {
-        setLoading(false)
+  // Fetch blog posts function (extracted for reuse)
+  const fetchPosts = async (showLoading = true) => {
+    try {
+      if (showLoading) setLoading(true)
+      else setRefreshing(true)
+      setError(null)
+      
+      // Check if we need to filter by locale from URL parameter
+      const localeFilter = filterParam || activeFilter
+      let apiUrl = '/api/blog/all'
+      
+      // If filter is specified, add it to the API URL
+      if (localeFilter) {
+        apiUrl += `?locale=${localeFilter}`
+        setActiveFilter(localeFilter)
       }
+      
+      // Fetch posts with filter if specified
+      const res = await fetch(apiUrl, {
+        cache: 'no-store',
+        headers: {
+          'Cache-Control': 'no-cache, no-store, must-revalidate',
+          'Pragma': 'no-cache',
+          'Expires': '0',
+          'X-Timestamp': Date.now().toString()
+        }
+      })
+      
+      if (!res.ok) {
+        throw new Error('Failed to fetch blog posts')
+      }
+      
+      const data = await res.json()
+      setPosts(data)
+    } catch (err) {
+      console.error('Error fetching blog posts:', err)
+      setError(err instanceof Error ? err.message : 'Failed to fetch blog posts')
+    } finally {
+      setLoading(false)
+      setRefreshing(false)
     }
-    
+  }
+
+  // Fetch posts on mount and when filter changes
+  useEffect(() => {
     fetchPosts()
   }, [filterParam, activeFilter])
+
+  // Use admin refresh hook for automatic refresh
+  useAdminRefresh({ 
+    onRefresh: () => fetchPosts(false),
+    dependencies: [filterParam, activeFilter]
+  })
+
+  // Manual refresh function
+  const handleRefresh = () => {
+    console.log('[Admin Blog] Manual refresh triggered')
+    fetchPosts(false)
+  }
 
   // Set filter function
   const setFilter = (filter: string | null) => {
@@ -99,9 +117,10 @@ export default function BlogAdminPage({ params }: PageProps) {
         throw new Error('Failed to delete blog post')
       }
       
-      // Remove the post from the state
-      setPosts(posts.filter(post => post._id !== id))
       toast.success('Blog post deleted successfully!')
+      // Signal data change for other tabs and refetch
+      signalAdminDataChange()
+      fetchPosts(false)
     } catch (err) {
       console.error('Error deleting blog post:', err)
       toast.error(err instanceof Error ? err.message : 'Failed to delete blog post')
@@ -160,9 +179,19 @@ export default function BlogAdminPage({ params }: PageProps) {
             </select>
           </div>
         </div>
-        <Button onClick={() => router.push(`/${locale}/admin/blog/editor/new`)}>
-          <Plus className="mr-2 h-4 w-4" /> Create New Post
-        </Button>
+        <div className="flex gap-2">
+          <Button 
+            variant="outline" 
+            onClick={handleRefresh}
+            disabled={refreshing}
+          >
+            <RefreshCw className={`mr-2 h-4 w-4 ${refreshing ? 'animate-spin' : ''}`} />
+            {refreshing ? 'Refreshing...' : 'Refresh'}
+          </Button>
+          <Button onClick={() => router.push(`/${locale}/admin/blog/editor/new`)}>
+            <Plus className="mr-2 h-4 w-4" /> Create New Post
+          </Button>
+        </div>
       </div>
       
       <Tabs defaultValue="published">

@@ -10,8 +10,9 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Badge } from '@/components/ui/badge'
 import { Skeleton } from '@/components/ui/skeleton'
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
-import { Pencil, Trash, Plus, AlertCircle, Eye, Filter, ExternalLink, Github } from 'lucide-react'
+import { Pencil, Trash, Plus, AlertCircle, Eye, Filter, ExternalLink, Github, RefreshCw } from 'lucide-react'
 import { toast } from 'sonner'
+import { useAdminRefresh, signalAdminDataChange } from '@/hooks/use-admin-refresh'
 
 interface PageProps {
   params: Promise<{
@@ -25,65 +26,75 @@ export default function ProjectsAdminPage({ params }: PageProps) {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [activeFilter, setActiveFilter] = useState<string | null>(null)
+  const [refreshing, setRefreshing] = useState(false)
   
   const router = useRouter()
   const searchParams = useSearchParams()
   const filterParam = searchParams.get('filter')
 
-  // Fetch projects
-  useEffect(() => {
-    const fetchProjects = async () => {
-      try {
-        setLoading(true)
-        setError(null)
-        
-        // Check if we need to filter by locale from URL parameter
-        const localeFilter = filterParam || activeFilter
-        let apiUrl = '/api/admin/projects'
-        
-        // If filter is specified, add it to the API URL
-        if (localeFilter) {
-          apiUrl += `?locale=${localeFilter}`
-          setActiveFilter(localeFilter)
-        }
-        
-        // Fetch projects with filter if specified
-        const res = await fetch(apiUrl, {
-          cache: 'no-store',
-          headers: {
-            'Cache-Control': 'no-cache, no-store, must-revalidate',
-            'Pragma': 'no-cache',
-            'Expires': '0'
-          }
-        })
-        
-        if (!res.ok) {
-          throw new Error('Failed to fetch projects')
-        }
-        
-        const data = await res.json()
-        console.log('[Admin Projects] API Response:', data)
-        console.log('[Admin Projects] API URL:', apiUrl)
-        console.log('[Admin Projects] Active Filter:', activeFilter)
-        console.log('[Admin Projects] Filter Param:', filterParam)
-        if (data.success) {
-          console.log('[Admin Projects] Projects loaded:', data.projects.length)
-          console.log('[Admin Projects] Draft projects:', data.projects.filter((p: any) => !p.isPublished).length)
-          console.log('[Admin Projects] Published projects:', data.projects.filter((p: any) => p.isPublished).length)
-          setProjects(data.projects)
-        } else {
-          throw new Error(data.error || 'Failed to fetch projects')
-        }
-      } catch (err) {
-        console.error('Error fetching projects:', err)
-        setError(err instanceof Error ? err.message : 'Failed to fetch projects')
-      } finally {
-        setLoading(false)
+  // Fetch projects function (extracted for reuse)
+  const fetchProjects = async (showLoading = true) => {
+    try {
+      if (showLoading) setLoading(true)
+      else setRefreshing(true)
+      setError(null)
+      
+      // Check if we need to filter by locale from URL parameter
+      const localeFilter = filterParam || activeFilter
+      let apiUrl = '/api/admin/projects'
+      
+      // If filter is specified, add it to the API URL
+      if (localeFilter) {
+        apiUrl += `?locale=${localeFilter}`
+        setActiveFilter(localeFilter)
       }
+      
+      // Fetch projects with filter if specified
+      const res = await fetch(apiUrl, {
+        cache: 'no-store',
+        headers: {
+          'Cache-Control': 'no-cache, no-store, must-revalidate',
+          'Pragma': 'no-cache',
+          'Expires': '0',
+          'X-Timestamp': Date.now().toString()
+        }
+      })
+      
+      if (!res.ok) {
+        throw new Error('Failed to fetch projects')
+      }
+      
+      const data = await res.json()
+      
+      console.log('[Admin Projects] Fetched projects:', data.length)
+      console.log('[Admin Projects] Projects isPublished status:', data.map((p: any) => ({ title: p.title, isPublished: p.isPublished })))
+      
+      setProjects(data)
+    } catch (err) {
+      console.error('Error fetching projects:', err)
+      setError(err instanceof Error ? err.message : 'Failed to fetch projects')
+    } finally {
+      setLoading(false)
+      setRefreshing(false)
     }
-    
+  }
+
+  // Fetch projects on mount and when filter changes
+  useEffect(() => {
     fetchProjects()
   }, [filterParam, activeFilter])
+
+  // Use admin refresh hook for automatic refresh
+  useAdminRefresh({ 
+    onRefresh: () => fetchProjects(false),
+    dependencies: [filterParam, activeFilter]
+  })
+
+  // Manual refresh function
+  const handleRefresh = () => {
+    console.log('[Admin Projects] Manual refresh triggered')
+    fetchProjects(false)
+  }
 
   // Set filter function
   const setFilter = (filter: string | null) => {
@@ -110,9 +121,10 @@ export default function ProjectsAdminPage({ params }: PageProps) {
         throw new Error('Failed to delete project')
       }
       
-      // Remove the project from the state
-      setProjects(projects.filter(project => project._id !== id))
       toast.success('Project deleted successfully!')
+      // Signal data change for other tabs and refetch
+      signalAdminDataChange()
+      fetchProjects(false)
     } catch (err) {
       console.error('Error deleting project:', err)
       toast.error(err instanceof Error ? err.message : 'Failed to delete project')
@@ -136,14 +148,10 @@ export default function ProjectsAdminPage({ params }: PageProps) {
         throw new Error('Failed to update project status')
       }
       
-      // Update the project in the state
-      setProjects(projects.map(project => 
-        project._id === id 
-          ? { ...project, isPublished: !currentStatus }
-          : project
-      ))
-      
       toast.success(`Project ${!currentStatus ? 'published' : 'unpublished'} successfully!`)
+      // Signal data change for other tabs and refetch
+      signalAdminDataChange()
+      fetchProjects(false)
     } catch (err) {
       console.error('Error updating project status:', err)
       toast.error(err instanceof Error ? err.message : 'Failed to update project status')
@@ -196,9 +204,19 @@ export default function ProjectsAdminPage({ params }: PageProps) {
             </select>
           </div>
         </div>
-        <Button onClick={() => router.push(`/${locale}/admin/projects/editor`)}>
-          <Plus className="mr-2 h-4 w-4" /> Create New Project
-        </Button>
+        <div className="flex gap-2">
+          <Button 
+            variant="outline" 
+            onClick={handleRefresh}
+            disabled={refreshing}
+          >
+            <RefreshCw className={`mr-2 h-4 w-4 ${refreshing ? 'animate-spin' : ''}`} />
+            {refreshing ? 'Refreshing...' : 'Refresh'}
+          </Button>
+          <Button onClick={() => router.push(`/${locale}/admin/projects/editor`)}>
+            <Plus className="mr-2 h-4 w-4" /> Create New Project
+          </Button>
+        </div>
       </div>
       
       <Tabs defaultValue="all">

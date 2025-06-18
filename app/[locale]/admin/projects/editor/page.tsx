@@ -238,6 +238,12 @@ export default function AdminProjectEditor({ params }: AdminProjectEditorProps) 
         description: `Proje ${publish ? 'yayınlandı' : 'kaydedildi'}.`,
       })
 
+      // Signal data change for admin refresh
+      if (typeof window !== 'undefined') {
+        localStorage.setItem('admin-data-changed', Date.now().toString())
+        localStorage.removeItem('admin-data-changed')
+      }
+
       router.push(`/${params.locale}/admin/projects`)
     } catch (error) {
       console.error('Error saving project:', error)

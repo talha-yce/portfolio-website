@@ -342,6 +342,12 @@ export default function AdminProjectEdit({ params }: AdminProjectEditProps) {
         description: `Proje ${publish ? 'yayınlandı' : 'güncellendi'}.`,
       })
 
+      // Signal data change for admin refresh
+      if (typeof window !== 'undefined') {
+        localStorage.setItem('admin-data-changed', Date.now().toString())
+        localStorage.removeItem('admin-data-changed')
+      }
+
       // Delay navigation to show the updated state
       setTimeout(() => {
         router.push(`/${params.locale}/admin/projects`)
@@ -376,6 +382,12 @@ export default function AdminProjectEdit({ params }: AdminProjectEditProps) {
         title: 'Başarılı',
         description: 'Proje başarıyla silindi.',
       })
+
+      // Signal data change for admin refresh
+      if (typeof window !== 'undefined') {
+        localStorage.setItem('admin-data-changed', Date.now().toString())
+        localStorage.removeItem('admin-data-changed')
+      }
 
       router.push(`/${params.locale}/admin/projects`)
     } catch (error) {
