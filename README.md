@@ -12,11 +12,11 @@
       <strong>🚀 Live Demo »</strong>
     </a>
     &nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;
-    <a href="https://github.com/talhayuce/portfolio-website/issues" target="_blank">
+    <a href="https://github.com/talha-yce/portfolio-website/issues" target="_blank">
       Rapor a Bug
     </a>
     &nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;
-    <a href="https://github.com/talhayuce/portfolio-website/pulls" target="_blank">
+    <a href="https://github.com/talha-yce/portfolio-website/pulls" target="_blank">
       Request a Feature
     </a>
   </p>
