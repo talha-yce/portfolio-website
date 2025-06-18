@@ -157,8 +157,62 @@ export default function AdminProjectEditor({ params }: AdminProjectEditorProps) 
     try {
       setSaving(true)
       
+      // Transform content to match database schema with proper field structure
+      const transformedContent = formData.content.map((section, index) => {
+        const baseSection = {
+          _id: undefined, // Let MongoDB generate this
+          type: section.type,
+          text: section.content.trim(),
+          order: index
+        }
+        
+        switch (section.type) {
+          case 'paragraph':
+            return { ...baseSection, type: 'paragraph' }
+          case 'heading':
+            return { 
+              ...baseSection, 
+              type: 'heading', 
+              level: 2,
+              items: []
+            }
+          case 'list':
+            return { 
+              ...baseSection, 
+              type: 'list',
+              items: section.content.split('\n').filter(item => item.trim()).map(item => item.trim())
+            }
+          case 'code':
+            return { 
+              ...baseSection, 
+              type: 'code', 
+              language: 'javascript',
+              items: []
+            }
+          case 'image':
+            return { 
+              ...baseSection, 
+              type: 'image', 
+              src: section.content,
+              alt: 'Project image',
+              caption: '',
+              items: []
+            }
+          case 'quote':
+            return { 
+              ...baseSection, 
+              type: 'quote',
+              author: '',
+              items: []
+            }
+          default:
+            return { ...baseSection, type: 'paragraph' }
+        }
+      })
+      
       const projectData = {
         ...formData,
+        content: transformedContent,
         isPublished: publish || formData.isPublished,
         date: new Date(formData.date),
         lastModified: new Date(),

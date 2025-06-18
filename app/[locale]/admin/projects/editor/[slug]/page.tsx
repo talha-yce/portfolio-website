@@ -87,21 +87,27 @@ export default function AdminProjectEdit({ params }: AdminProjectEditProps) {
       
       // Transform database content to form content
       const transformedContent = project.content ? project.content.map((section: any) => {
+        // Handle both old format (text field) and new format (content field)
+        const textContent = section.text || section.content || ''
+        
         switch (section.type) {
           case 'paragraph':
-            return { type: 'paragraph', content: section.text || '' }
+          case 'text': // Handle both 'text' and 'paragraph' types
+            return { type: 'paragraph', content: textContent }
           case 'heading':
-            return { type: 'heading', content: section.text || '' }
+            return { type: 'heading', content: textContent }
           case 'list':
-            return { type: 'list', content: (section.items || []).join('\n') }
+            // Handle both items array and text content
+            const listContent = section.items ? section.items.join('\n') : textContent
+            return { type: 'list', content: listContent }
           case 'code':
-            return { type: 'code', content: section.text || '' }
+            return { type: 'code', content: textContent }
           case 'image':
-            return { type: 'image', content: section.src || '' }
+            return { type: 'image', content: section.src || textContent }
           case 'quote':
-            return { type: 'quote', content: section.text || '' }
+            return { type: 'quote', content: textContent }
           default:
-            return { type: 'paragraph', content: section.text || section.content || '' }
+            return { type: 'paragraph', content: textContent }
         }
       }) : [{ type: 'paragraph', content: '' }]
       
@@ -232,23 +238,56 @@ export default function AdminProjectEdit({ params }: AdminProjectEditProps) {
     try {
       setSaving(true)
       
-      // Transform content to match database schema
-      const transformedContent = formData.content.map(section => {
+      // Transform content to match database schema with proper field structure
+      const transformedContent = formData.content.map((section, index) => {
+        const baseSection = {
+          _id: undefined, // Let MongoDB generate this
+          type: section.type,
+          text: section.content.trim(),
+          order: index
+        }
+        
         switch (section.type) {
           case 'paragraph':
-            return { type: 'paragraph', text: section.content }
+            return { ...baseSection, type: 'paragraph' }
           case 'heading':
-            return { type: 'heading', text: section.content, level: 2 }
+            return { 
+              ...baseSection, 
+              type: 'heading', 
+              level: 2,
+              items: []
+            }
           case 'list':
-            return { type: 'list', items: section.content.split('\n').filter(item => item.trim()) }
+            return { 
+              ...baseSection, 
+              type: 'list',
+              items: section.content.split('\n').filter(item => item.trim()).map(item => item.trim())
+            }
           case 'code':
-            return { type: 'code', text: section.content, language: 'javascript' }
+            return { 
+              ...baseSection, 
+              type: 'code', 
+              language: 'javascript',
+              items: []
+            }
           case 'image':
-            return { type: 'image', src: section.content, alt: 'Project image' }
+            return { 
+              ...baseSection, 
+              type: 'image', 
+              src: section.content,
+              alt: 'Project image',
+              caption: '',
+              items: []
+            }
           case 'quote':
-            return { type: 'quote', text: section.content }
+            return { 
+              ...baseSection, 
+              type: 'quote',
+              author: '',
+              items: []
+            }
           default:
-            return { type: 'paragraph', text: section.content }
+            return { ...baseSection, type: 'paragraph' }
         }
       })
       

@@ -8,11 +8,19 @@ export async function GET(request: NextRequest) {
     console.log('[Admin API] Projects GET request')
     await connectToDatabase()
     
-    const projects = await Project.find({})
+    // Get locale filter from query params
+    const { searchParams } = new URL(request.url)
+    const locale = searchParams.get('locale')
+    
+    // Build query based on locale filter
+    const query = locale ? { locale } : {}
+    console.log(`[Admin API] Query filter:`, query)
+    
+    const projects = await Project.find(query)
       .sort({ createdAt: -1 })
       .lean()
     
-    console.log(`[Admin API] Returning ${projects.length} projects`)
+    console.log(`[Admin API] Returning ${projects.length} projects for locale: ${locale || 'all'}`)
     
     const formattedProjects = projects.map((project: any) => ({
       ...project,

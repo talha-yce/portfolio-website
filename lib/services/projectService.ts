@@ -18,6 +18,33 @@ const formatDate = (date: Date | string, locale: Locale): string => {
   })
 }
 
+// Normalize content structure between different formats
+const normalizeContent = (content: any[]): any[] => {
+  if (!Array.isArray(content)) {
+    return []
+  }
+  
+  return content.map(section => {
+    // Handle different content field names (content vs text)
+    if (section.content && !section.text) {
+      return {
+        ...section,
+        text: section.content
+      }
+    }
+    
+    // Ensure we have the proper type mapping
+    if (section.type === 'text') {
+      return {
+        ...section,
+        type: 'paragraph'
+      }
+    }
+    
+    return section
+  })
+}
+
 export async function getAllProjects(locale: Locale) {
   try {
     console.log(`[ProjectService] getAllProjects("${locale}") başladı`);
@@ -35,6 +62,7 @@ export async function getAllProjects(locale: Locale) {
       ...project,
       _id: project._id.toString(),
       formattedDate: formatDate(project.date, locale),
+      content: normalizeContent(project.content || [])
     }))
   } catch (error) {
     console.error('[ProjectService] Projeleri getirirken hata:', error)
@@ -123,6 +151,7 @@ export async function getFeaturedProjects(locale: Locale, limit: number = 3) {
       ...project,
       _id: project._id.toString(),
       formattedDate: formatDate(project.date, locale),
+      content: normalizeContent(project.content || [])
     }))
   } catch (error) {
     console.error('[ProjectService] Öne çıkan projeleri getirirken hata:', error)
@@ -151,6 +180,7 @@ export async function getProjectBySlug(slug: string, locale: Locale) {
       ...(project as any),
       _id: (project as any)._id.toString(),
       formattedDate: formatDate((project as any).date, locale),
+      content: normalizeContent((project as any).content || [])
     }
   } catch (error) {
     console.error(`[ProjectService] "${slug}" sluglı projeyi getirirken hata:`, error)
@@ -176,6 +206,7 @@ export async function getProjectsByTag(tag: string, locale: Locale) {
       ...project,
       _id: project._id.toString(),
       formattedDate: formatDate(project.date, locale),
+      content: normalizeContent(project.content || [])
     }))
   } catch (error) {
     console.error(`[ProjectService] "${tag}" etiketli projeleri getirirken hata:`, error)

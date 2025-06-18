@@ -13,7 +13,7 @@ import { type Locale, getLocalizedPathname } from "@/lib/i18n/config"
 import { getProjectBySlug } from "@/lib/services/projectService"
 import { PageTransition } from "@/components/page-transition"
 import { SiteLayout } from "@/components/site-layout"
-import { BlogContentRenderer } from "@/components/BlogContentRenderer"
+import { ProjectContentRenderer } from "@/components/ProjectContentRenderer"
 import { sanitizeForClient } from "@/lib/utils"
 
 interface ProjectPageProps {
@@ -136,7 +136,7 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
             <div className="bg-white/80 backdrop-blur-sm rounded-xl p-8 shadow-md border border-primary-100">
               <div className="prose max-w-none prose-headings:text-foreground prose-headings:font-bold prose-h2:text-2xl prose-h3:text-xl prose-p:text-muted-foreground prose-a:text-primary-600 prose-a:no-underline hover:prose-a:underline prose-img:rounded-lg prose-strong:text-foreground">
                 {Array.isArray(project.content) ? (
-                  <BlogContentRenderer content={sanitizeForClient(project.content)} />
+                  <ProjectContentRenderer content={sanitizeForClient(project.content)} />
                 ) : (
                   <div dangerouslySetInnerHTML={{ __html: project.content }} />
                 )}
@@ -152,8 +152,8 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
                   </Button>
                 </Link>
               )}
-              {project.link && (
-                <Link href={project.link} target="_blank" rel="noopener noreferrer">
+              {project.demo && (
+                <Link href={project.demo} target="_blank" rel="noopener noreferrer">
                   <Button
                     variant="outline"
                     className="gap-2 border-primary-200 hover:bg-primary-50 hover:border-primary-300 hover:text-primary-700 transition-all duration-300"

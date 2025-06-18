@@ -107,6 +107,7 @@ export function transformToProject(project: any): Project {
     demo: project.demo,
     status: project.status,
     featured: project.featured,
+    content: project.content,
     _id: project._id
   }
 } 
