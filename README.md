@@ -90,37 +90,38 @@ Aşağıdaki diyagram, uygulamanın temel mimarisini ve veri akışını göster
 ```mermaid
 graph TD
     subgraph "Kullanıcı Cihazı (Browser)"
-        A[Next.js Frontend <br/>(React, Tailwind, Framer Motion)]
+        A["Next.js Frontend <br/>(React, Tailwind, Framer Motion)"]
     end
 
     subgraph "Vercel Platformu (Sunucu)"
         B(Next.js App Router)
-        C{Middleware <br/>(i18n Yönlendirme & Auth Kontrolü)}
-        D[API Routes <br/>(/api/...)]
+        C{"Middleware <br/>(i18n Yönlendirme & Auth Kontrolü)"}
+        D["API Routes <br/>(/api/...)"]
     end
 
     subgraph "Harici Servisler"
-        E[MongoDB Atlas <br/>(Veritabanı)]
+        E["MongoDB Atlas <br/>(Veritabanı)"]
     end
 
-    A -- Tarayıcı İsteği (örn: /tr/blog/yazi) --> C
-    C -- Yetki ve Dil Kontrolü --> B
-    B -- Sayfayı Sunucuda Render Eder (SSR) --> D
-    D -- Veritabanı Sorgusu (Mongoose ile) --> E
-    E -- İstenen Veriyi Döndürür --> D
-    D -- Veriyi Sayfa Bileşenine Aktarır --> B
-    B -- Oluşturulan HTML'i Tarayıcıya Gönderir --> A
+    A -- "Tarayıcı İsteği (örn: /tr/blog/yazi)" --> C
+    C -- "Yetki ve Dil Kontrolü" --> B
+    B -- "Sayfayı Sunucuda Render Eder (SSR)" --> D
+    D -- "Veritabanı Sorgusu (Mongoose ile)" --> E
+    E -- "İstenen Veriyi Döndürür" --> D
+    D -- "Veriyi Sayfa Bileşenine Aktarır" --> B
+    B -- "Oluşturulan HTML'i Tarayıcıya Gönderir" --> A
     
-    A -- Admin Panelinden API Çağrısı (örn: Proje Güncelle) --> D
-    D -- Gelen Veriyi İşler ve Veritabanına Yazar --> E
-    E -- Başarılı Yanıt Döndürür --> D
-    D -- JSON Yanıtı Tarayıcıya Gönderir --> A
+    A -- "Admin Panelinden API Çağrısı (örn: Proje Güncelle)" --> D
+    D -- "Gelen Veriyi İşler ve Veritabanına Yazar" --> E
+    E -- "Başarılı Yanıt Döndürür" --> D
+    D -- "JSON Yanıtı Tarayıcıya Gönderir" --> A
 
-    style A fill:#61DAFB,stroke:#333,stroke-width:2px
-    style B fill:#000,stroke:#fff,stroke-width:2px,color:#fff
-    style C fill:#F7DF1E,stroke:#333,stroke-width:2px
-    style D fill:#764ABC,stroke:#fff,stroke-width:2px,color:#fff
-    style E fill:#4DB33D,stroke:#333,stroke-width:2px
+    %% Stil Tanımlamaları (Modern Palet)
+    style A fill:#58A6FF,stroke:#8B949E,color:#000,font-weight:bold,stroke-width:2px
+    style B fill:#30363D,stroke:#8B949E,color:#fff,font-weight:bold,stroke-width:2px
+    style C fill:#E3B341,stroke:#8B949E,color:#000,font-weight:bold,stroke-width:2px
+    style D fill:#484F58,stroke:#8B949E,color:#fff,font-weight:bold,stroke-width:2px
+    style E fill:#3FB950,stroke:#8B949E,color:#fff,font-weight:bold,stroke-width:2px
 ```
 
 ---
