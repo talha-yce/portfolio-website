@@ -62,7 +62,14 @@ export default function ProjectsAdminPage({ params }: PageProps) {
         }
         
         const data = await res.json()
+        console.log('[Admin Projects] API Response:', data)
+        console.log('[Admin Projects] API URL:', apiUrl)
+        console.log('[Admin Projects] Active Filter:', activeFilter)
+        console.log('[Admin Projects] Filter Param:', filterParam)
         if (data.success) {
+          console.log('[Admin Projects] Projects loaded:', data.projects.length)
+          console.log('[Admin Projects] Draft projects:', data.projects.filter((p: any) => !p.isPublished).length)
+          console.log('[Admin Projects] Published projects:', data.projects.filter((p: any) => p.isPublished).length)
           setProjects(data.projects)
         } else {
           throw new Error(data.error || 'Failed to fetch projects')
@@ -194,7 +201,7 @@ export default function ProjectsAdminPage({ params }: PageProps) {
         </Button>
       </div>
       
-      <Tabs defaultValue="published">
+      <Tabs defaultValue="all">
         <TabsList className="mb-6">
           <TabsTrigger value="published">Published</TabsTrigger>
           <TabsTrigger value="drafts">Drafts</TabsTrigger>
@@ -225,23 +232,30 @@ export default function ProjectsAdminPage({ params }: PageProps) {
         
         <TabsContent value="drafts">
           <div className="space-y-4">
-            {projects.filter(project => !project.isPublished).length === 0 ? (
-              <p className="text-center text-gray-500 py-10">
-                No draft projects {activeFilter ? `in ${activeFilter.toUpperCase()}` : ''}.
-              </p>
-            ) : (
-              projects
-                .filter(project => !project.isPublished)
-                .map(project => (
-                  <ProjectCard 
-                    key={project._id} 
-                    project={project} 
-                    locale={locale} 
-                    onDelete={deleteProject}
-                    onTogglePublished={togglePublished}
-                  />
-                ))
-            )}
+            {(() => {
+              const draftProjects = projects.filter(project => !project.isPublished)
+              console.log('[Admin Projects] Drafts tab - Total projects:', projects.length)
+              console.log('[Admin Projects] Drafts tab - Draft projects:', draftProjects.length)
+              console.log('[Admin Projects] Drafts tab - Draft project titles:', draftProjects.map(p => p.title))
+              
+              if (draftProjects.length === 0) {
+                return (
+                  <p className="text-center text-gray-500 py-10">
+                    No draft projects {activeFilter ? `in ${activeFilter.toUpperCase()}` : ''}.
+                  </p>
+                )
+              }
+              
+              return draftProjects.map(project => (
+                <ProjectCard 
+                  key={project._id} 
+                  project={project} 
+                  locale={locale} 
+                  onDelete={deleteProject}
+                  onTogglePublished={togglePublished}
+                />
+              ))
+            })()}
           </div>
         </TabsContent>
 
