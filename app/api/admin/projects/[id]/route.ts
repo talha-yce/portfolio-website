@@ -18,9 +18,20 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
     // Check if it's a MongoDB ObjectId
     if (mongoose.Types.ObjectId.isValid(params.id)) {
       project = await Project.findById(params.id).lean()
+      console.log(`[Admin API] Searching by MongoDB ID: ${params.id}`)
     } else {
-      // Treat as slug
-      project = await Project.findOne({ slug: params.id }).lean()
+      // Treat as slug - Get locale from query params to handle same slug in different locales
+      const { searchParams } = new URL(request.url)
+      const locale = searchParams.get('locale')
+      
+      if (locale) {
+        project = await Project.findOne({ slug: params.id, locale }).lean()
+        console.log(`[Admin API] Searching by slug and locale: ${params.id} (${locale})`)
+      } else {
+        // Fallback: find by slug without locale (might return unexpected results if multiple locales have same slug)
+        project = await Project.findOne({ slug: params.id }).lean()
+        console.log(`[Admin API] Searching by slug only: ${params.id} (no locale specified)`)
+      }
     }
     
     if (!project) {
@@ -31,7 +42,7 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
       )
     }
     
-    console.log(`[Admin API] Project found: ${(project as any).title}`)
+    console.log(`[Admin API] Project found: ${(project as any).title} (locale: ${(project as any).locale})`)
     
     return NextResponse.json({
       success: true,

@@ -63,7 +63,7 @@ export default function AdminProjectEdit({ params }: AdminProjectEditProps) {
     coverImageAlt: '',
     metaDescription: '',
     keywords: [],
-    locale: params.locale,
+    locale: 'tr', // Default başlatma, veritabanından yüklendiğinde üzerine yazılacak
     isPublished: false,
     featured: false,
     status: 'draft'
@@ -588,6 +588,7 @@ export default function AdminProjectEdit({ params }: AdminProjectEditProps) {
                 <Select
                   value={formData.locale}
                   onValueChange={(value: Locale) => setFormData(prev => ({ ...prev, locale: value }))}
+                  disabled={true} // Proje edit ederken locale değiştirme kapalı
                 >
                   <SelectTrigger>
                     <SelectValue />
@@ -597,6 +598,9 @@ export default function AdminProjectEdit({ params }: AdminProjectEditProps) {
                     <SelectItem value="en">English</SelectItem>
                   </SelectContent>
                 </Select>
+                <p className="text-xs text-muted-foreground">
+                  Proje dilini düzenlerken değiştiremezsiniz. Farklı dilde proje oluşturmak için yeni proje oluşturun.
+                </p>
               </div>
             </CardContent>
           </Card>

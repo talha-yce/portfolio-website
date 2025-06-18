@@ -380,7 +380,7 @@ function ProjectCard({ project, locale, onDelete, onTogglePublished }: ProjectCa
           </Link>
         </div>
         <div className="flex gap-2">
-          <Link href={`/${locale}/admin/projects/editor/${project.slug}`}>
+          <Link href={`/${locale}/admin/projects/editor/${project._id}`}>
             <Button variant="outline" size="sm">
               <Pencil className="mr-2 h-4 w-4" />
               Edit
