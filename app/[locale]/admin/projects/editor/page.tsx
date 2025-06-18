@@ -20,6 +20,7 @@ interface ContentSection {
   content: string
 }
 
+
 interface ProjectFormData {
   title: string
   slug: string
