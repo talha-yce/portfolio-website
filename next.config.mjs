@@ -7,21 +7,20 @@ try {
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  eslint: {
-    ignoreDuringBuilds: true,
-  },
+  turbopack: {},
+
   typescript: {
     ignoreBuildErrors: true,
   },
+
   images: {
     dangerouslyAllowSVG: true,
-    contentDispositionType: 'attachment',
+    contentDispositionType: "attachment",
     contentSecurityPolicy: "default-src 'self'; script-src 'none'; sandbox;",
-    domains: ["images.unsplash.com", "talha-yuce.site", "images.stockcake.com"],
     remotePatterns: [
       {
-        protocol: 'https',
-        hostname: '**',
+        protocol: "https",
+        hostname: "**",
       },
     ],
     formats: ["image/avif", "image/webp"],
@@ -29,10 +28,8 @@ const nextConfig = {
     imageSizes: [16, 32, 48, 64, 96, 128, 256, 384],
     minimumCacheTTL: 60,
   },
+
   experimental: {
-    webpackBuildWorker: true,
-    parallelServerBuildTraces: true,
-    parallelServerCompiles: true,
     optimizePackageImports: [
       "@icons-pack/react-simple-icons",
       "lucide-react",
@@ -40,41 +37,29 @@ const nextConfig = {
       "react-syntax-highlighter",
     ],
   },
+
   compress: true,
   poweredByHeader: false,
   reactStrictMode: true,
+
   compiler: {
     removeConsole: process.env.NODE_ENV === "production",
   },
+
   async headers() {
     return [
       {
         source: "/:path*",
         headers: [
-          {
-            key: "X-DNS-Prefetch-Control",
-            value: "on",
-          },
+          { key: "X-DNS-Prefetch-Control", value: "on" },
           {
             key: "Strict-Transport-Security",
             value: "max-age=63072000; includeSubDomains; preload",
           },
-          {
-            key: "X-XSS-Protection",
-            value: "1; mode=block",
-          },
-          {
-            key: "X-Frame-Options",
-            value: "SAMEORIGIN",
-          },
-          {
-            key: "X-Content-Type-Options",
-            value: "nosniff",
-          },
-          {
-            key: "Referrer-Policy",
-            value: "origin-when-cross-origin",
-          },
+          { key: "X-XSS-Protection", value: "1; mode=block" },
+          { key: "X-Frame-Options", value: "SAMEORIGIN" },
+          { key: "X-Content-Type-Options", value: "nosniff" },
+          { key: "Referrer-Policy", value: "origin-when-cross-origin" },
           {
             key: "Permissions-Policy",
             value: "camera=(), microphone=(), geolocation=()",
@@ -105,25 +90,14 @@ const nextConfig = {
       },
     ];
   },
-  output: 'standalone',
-  webpack(config) {
-    config.module.rules.push({
-      test: /\.(ico|png|jpg|jpeg|gif|svg)$/i,
-      type: 'asset/resource',
-      generator: {
-        filename: 'static/[path][name][ext]'
-      }
-    });
-    return config;
-  },
+
+  output: "standalone",
 };
 
 mergeConfig(nextConfig, userConfig);
 
 function mergeConfig(nextConfig, userConfig) {
-  if (!userConfig) {
-    return;
-  }
+  if (!userConfig) return;
 
   for (const key in userConfig) {
     if (
