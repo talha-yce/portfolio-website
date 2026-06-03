@@ -63,7 +63,7 @@
     "mongodb": "^6.8.0",
     "mongoose": "^8.14.2",
     "negotiator": "^1.0.0",
-    "next": "latest"
+    "next": "latest",
     "next-themes": "latest",
     "nodemailer": "^6.10.0",
     "path": "latest",
